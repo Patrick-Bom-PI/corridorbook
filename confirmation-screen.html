@@ -858,16 +858,26 @@ function removeNotifEmail(i) {
 })();
 
 // ── Commercial validation feedback ───────────────────────────────────────────
-function recordFeedback(answer) {
-  var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
-  feedback.push({ answer: answer, ts: new Date().toISOString(), ref: localStorage.getItem('cb_ref') || '' });
-  localStorage.setItem('cb_feedback', JSON.stringify(feedback));
+async function recordFeedback(answer) {
+  var ref = localStorage.getItem('cb_ref') || '';
+  // Disable buttons immediately for instant feedback
   document.querySelectorAll('#feedbackPrompt button').forEach(function(b){ b.disabled=true; b.style.opacity='0.5'; });
   var thanks = document.getElementById('feedbackThanks');
   if (thanks) { thanks.style.display = 'flex'; }
+  // Write to Supabase, fall back to localStorage if not logged in
+  try {
+    await CB.submitFeedback({ booking_ref: ref, answer: answer });
+  } catch(e) {
+    var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+    feedback.push({ answer: answer, ts: new Date().toISOString(), ref: ref });
+    localStorage.setItem('cb_feedback', JSON.stringify(feedback));
+  }
 }
 
 // ── Cancellation deadline removed — cancel only available in My Shipments ──────
 </script>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 </body>
 </html>

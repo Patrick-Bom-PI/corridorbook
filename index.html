@@ -229,7 +229,7 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
     <a href="forwarder-portal.html">Forwarder Portal</a>
     <a href="about.html">About</a>
   </div>
-  <button class="nav-cta" id="navSignInBtn" onclick="openSignIn()">Sign in</button>
+  <button class="nav-cta" onclick="CB.showAuthModal()" id="navSignInBtn" onclick="openSignIn()">Sign in</button>
 </nav>
 
 <section class="hero">
@@ -1090,5 +1090,8 @@ updateLiveStrip();
 <!-- Portalled dropdowns — positioned via JS, z-index above everything -->
 <div class="dropdown-list" id="originDropdown" style="position:fixed;"></div>
 <div class="dropdown-list" id="destDropdown"   style="position:fixed;"></div>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 </body>
 </html>

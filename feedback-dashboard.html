@@ -135,8 +135,18 @@ body{font-family:var(--font-ui);background:#E8ECF0;color:var(--text);min-height:
 </div>
 
 <script>
-function loadAndRender() {
-  var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+async function loadAndRender() {
+  // Load from Supabase instead of localStorage
+  var feedback = [];
+  try {
+    feedback = await CB.getFeedback();
+  } catch(e) {
+    // Fall back to localStorage if not yet logged in
+    feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+    // Normalise field names (localStorage uses 'ts', Supabase uses 'created_at')
+    feedback = feedback.map(function(f){ return { answer: f.answer, created_at: f.ts, booking_ref: f.ref }; });
+  }
+
   var counts = { 'yes-current': 0, 'yes-lower': 0, 'not-yet': 0 };
   feedback.forEach(function(f) { if (counts[f.answer] !== undefined) counts[f.answer]++; });
 
@@ -144,12 +154,11 @@ function loadAndRender() {
   var wouldPay = counts['yes-current'] + counts['yes-lower'];
   var pct = total > 0 ? Math.round(wouldPay / total * 100) : 0;
 
-  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statTotal').textContent    = total;
   document.getElementById('statWouldPay').textContent = pct + '%';
   document.getElementById('statCurrent').textContent  = counts['yes-current'];
   document.getElementById('statNotYet').textContent   = counts['not-yet'];
 
-  // Bars
   function setBar(id, countId, count) {
     var pctBar = total > 0 ? Math.round(count / total * 100) : 0;
     var bar = document.getElementById(id);
@@ -161,33 +170,30 @@ function loadAndRender() {
   setBar('bar-lower',   'count-lower',   counts['yes-lower']);
   setBar('bar-notyet',  'count-notyet',  counts['not-yet']);
 
-  // Last updated
   var luEl = document.getElementById('lastUpdated');
   if (luEl && feedback.length > 0) {
-    var last = new Date(feedback[feedback.length-1].ts);
+    var last = new Date(feedback[feedback.length-1].created_at);
     luEl.textContent = 'Last response: ' + last.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + last.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
   }
 
-  // Insight
   var insightBox = document.getElementById('insightBox');
   var insightText = document.getElementById('insightText');
   if (total >= 2 && insightBox && insightText) {
     insightBox.style.display = '';
     if (pct >= 75) {
-      insightText.textContent = 'Strong commercial signal — ' + pct + '% of users would pay. This validates the platform concept. Consider presenting this data in your next user research session as proof of willingness-to-pay.';
+      insightText.textContent = 'Strong commercial signal — ' + pct + '% of users would pay. This validates the platform concept.';
     } else if (pct >= 40) {
-      insightText.textContent = pct + '% would pay, but ' + Math.round(counts['yes-lower']/total*100) + '% want a lower price point. Consider exploring a freemium tier or per-booking fee vs subscription pricing in your next expert interview.';
+      insightText.textContent = pct + '% would pay, but ' + Math.round(counts['yes-lower']/total*100) + '% want a lower price point. Consider exploring a freemium tier or per-booking fee in your next expert interview.';
     } else if (counts['not-yet'] > wouldPay) {
-      insightText.textContent = 'Most users need more features before paying. This is actionable — use the "Not yet" responses as a prompt: ask those users directly which features are missing to prioritise your next sprint.';
+      insightText.textContent = 'Most users need more features before paying. Ask those users directly which features are missing to prioritise your next sprint.';
     } else {
-      insightText.textContent = 'Early data — keep collecting. Target at least 5 responses for a meaningful signal to present to your coach.';
+      insightText.textContent = 'Early data — keep collecting. Target at least 5 responses for a meaningful signal.';
     }
   } else if (insightBox) {
     insightBox.style.display = total > 0 ? '' : 'none';
-    if (insightText && total === 1) insightText.textContent = '1 response collected. Keep collecting — aim for 5+ to present a meaningful signal.';
+    if (insightText && total === 1) insightText.textContent = '1 response collected. Aim for 5+ to present a meaningful signal.';
   }
 
-  // Response list
   var list = document.getElementById('responseList');
   if (!list) return;
   if (feedback.length === 0) {
@@ -200,16 +206,15 @@ function loadAndRender() {
     'not-yet':     {text:'Not yet — missing features', cls:'answer-not-yet'},
   };
   list.innerHTML = '';
-  // Show newest first
   feedback.slice().reverse().forEach(function(f, i) {
-    var d = new Date(f.ts);
+    var d = new Date(f.created_at);
     var timeStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     var lbl = labels[f.answer] || {text:f.answer, cls:'answer-not-yet'};
     var row = document.createElement('div');
     row.className = 'response-item';
     row.innerHTML =
       '<span style="font-size:13px;font-weight:700;color:var(--grey-muted);">#' + (feedback.length - i) + '</span>'
-      + '<span class="response-ref">' + (f.ref || 'no ref') + '</span>'
+      + '<span class="response-ref">' + (f.booking_ref || 'no ref') + '</span>'
       + '<span class="response-answer ' + lbl.cls + '">' + lbl.text + '</span>'
       + '<span class="response-time">' + timeStr + '</span>';
     list.appendChild(row);
@@ -217,15 +222,14 @@ function loadAndRender() {
 }
 
 function clearFeedback() {
-  if (confirm('Clear all feedback responses? This cannot be undone.')) {
-    localStorage.removeItem('cb_feedback');
-    loadAndRender();
-  }
+  alert('Responses are stored in the database and can only be cleared by an admin.');
 }
 
 loadAndRender();
-// Auto-refresh every 10s to pick up new responses
 setInterval(loadAndRender, 10000);
 </script>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 </body>
 </html>

@@ -456,11 +456,45 @@ function switchTab(tab, btn) {
   });
 }
 
+// Load real bookings from Supabase and merge with localStorage demo data
+async function loadAndRenderAll() {
+  var supabaseBookings = [];
+  try {
+    supabaseBookings = await CB.getMyBookings();
+    // Map Supabase booking fields to the format renderAll expects
+    supabaseBookings = supabaseBookings.map(function(b) {
+      return {
+        ref:        b.reference,
+        route:      b.origin + ' → ' + b.destination,
+        mode:       b.mode.charAt(0).toUpperCase() + b.mode.slice(1),
+        weight:     (b.cargo_weight_kg / 1000).toFixed(1) + 't',
+        depart:     new Date(b.departure_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+        operator:   b.operator_name,
+        price:      '€' + b.total_price.toFixed(0),
+        status:     b.status === 'confirmed' ? 'approved' : b.status,
+        co2:        b.co2_per_tonne_km ? Math.round(b.co2_per_tonne_km * b.cargo_weight_kg / 1000) + 'kg saved' : '—',
+        _supabase:  true
+      };
+    });
+  } catch(e) {
+    console.warn('Could not load bookings from Supabase:', e.message);
+  }
+  // Merge with any existing localStorage demo bookings
+  if (supabaseBookings.length > 0) {
+    // Replace BOOKINGS array with real data
+    window._sbBookings = supabaseBookings;
+  }
+  renderAll();
+}
+
 // Initial render
-renderAll();
+loadAndRenderAll();
 
 // Auto-refresh every 10s to pick up new bookings
-setInterval(renderAll, 10000);
+setInterval(loadAndRenderAll, 10000);
 </script>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 </body>
 </html>

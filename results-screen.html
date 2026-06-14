@@ -3879,12 +3879,63 @@ function applyDisruptionFilter() {
 // ── Wire disruption check into loadSearchAndUpdate ───────────────────────────
 var _origLoadSearch = window.loadSearchAndUpdate;
 document.addEventListener('DOMContentLoaded', function() {
-  // Run on initial load
   var o = localStorage.getItem('cb_origin') || '';
   var d = localStorage.getItem('cb_dest')   || '';
   var dist = 100;
   checkDisruptions(o, d);
 });
+
+// ── Log search to Supabase for demand signal ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function() {
+  // Wait for CB to be ready
+  if (typeof CB === 'undefined') return;
+  var origin  = localStorage.getItem('cb_origin') || '';
+  var dest    = localStorage.getItem('cb_dest')   || '';
+  var date    = localStorage.getItem('cb_date')   || new Date().toISOString().split('T')[0];
+  var weight  = parseFloat(localStorage.getItem('cb_weight') || '1000');
+
+  if (!origin || !dest) return;
+
+  // Try to get real slots from Supabase and log the search
+  try {
+    var slots = await CB.getSlots({
+      origin:          origin,
+      destination:     dest,
+      date:            date,
+      cargo_weight_kg: weight
+    });
+
+    // Log the search with result counts per mode
+    await CB.logSearch({
+      origin, destination: dest, date, cargo_weight_kg: weight, slots
+    });
+
+    // If real slots exist, score and inject them into the page
+    if (slots.length > 0) {
+      var sortMode = localStorage.getItem('cb_sort') || 'default';
+      var scored = CB.scoreSlots(slots, {
+        sortMode:        sortMode,
+        requestedDate:   date,
+        cargo_weight_kg: weight
+      });
+
+      // Store scored slots for the confirmation screen
+      localStorage.setItem('cb_real_slots', JSON.stringify(scored));
+
+      // Show a subtle banner indicating real data is available
+      var banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:10px 16px;font-size:12px;color:#2E7D32;font-family:inherit;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+      banner.textContent = scored.length + ' live slot' + (scored.length > 1 ? 's' : '') + ' found for this route';
+      document.body.appendChild(banner);
+      setTimeout(function(){ banner.remove(); }, 4000);
+    }
+  } catch(e) {
+    console.warn('Supabase search log failed:', e.message);
+  }
+});
 </script>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 </body>
 </html>
