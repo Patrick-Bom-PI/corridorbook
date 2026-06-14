@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freight Forwarder Portal — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --amber:#F57F17;--amber-light:#FFF8E1;--amber-border:#FFD54F;
+  --red:#C62828;--red-light:#FFEBEE;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+body{font-family:var(--font-ui);color:var(--text);background:#E8ECF0;min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+.nav{height:56px;background:rgba(11,24,40,0.97);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-badge{background:#F57F17;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);letter-spacing:.04em;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;}
+.nav-link:hover{color:#fff;}
+
+/* PAGE */
+.page{max-width:900px;margin:0 auto;padding:28px 20px 64px;}
+
+/* HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.page-sub{font-size:13px;color:var(--grey-label);margin-top:3px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:16px;}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-muted);margin-bottom:4px;}
+.stat-value{font-size:24px;font-weight:800;letter-spacing:-0.5px;}
+.stat-sub{font-size:11px;color:var(--grey-label);margin-top:3px;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--grey-border);margin-bottom:20px;gap:0;}
+.tab-btn{padding:10px 20px;font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--grey-label);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-count{background:var(--grey-bg);color:var(--grey-label);font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--r-pill);}
+.tab-btn.active .tab-count{background:var(--blue-light);color:var(--blue);}
+
+/* BOOKING CARD */
+.booking-card{background:#fff;border:1px solid var(--grey-border);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:box-shadow .15s;}
+.booking-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.booking-card.pending{border-left:4px solid var(--amber);}
+.booking-card.approved{border-left:4px solid var(--green);}
+.booking-card.rejected{border-left:4px solid var(--red);opacity:.7;}
+
+.bc-header{padding:16px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.bc-ref{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text);}
+.bc-route{font-size:14px;font-weight:600;flex:1;}
+.bc-meta{font-size:11px;color:var(--grey-muted);margin-top:2px;}
+.bc-status{font-size:11px;font-weight:700;padding:4px 12px;border-radius:var(--r-pill);}
+.bc-status.pending{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);}
+.bc-status.approved{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);}
+.bc-status.rejected{background:var(--red-light);color:var(--red);border:1px solid #FFCDD2;}
+
+.bc-mode-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--r-sm);}
+
+.bc-body{padding:0 20px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;}
+.bc-body.open{max-height:600px;padding:0 20px 20px;}
+
+.bc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--grey-border);}
+.bc-cell{background:var(--grey-bg);border-radius:var(--r-md);padding:10px 12px;}
+.bc-cell-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-muted);margin-bottom:3px;}
+.bc-cell-value{font-size:13px;font-weight:600;color:var(--text);}
+
+/* FORWARDER NOTES */
+.fw-notes{margin-bottom:14px;}
+.fw-notes label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-label);display:block;margin-bottom:5px;}
+.fw-notes textarea{width:100%;padding:9px 12px;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:72px;transition:border-color .15s;}
+.fw-notes textarea:focus{border-color:var(--blue);}
+
+/* ACTION BUTTONS */
+.bc-actions{display:flex;gap:8px;}
+.btn-approve{flex:1;height:40px;background:var(--green);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s;}
+.btn-approve:hover{opacity:.88;}
+.btn-reject{flex:1;height:40px;background:transparent;color:var(--red);border:1.5px solid #FFCDD2;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-reject:hover{background:var(--red-light);}
+.btn-expand{height:40px;padding:0 14px;background:transparent;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:12px;color:var(--grey-label);cursor:pointer;transition:all .15s;}
+.btn-expand:hover{border-color:var(--grey-muted);color:var(--text);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:56px 24px;color:var(--grey-muted);}
+.empty-icon{width:56px;height:56px;background:var(--grey-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.empty-title{font-size:15px;font-weight:600;color:var(--grey-label);margin-bottom:6px;}
+.empty-sub{font-size:13px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <span class="nav-badge">Freight Forwarder Portal</span>
+  <div class="nav-right">
+    <a href="tracking.html" class="nav-link">Shipper view</a>
+    <a href="index.html" class="nav-link">Home</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Forwarder Portal</div>
+      <div class="page-sub" id="portalSub">Review and approve bookings submitted by your shippers</div>
+    </div>
+    <a href="tracking.html" style="height:36px;padding:0 16px;background:#fff;color:var(--text);border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      My Shipments
+    </a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Pending approval</div>
+      <div class="stat-value" id="statPending" style="color:var(--amber);">0</div>
+      <div class="stat-sub">Require your action</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved today</div>
+      <div class="stat-value" id="statApproved" style="color:var(--green);">0</div>
+      <div class="stat-sub">Confirmed with operator</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total value pending</div>
+      <div class="stat-value" id="statValue">€0</div>
+      <div class="stat-sub">Combined freight value</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('pending',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Pending
+      <span class="tab-count" id="tab-pending-count">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('approved',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Approved
+      <span class="tab-count" id="tab-approved-count">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('rejected',this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Rejected
+      <span class="tab-count" id="tab-rejected-count">0</span>
+    </button>
+  </div>
+
+  <!-- BOOKING LISTS -->
+  <div id="panel-pending"></div>
+  <div id="panel-approved" style="display:none;"></div>
+  <div id="panel-rejected" style="display:none;"></div>
+
+</div>
+
+<script>
+var modeColors = {
+  barge: {bg:'#1565C0', text:'#fff', label:'Barge'},
+  rail:  {bg:'#5E35B1', text:'#fff', label:'Rail'},
+  road:  {bg:'#C25450', text:'#fff', label:'Road'}
+};
+var modeIcons = {
+  barge: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>',
+  rail:  '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>',
+  road:  '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>'
+};
+
+// Load bookings from localStorage
+function loadBookings() {
+  return JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+}
+function saveBookings(bookings) {
+  localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+function buildCard(b, status) {
+  var mc = modeColors[b.mode] || modeColors.barge;
+  var icon = modeIcons[b.mode] || modeIcons.barge;
+  var cardId = 'card-' + b.ref.replace(/[^A-Z0-9]/g,'');
+  var bodyId  = 'body-' + b.ref.replace(/[^A-Z0-9]/g,'');
+
+  var card = document.createElement('div');
+  card.className = 'booking-card ' + status;
+  card.id = cardId;
+
+  // Header
+  var hdr = document.createElement('div');
+  hdr.className = 'bc-header';
+
+  var refEl = document.createElement('div');
+  var refCode = document.createElement('div');
+  refCode.className = 'bc-ref';
+  refCode.textContent = b.ref;
+  var refMeta = document.createElement('div');
+  refMeta.className = 'bc-meta';
+  refMeta.textContent = 'Submitted ' + formatDate(b.ts) + (b.user ? ' by ' + b.user : '');
+  refEl.appendChild(refCode);
+  refEl.appendChild(refMeta);
+
+  var routeEl = document.createElement('div');
+  routeEl.style.flex = '1';
+  var routeMain = document.createElement('div');
+  routeMain.className = 'bc-route';
+  routeMain.textContent = (b.origin||'—') + ' → ' + (b.dest||'—');
+  var routeMeta = document.createElement('div');
+  routeMeta.className = 'bc-meta';
+  routeMeta.textContent = (b.cqty||'1') + ' × ' + (b.ctype||'40HC') + ' · ' + (b.weight||'—') + ' kg · ' + (b.operator||'—');
+  routeEl.appendChild(routeMain);
+  routeEl.appendChild(routeMeta);
+
+  var modeBadge = document.createElement('span');
+  modeBadge.className = 'bc-mode-badge';
+  modeBadge.style.cssText = 'background:' + mc.bg + ';color:' + mc.text + ';';
+  modeBadge.innerHTML = icon + ' ' + mc.label;
+
+  var statusBadge = document.createElement('span');
+  statusBadge.className = 'bc-status ' + status;
+  statusBadge.textContent = status === 'pending' ? 'Pending approval' : status === 'approved' ? 'Approved' : 'Rejected';
+
+  var expandBtn = document.createElement('button');
+  expandBtn.className = 'btn-expand';
+  expandBtn.textContent = 'Review';
+  expandBtn.addEventListener('click', function() {
+    var body = document.getElementById(bodyId);
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    expandBtn.textContent = isOpen ? 'Review' : 'Close';
+  });
+
+  hdr.appendChild(refEl);
+  hdr.appendChild(routeEl);
+  hdr.appendChild(modeBadge);
+  hdr.appendChild(statusBadge);
+  hdr.appendChild(expandBtn);
+  card.appendChild(hdr);
+
+  // Body (collapsible)
+  var body = document.createElement('div');
+  body.className = 'bc-body';
+  body.id = bodyId;
+
+  // Details grid
+  var grid = document.createElement('div');
+  grid.className = 'bc-grid';
+  var fields = [
+    ['Departure', b.depart || '—'],
+    ['Arrival ETA', b.arrive || '—'],
+    ['Freight price', b.price ? '\u20ac' + b.price : '—'],
+    ['Container', (b.cqty||'1') + ' \u00d7 ' + (b.ctype||'40HC')],
+    ['CO\u2082 saved', b.co2 || '—'],
+    ['Deliver to', b.deliver_to || 'Port terminal only']
+  ];
+  fields.forEach(function(f) {
+    var cell = document.createElement('div');
+    cell.className = 'bc-cell';
+    cell.innerHTML = '<div class="bc-cell-label">' + f[0] + '</div><div class="bc-cell-value">' + f[1] + '</div>';
+    grid.appendChild(cell);
+  });
+  body.appendChild(grid);
+
+  // Notification contacts
+  if (b.notifEmails && b.notifEmails.length) {
+    var notifDiv = document.createElement('div');
+    notifDiv.style.cssText = 'font-size:12px;color:var(--grey-label);margin-bottom:14px;';
+    notifDiv.innerHTML = '<strong>Notification contacts:</strong> ' + b.notifEmails.join(', ');
+    body.appendChild(notifDiv);
+  }
+
+  if (status === 'pending') {
+    // Forwarder notes with collaboration thread
+    var notesDiv = document.createElement('div');
+    notesDiv.className = 'fw-notes';
+    var notesLabel = document.createElement('label');
+    notesLabel.textContent = 'Forwarder notes & collaboration';
+    var notesTextarea = document.createElement('textarea');
+    notesTextarea.placeholder = 'Add notes, flag concerns, or @mention colleagues — e.g. "@ops team: confirm capacity before approving" or "Rate confirmed with Contargo, green to go"';
+    notesTextarea.id = 'notes-' + b.ref;
+
+    // Collaboration quick-tags
+    var tagRow = document.createElement('div');
+    tagRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;margin-bottom:10px;';
+    var quickTags = [
+      {label:'\u2705 Rate confirmed', text:'Rate confirmed with operator. '},
+      {label:'\u26a0 Check capacity', text:'Please check available capacity before approving. '},
+      {label:'\ud83d\udccb Docs required', text:'Awaiting bill of lading and CMR documents from shipper. '},
+      {label:'\ud83d\udcde Call shipper', text:'Call shipper to confirm cargo details before proceeding. '},
+    ];
+    quickTags.forEach(function(qt) {
+      var btn = document.createElement('button');
+      btn.style.cssText = 'padding:3px 10px;background:#F8F9FA;border:1px solid var(--grey-border);border-radius:var(--r-sm);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-ui);';
+      btn.textContent = qt.label;
+      btn.addEventListener('click', function() { notesTextarea.value += qt.text; notesTextarea.focus(); });
+      tagRow.appendChild(btn);
+    });
+
+    notesDiv.appendChild(notesLabel);
+    notesDiv.appendChild(notesTextarea);
+    notesDiv.appendChild(tagRow);
+    body.appendChild(notesDiv);
+
+    // Action buttons
+    var actions = document.createElement('div');
+    actions.className = 'bc-actions';
+
+    var approveBtn = document.createElement('button');
+    approveBtn.className = 'btn-approve';
+    approveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Approve booking';
+    approveBtn.addEventListener('click', function() { handleDecision(b.ref, 'approved'); });
+
+    var rejectBtn = document.createElement('button');
+    rejectBtn.className = 'btn-reject';
+    rejectBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reject';
+    rejectBtn.addEventListener('click', function() { handleDecision(b.ref, 'rejected'); });
+
+    var requestInfoBtn = document.createElement('button');
+    requestInfoBtn.style.cssText = 'flex:0;padding:0 14px;height:40px;background:transparent;color:var(--amber);border:1.5px solid var(--amber-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;';
+    requestInfoBtn.textContent = 'Request info';
+    requestInfoBtn.addEventListener('click', function() {
+      var notes = document.getElementById('notes-' + b.ref);
+      if (notes && !notes.value) notes.value = 'Additional information required from shipper before this can be approved. Please provide: ';
+      if (notes) notes.focus();
+    });
+
+    actions.appendChild(approveBtn);
+    actions.appendChild(rejectBtn);
+    actions.appendChild(requestInfoBtn);
+    body.appendChild(actions);
+  } else if (status === 'approved') {
+    var note = document.createElement('div');
+    note.style.cssText = 'font-size:12px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:6px;';
+    note.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Approved and confirmed with operator. Shipper has been notified.';
+    body.appendChild(note);
+    if (b.fw_notes) {
+      var fnote = document.createElement('div');
+      fnote.style.cssText = 'font-size:12px;color:var(--grey-label);margin-top:6px;';
+      fnote.textContent = 'Notes: ' + b.fw_notes;
+      body.appendChild(fnote);
+    }
+  } else if (status === 'rejected') {
+    var note = document.createElement('div');
+    note.style.cssText = 'font-size:12px;color:var(--red);font-weight:600;display:flex;align-items:center;gap:6px;';
+    note.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Rejected. Shipper has been notified and payment refunded.';
+    body.appendChild(note);
+    if (b.fw_notes) {
+      var fnote2 = document.createElement('div');
+      fnote2.style.cssText = 'font-size:12px;color:var(--grey-label);margin-top:6px;';
+      fnote2.textContent = 'Reason: ' + b.fw_notes;
+      body.appendChild(fnote2);
+    }
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function handleDecision(ref, decision) {
+  var bookings = loadBookings();
+  var b = bookings.find(function(x){ return x.ref === ref; });
+  if (!b) return;
+
+  var notesEl = document.getElementById('notes-' + ref);
+  var notes = notesEl ? notesEl.value.trim() : '';
+
+  b.status   = decision;
+  b.fw_notes = notes;
+  b.fw_ts    = new Date().toISOString();
+  saveBookings(bookings);
+
+  // Show toast
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.background = decision === 'approved' ? '#2E7D32' : '#C62828';
+  toast.textContent = decision === 'approved'
+    ? 'Booking ' + ref + ' approved. Operator and shipper notified.'
+    : 'Booking ' + ref + ' rejected. Shipper notified.';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.remove(); }, 4000);
+
+  // Re-render
+  renderAll();
+}
+
+function renderAll() {
+  var bookings = loadBookings();
+  var pending  = bookings.filter(function(b){ return b.status === 'pending_forwarder'; });
+  var approved = bookings.filter(function(b){ return b.status === 'approved'; });
+  var rejected = bookings.filter(function(b){ return b.status === 'rejected'; });
+
+  // Stats
+  document.getElementById('statPending').textContent  = pending.length;
+  document.getElementById('statApproved').textContent = approved.length;
+  var totalVal = pending.reduce(function(s,b){ return s + (parseInt(b.price)||0); }, 0);
+  document.getElementById('statValue').textContent = '\u20ac' + totalVal.toLocaleString();
+
+  // Tab counts
+  document.getElementById('tab-pending-count').textContent  = pending.length;
+  document.getElementById('tab-approved-count').textContent = approved.length;
+  document.getElementById('tab-rejected-count').textContent = rejected.length;
+
+  // Render panels
+  var panels = {pending: pending, approved: approved, rejected: rejected};
+  Object.keys(panels).forEach(function(status) {
+    var panel = document.getElementById('panel-' + status);
+    panel.innerHTML = '';
+    var list = panels[status];
+    if (list.length === 0) {
+      panel.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="empty-title">No ' + status + ' bookings</div><div class="empty-sub">' + (status==='pending'?'All bookings have been reviewed.':'No bookings in this state yet.') + '</div></div>';
+    } else {
+      list.forEach(function(b) {
+        panel.appendChild(buildCard(b, status));
+      });
+    }
+  });
+
+  // Sub heading
+  var sub = document.getElementById('portalSub');
+  if (sub) sub.textContent = pending.length > 0
+    ? pending.length + ' booking' + (pending.length>1?'s':'') + ' waiting for your approval'
+    : 'All bookings reviewed — no pending approvals';
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  ['pending','approved','rejected'].forEach(function(t){
+    document.getElementById('panel-' + t).style.display = t === tab ? '' : 'none';
+  });
+}
+
+// Initial render
+renderAll();
+
+// Auto-refresh every 10s to pick up new bookings
+setInterval(renderAll, 10000);
+</script>
+</body>
+</html>

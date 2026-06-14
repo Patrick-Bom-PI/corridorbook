@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Dashboard — CorridorBook</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--blue:#1565C0;--green:#2E7D32;--amber:#F57F17;--red:#C62828;--grey-bg:#F5F5F5;--grey-border:#D0D0D0;--grey-label:#6C757D;--text:#1A1A1A;--font-ui:'DM Sans',-apple-system,sans-serif;--font-mono:'IBM Plex Mono',monospace;}
+body{font-family:var(--font-ui);background:#E8ECF0;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.nav{height:56px;background:rgba(11,24,40,.97);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-right{display:flex;gap:20px;align-items:center;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;}
+.nav-link:hover{color:#fff;}
+.page{max-width:900px;margin:0 auto;padding:32px 20px 64px;}
+.page-header{margin-bottom:28px;}
+.page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--grey-label);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.stat-card{background:#fff;border:1px solid var(--grey-border);border-radius:10px;padding:18px;}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-label);margin-bottom:6px;}
+.stat-value{font-size:28px;font-weight:800;letter-spacing:-.5px;}
+.stat-sub{font-size:11px;color:var(--grey-label);margin-top:3px;}
+.section{background:#fff;border:1px solid var(--grey-border);border-radius:12px;margin-bottom:20px;overflow:hidden;}
+.section-header{padding:16px 20px;border-bottom:1px solid var(--grey-border);display:flex;align-items:center;justify-content:space-between;}
+.section-title{font-size:14px;font-weight:700;}
+.section-body{padding:20px;}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.bar-label{font-size:12px;font-weight:600;width:180px;flex-shrink:0;}
+.bar-track{flex:1;height:10px;background:var(--grey-bg);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;transition:width .6s ease;}
+.bar-count{font-size:12px;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+.response-list{display:flex;flex-direction:column;gap:8px;}
+.response-item{padding:12px 14px;background:var(--grey-bg);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.response-ref{font-family:var(--font-mono);font-size:11px;color:var(--grey-label);}
+.response-answer{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.answer-yes-current{background:#E8F5E9;color:#2E7D32;}
+.answer-yes-lower{background:#E3F2FD;color:#1565C0;}
+.answer-not-yet{background:#FFF3E0;color:#E65100;}
+.response-time{font-size:11px;color:var(--grey-label);}
+.empty-state{text-align:center;padding:48px 20px;color:var(--grey-label);}
+.empty-icon{font-size:36px;margin-bottom:12px;}
+.empty-title{font-size:15px;font-weight:600;margin-bottom:6px;}
+.empty-sub{font-size:13px;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.insight-box{background:#EBF5FB;border:1px solid #BBDEFB;border-radius:8px;padding:14px 16px;margin-top:16px;}
+.insight-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px;}
+.insight-text{font-size:12px;color:#1A5276;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="tracking.html" class="nav-link">My Shipments</a>
+    <a href="forwarder-portal.html" class="nav-link">Forwarder Portal</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Feedback Dashboard</div>
+    <div class="page-sub">Commercial validation — "Would you pay for CorridorBook?" responses</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total responses</div>
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-sub">Since launch</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Would pay</div>
+      <div class="stat-value" id="statWouldPay" style="color:var(--green);">0%</div>
+      <div class="stat-sub">At any price point</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">At current pricing</div>
+      <div class="stat-value" id="statCurrent" style="color:var(--blue);">0</div>
+      <div class="stat-sub">Yes, as-is</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Need more features</div>
+      <div class="stat-value" id="statNotYet" style="color:var(--amber);">0</div>
+      <div class="stat-sub">Not yet ready</div>
+    </div>
+  </div>
+
+  <!-- Bar chart -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Response breakdown</div>
+      <div id="lastUpdated" style="font-size:11px;color:var(--grey-label);"></div>
+    </div>
+    <div class="section-body">
+      <div class="bar-row">
+        <div class="bar-label">✅ Yes, at current pricing</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-current" style="background:#2E7D32;width:0%"></div></div>
+        <div class="bar-count" id="count-current">0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">💙 Yes, at a lower price</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-lower" style="background:#1565C0;width:0%"></div></div>
+        <div class="bar-count" id="count-lower">0</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">⏳ Not yet — missing features</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-notyet" style="background:#E65100;width:0%"></div></div>
+        <div class="bar-count" id="count-notyet">0</div>
+      </div>
+
+      <div class="insight-box" id="insightBox" style="display:none;">
+        <div class="insight-title">💡 Insight</div>
+        <div class="insight-text" id="insightText"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response log -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Response log</div>
+      <button onclick="clearFeedback()" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:var(--font-ui);font-weight:600;">Clear all</button>
+    </div>
+    <div class="section-body">
+      <div id="responseList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function loadAndRender() {
+  var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+  var counts = { 'yes-current': 0, 'yes-lower': 0, 'not-yet': 0 };
+  feedback.forEach(function(f) { if (counts[f.answer] !== undefined) counts[f.answer]++; });
+
+  var total = feedback.length;
+  var wouldPay = counts['yes-current'] + counts['yes-lower'];
+  var pct = total > 0 ? Math.round(wouldPay / total * 100) : 0;
+
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statWouldPay').textContent = pct + '%';
+  document.getElementById('statCurrent').textContent  = counts['yes-current'];
+  document.getElementById('statNotYet').textContent   = counts['not-yet'];
+
+  // Bars
+  function setBar(id, countId, count) {
+    var pctBar = total > 0 ? Math.round(count / total * 100) : 0;
+    var bar = document.getElementById(id);
+    var cnt = document.getElementById(countId);
+    if (bar) bar.style.width = pctBar + '%';
+    if (cnt) cnt.textContent = count;
+  }
+  setBar('bar-current', 'count-current', counts['yes-current']);
+  setBar('bar-lower',   'count-lower',   counts['yes-lower']);
+  setBar('bar-notyet',  'count-notyet',  counts['not-yet']);
+
+  // Last updated
+  var luEl = document.getElementById('lastUpdated');
+  if (luEl && feedback.length > 0) {
+    var last = new Date(feedback[feedback.length-1].ts);
+    luEl.textContent = 'Last response: ' + last.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + last.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  // Insight
+  var insightBox = document.getElementById('insightBox');
+  var insightText = document.getElementById('insightText');
+  if (total >= 2 && insightBox && insightText) {
+    insightBox.style.display = '';
+    if (pct >= 75) {
+      insightText.textContent = 'Strong commercial signal — ' + pct + '% of users would pay. This validates the platform concept. Consider presenting this data in your next user research session as proof of willingness-to-pay.';
+    } else if (pct >= 40) {
+      insightText.textContent = pct + '% would pay, but ' + Math.round(counts['yes-lower']/total*100) + '% want a lower price point. Consider exploring a freemium tier or per-booking fee vs subscription pricing in your next expert interview.';
+    } else if (counts['not-yet'] > wouldPay) {
+      insightText.textContent = 'Most users need more features before paying. This is actionable — use the "Not yet" responses as a prompt: ask those users directly which features are missing to prioritise your next sprint.';
+    } else {
+      insightText.textContent = 'Early data — keep collecting. Target at least 5 responses for a meaningful signal to present to your coach.';
+    }
+  } else if (insightBox) {
+    insightBox.style.display = total > 0 ? '' : 'none';
+    if (insightText && total === 1) insightText.textContent = '1 response collected. Keep collecting — aim for 5+ to present a meaningful signal.';
+  }
+
+  // Response list
+  var list = document.getElementById('responseList');
+  if (!list) return;
+  if (feedback.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No responses yet</div><div class="empty-sub">Ask users to go through the booking flow — the feedback prompt appears on the confirmation screen.</div></div>';
+    return;
+  }
+  var labels = {
+    'yes-current': {text:'Yes, at current pricing', cls:'answer-yes-current'},
+    'yes-lower':   {text:'Yes, at a lower price',   cls:'answer-yes-lower'},
+    'not-yet':     {text:'Not yet — missing features', cls:'answer-not-yet'},
+  };
+  list.innerHTML = '';
+  // Show newest first
+  feedback.slice().reverse().forEach(function(f, i) {
+    var d = new Date(f.ts);
+    var timeStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    var lbl = labels[f.answer] || {text:f.answer, cls:'answer-not-yet'};
+    var row = document.createElement('div');
+    row.className = 'response-item';
+    row.innerHTML =
+      '<span style="font-size:13px;font-weight:700;color:var(--grey-muted);">#' + (feedback.length - i) + '</span>'
+      + '<span class="response-ref">' + (f.ref || 'no ref') + '</span>'
+      + '<span class="response-answer ' + lbl.cls + '">' + lbl.text + '</span>'
+      + '<span class="response-time">' + timeStr + '</span>';
+    list.appendChild(row);
+  });
+}
+
+function clearFeedback() {
+  if (confirm('Clear all feedback responses? This cannot be undone.')) {
+    localStorage.removeItem('cb_feedback');
+    loadAndRender();
+  }
+}
+
+loadAndRender();
+// Auto-refresh every 10s to pick up new responses
+setInterval(loadAndRender, 10000);
+</script>
+</body>
+</html>

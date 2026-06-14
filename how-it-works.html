@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How It Works — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --purple:#5E35B1;--purple-light:#EDE7F6;
+  --amber:#E65100;--amber-light:#FFF3E0;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+.nav{height:56px;background:rgba(11,24,40,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-links a{font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;font-weight:500;transition:color .15s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;}
+.nav-cta{height:32px;padding:0 16px;background:#1565C0;color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;}
+
+/* HERO BANNER */
+.page-hero{background:#0B1828;padding:72px 48px 64px;text-align:center;}
+.page-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#60B4FF;margin-bottom:20px;background:rgba(21,101,192,0.18);border:1px solid rgba(77,163,255,0.25);padding:5px 14px;border-radius:20px;}
+.page-hero h1{font-size:44px;font-weight:800;line-height:1.08;letter-spacing:-1.5px;color:#fff;margin-bottom:16px;}
+.page-hero h1 span{color:#4DA3FF;}
+.page-hero p{font-size:16px;color:#8FAFC8;max-width:560px;margin:0 auto;line-height:1.65;}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:72px 48px;}
+
+/* STEPS */
+.steps-section{margin-bottom:80px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+.section-title{font-size:30px;font-weight:800;letter-spacing:-0.8px;margin-bottom:8px;}
+.section-sub{font-size:15px;color:var(--grey-label);margin-bottom:48px;line-height:1.6;}
+
+.steps-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.steps-flow::before{content:'';position:absolute;top:28px;left:10%;width:80%;height:2px;background:linear-gradient(90deg,var(--blue),#5E35B1,#2E7D32);z-index:0;border-radius:2px;}
+.step-block{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;padding:0 16px;}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--white);border:2px solid var(--grey-border);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);font-family:var(--font-mono);}
+.step-block:nth-child(1) .step-num{background:var(--blue);border-color:var(--blue);color:#fff;}
+.step-block:nth-child(2) .step-num{background:#fff;border-color:var(--blue);color:var(--blue);}
+.step-block:nth-child(3) .step-num{background:#fff;border-color:#5E35B1;color:#5E35B1;}
+.step-block:nth-child(4) .step-num{background:#fff;border-color:var(--green);color:var(--green);}
+.step-label{font-size:14px;font-weight:700;margin-bottom:8px;}
+.step-desc{font-size:13px;color:var(--grey-label);line-height:1.6;}
+
+/* MODES GRID */
+.modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:80px;}
+.mode-card{border:1px solid var(--grey-border);border-radius:12px;padding:28px;transition:box-shadow .2s,border-color .2s;}
+.mode-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);border-color:var(--blue-border);}
+.mode-icon-wrap{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.mode-name{font-size:18px;font-weight:700;margin-bottom:6px;}
+.mode-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:var(--r-pill);margin-bottom:12px;}
+.mode-desc{font-size:13px;color:var(--grey-label);line-height:1.65;margin-bottom:16px;}
+.mode-specs{display:flex;flex-direction:column;gap:6px;}
+.mode-spec{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--grey-bg);}
+.mode-spec:last-child{border-bottom:none;}
+.spec-label{color:var(--grey-muted);}
+.spec-val{font-weight:600;font-family:var(--font-mono);font-size:11px;}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:2px;margin-bottom:80px;}
+.faq-item{border:1px solid var(--grey-border);border-radius:var(--r-md);overflow:hidden;}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;font-size:14px;font-weight:600;transition:background .15s;user-select:none;}
+.faq-q:hover{background:var(--grey-bg);}
+.faq-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--grey-muted);transition:transform .2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-a{display:none;padding:0 20px 16px;font-size:13px;color:var(--grey-label);line-height:1.7;}
+.faq-item.open .faq-a{display:block;}
+
+/* CTA BAND */
+.cta-band{background:#0B1828;border-radius:16px;padding:56px 48px;text-align:center;margin-bottom:80px;}
+.cta-band h2{font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:12px;}
+.cta-band p{font-size:15px;color:#8FAFC8;margin-bottom:32px;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{height:46px;padding:0 28px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background .15s;}
+.btn-primary:hover{background:var(--blue-hover);}
+.btn-ghost{height:46px;padding:0 24px;background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .15s;}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+
+/* FOOTER */
+.site-footer{background:#F8F9FA;border-top:1px solid var(--grey-border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-size:15px;font-weight:700;}.footer-brand span{color:var(--blue);}
+.footer-text{font-size:12px;color:var(--grey-muted);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="tracking.html">My Shipments</a>
+    <a href="how-it-works.html" class="active">How it works</a>
+    <a href="for-operators.html">For operators</a>
+    <a href="about.html">About</a>
+  </div>
+  <button class="nav-cta" onclick="window.location.href='index.html'">Get started</button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Platform guide</div>
+  <h1>Freight booked in<br><span>under 90 seconds.</span></h1>
+  <p>CorridorBook connects shippers directly to barge, rail and road operators across the Rotterdam–Antwerp hinterland corridor — no calls, no quotes, no waiting.</p>
+</div>
+
+<div class="content">
+
+  <!-- THE 4 STEPS -->
+  <div class="steps-section">
+    <div class="section-eyebrow">The process</div>
+    <div class="section-title">From search to confirmed slot</div>
+    <div class="section-sub">Four steps. No phone calls. No quote requests.</div>
+
+    <div class="steps-flow">
+      <div class="step-block">
+        <div class="step-num">1</div>
+        <div class="step-label">Enter your route</div>
+        <div class="step-desc">Type origin and destination port or inland terminal. CorridorBook covers 80+ nodes across NL, BE and DE.</div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">2</div>
+        <div class="step-label">Set cargo details</div>
+        <div class="step-desc">Select container type (20ft, 40ft GP/HC, Reefer), quantity, and departure date. Weight is auto-calculated.</div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">3</div>
+        <div class="step-label">Compare live prices</div>
+        <div class="step-desc">See barge, rail and road prices side-by-side with transit time and CO₂ savings. Pick a departure slot from available operators.</div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">4</div>
+        <div class="step-label">Confirm &amp; track</div>
+        <div class="step-desc">A 20-minute hold is placed immediately. Confirm booking and track your shipment live from the My Shipments dashboard.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE THREE MODES -->
+  <div class="section-eyebrow">Transport modes</div>
+  <div class="section-title">Three modes, one platform</div>
+  <div class="section-sub" style="margin-bottom:32px;">Compare barge, rail and road on a single screen — no separate operator portals needed.</div>
+  <div class="modes-grid">
+    <div class="mode-card">
+      <div class="mode-icon-wrap" style="background:#E3F2FD;color:#1565C0;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+      </div>
+      <div class="mode-name">Barge / Inland Waterway</div>
+      <span class="mode-tag" style="background:#E3F2FD;color:#1565C0;">Most sustainable</span>
+      <div class="mode-desc">The backbone of Physical Internet logistics. Push barge convoys move containers along Rhine, Meuse and Scheldt with minimal emissions and high capacity per trip.</div>
+      <div class="mode-specs">
+        <div class="mode-spec"><span class="spec-label">CO₂ savings vs road</span><span class="spec-val" style="color:#2E7D32;">up to −68%</span></div>
+        <div class="mode-spec"><span class="spec-label">Typical RTM→ANR</span><span class="spec-val">€290–€380</span></div>
+        <div class="mode-spec"><span class="spec-label">Transit time</span><span class="spec-val">14–24h</span></div>
+        <div class="mode-spec"><span class="spec-label">Operators</span><span class="spec-val">Contargo, Rhenus, HGK, Danser</span></div>
+      </div>
+    </div>
+
+    <div class="mode-card">
+      <div class="mode-icon-wrap" style="background:#EDE7F6;color:#5E35B1;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M12 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M4 22h16"/></svg>
+      </div>
+      <div class="mode-name">Rail Freight</div>
+      <span class="mode-tag" style="background:#EDE7F6;color:#5E35B1;">Fastest alternative</span>
+      <div class="mode-desc">Block trains run direct schedules between major port terminals and inland hubs. Best for time-sensitive cargo that can't wait for barge frequency.</div>
+      <div class="mode-specs">
+        <div class="mode-spec"><span class="spec-label">CO₂ savings vs road</span><span class="spec-val" style="color:#2E7D32;">up to −54%</span></div>
+        <div class="mode-spec"><span class="spec-label">Typical RTM→ANR</span><span class="spec-val">€330–€420</span></div>
+        <div class="mode-spec"><span class="spec-label">Transit time</span><span class="spec-val">8–14h</span></div>
+        <div class="mode-spec"><span class="spec-label">Operators</span><span class="spec-val">DB Cargo, Lineas, Rail Cargo Group</span></div>
+      </div>
+    </div>
+
+    <div class="mode-card">
+      <div class="mode-icon-wrap" style="background:#F1F3F5;color:#495057;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+      </div>
+      <div class="mode-name">Road (HGV)</div>
+      <span class="mode-tag" style="background:#F1F3F5;color:#495057;">Baseline / fastest</span>
+      <div class="mode-desc">Euro 6 HGV trucks remain the default in hinterland logistics. CorridorBook includes road as a baseline so you can see exactly how much you save by switching modes.</div>
+      <div class="mode-specs">
+        <div class="mode-spec"><span class="spec-label">CO₂</span><span class="spec-val" style="color:#C25450;">Baseline (reference)</span></div>
+        <div class="mode-spec"><span class="spec-label">Typical RTM→ANR</span><span class="spec-val">€380–€480</span></div>
+        <div class="mode-spec"><span class="spec-label">Transit time</span><span class="spec-val">3–5h</span></div>
+        <div class="mode-spec"><span class="spec-label">Operators</span><span class="spec-val">DSV Road, Rhenus Road, Jan de Rijk</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">FAQ</div>
+  <div class="section-title" style="margin-bottom:8px;">Common questions</div>
+  <div class="section-sub">Everything shippers ask before their first booking.</div>
+
+  <div class="faq-list">
+    <div class="faq-item open">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Do I need a KVK or VAT registration to book?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">Yes. CorridorBook is a B2B freight platform. You need a valid business registration (KVK in NL, KBO in BE, HRB in DE or equivalent) and a VAT number to complete a booking. Individual shippers without registration should contact their freight forwarder.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How long does the slot hold last?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">Once you click "Select &amp; Book", a 20-minute hold is placed on the slot. This gives you time to review the booking details and confirm payment. If the timer expires, the slot is released back to the market and you return to search results.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Can I book multiple containers or mixed loads?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">Yes. Use the quantity field on the search form to book multiple containers of the same type. For mixed loads (e.g. 2 × 40HC + 1 × 20GP), create separate bookings per container type. Bulk booking for 10+ containers is available on request via the operators panel.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What container types are supported?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">CorridorBook currently supports: 20ft General Purpose (20GP), 40ft General Purpose (40GP), 40ft High Cube (40HC), 45ft High Cube (45HC), 20ft Reefer (20RF) and 40ft Reefer (40RF). Dangerous goods (ADN/ADR certified), open-top and flat-rack are available via selected operators — contact them directly via the "Operator info" button on the results screen.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How are CO₂ savings calculated?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">We use the GLEC Framework (Global Logistics Emissions Council) emission factors: road HGV ~120 g CO₂/tonne·km, inland waterway ~38 g CO₂/tonne·km, rail ~26 g CO₂/tonne·km. Savings are calculated against the road baseline for your specific cargo weight and distance. The figures shown are indicative — actual emissions depend on vessel load factor, fuel type and route.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What if I need to cancel a booking?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">You can cancel up to 24 hours before the gate-open time. Cancellation fees apply: 8% for road, 12% for rail, 15% for barge. The booking reference page shows your exact cancellation deadline and fee. After the deadline, the full freight charge applies.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How does live tracking work?
+        <div class="faq-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="faq-a">After booking, your shipment appears in My Shipments with a live milestone tracker. Barge positions are updated via AIS (Automatic Identification System). Rail events come from the operator's TMS feed. Road shipments are tracked via driver app GPS. Update frequency: every 5–15 minutes depending on mode and operator.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <h2>Ready to book your first shipment?</h2>
+    <p>Compare barge, rail and road in real-time — no account needed to search.</p>
+    <div class="cta-btns">
+      <a href="index.html" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search routes now
+      </a>
+      <a href="for-operators.html" class="btn-ghost">For operators →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">Corridor<span>Book</span></div>
+  <div class="footer-text">© 2026 CorridorBook B.V. · Rotterdam, Netherlands</div>
+  <div style="font-size:12px;color:var(--grey-muted);">ISO 27001 &amp; GDPR certified</div>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  var item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>

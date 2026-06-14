@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Shipments — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white:        #FFFFFF;
+    --grey-bg:      #F5F5F5;
+    --grey-surface: #F8F9FA;
+    --grey-border:  #D0D0D0;
+    --grey-strong:  #BDBDBD;
+    --grey-label:   #6C757D;
+    --grey-muted:   #9E9E9E;
+    --blue:         #1565C0;
+    --blue-hover:   #0D47A1;
+    --blue-light:   #E3F2FD;
+    --blue-border:  #BBDEFB;
+    --green:        #2E7D32;
+    --green-light:  #E8F5E9;
+    --green-border: #A5D6A7;
+    --amber:        #E65100;
+    --amber-light:  #FFF3E0;
+    --amber-border: #FFCC80;
+    --purple:       #5E35B1;
+    --purple-light: #EDE7F6;
+    --purple-border:#D1C4E9;
+    --red:          #C62828;
+    --red-light:    #FFEBEE;
+    --text:         #1A1A1A;
+    --font-ui:      'DM Sans', -apple-system, sans-serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+    --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --r-pill: 20px;
+  }
+
+  body {
+    font-family: var(--font-ui); color: var(--text);
+    background: var(--white); min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    background: var(--white); border-bottom: 1px solid var(--grey-border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 52px; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-size: 15px; font-weight: 700; color: var(--text); text-decoration: none; }
+  .nav-brand span { color: var(--blue); }
+  .nav-links { display: flex; align-items: center; gap: 24px; }
+  .nav-links a {
+    font-size: 13px; color: var(--grey-label); text-decoration: none;
+    font-weight: 500; transition: color .15s; padding: 4px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--blue); border-bottom-color: var(--blue); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: var(--white);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 64px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 3px; }
+  .page-sub   { font-size: 13px; color: var(--grey-label); }
+  .btn-new {
+    background: var(--blue); color: var(--white);
+    border: none; border-radius: var(--r-md);
+    padding: 10px 20px; font-family: var(--font-ui);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 7px; transition: background .15s;
+    text-decoration: none;
+  }
+  .btn-new:hover { background: var(--blue-hover); }
+
+  /* ── STATS ROW ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-lg); padding: 16px 18px;
+  }
+  .stat-label { font-size: 11px; color: var(--grey-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+  .stat-sub   { font-size: 11px; color: var(--grey-label); margin-top: 3px; }
+  .stat-dot   { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--grey-border);
+    margin-bottom: 20px; background: var(--white);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    border: 1px solid var(--grey-border); overflow: hidden;
+    border-bottom: none;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 16px; background: var(--white);
+    border: none; border-right: 1px solid var(--grey-border);
+    font-family: var(--font-ui); font-size: 13px; font-weight: 500;
+    color: var(--grey-label); cursor: pointer; transition: all .15s;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn.active { background: var(--white); color: var(--blue); font-weight: 600; }
+  .tab-btn:hover:not(.active) { background: var(--white); color: var(--text); }
+  .tab-count {
+    background: var(--grey-border); color: var(--grey-label);
+    font-size: 10px; font-weight: 700; padding: 2px 6px;
+    border-radius: var(--r-pill); min-width: 18px; text-align: center;
+  }
+  .tab-btn.active .tab-count { background: var(--blue-light); color: var(--blue); }
+
+  /* ── SEARCH / FILTER BAR ── */
+  .filter-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .search-input-wrap {
+    flex: 1; min-width: 200px;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-md); padding: 8px 14px;
+  }
+  .search-input-wrap svg { color: var(--grey-muted); flex-shrink: 0; }
+  .search-input-wrap input {
+    border: none; background: transparent; font-family: var(--font-ui);
+    font-size: 13px; color: var(--text); outline: none; width: 100%;
+  }
+  .filter-select {
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-md); padding: 8px 12px;
+    font-family: var(--font-ui); font-size: 13px; color: var(--text);
+    cursor: pointer; outline: none;
+  }
+
+  /* ── SHIPMENT CARDS ── */
+  .shipment-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .shipment-card {
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-lg); overflow: hidden;
+    transition: box-shadow .15s; cursor: pointer;
+  }
+  .shipment-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+  .shipment-card.expanded { border-color: var(--blue); }
+
+  .shipment-main {
+    display: grid; grid-template-columns: auto 1fr auto auto auto;
+    align-items: center; gap: 16px; padding: 14px 18px;
+  }
+
+  /* Status indicator */
+  .status-indicator {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .status-indicator.in-transit { background: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); animation: pulse-blue 1.8s ease infinite; }
+  .status-indicator.delivered  { background: var(--green); }
+  .status-indicator.pending    { background: var(--amber); }
+  .status-indicator.delayed    { background: var(--red); box-shadow: 0 0 0 3px var(--red-light); animation: pulse-red 1.8s ease infinite; }
+  @keyframes pulse-blue { 0%,100%{box-shadow:0 0 0 3px var(--blue-light)} 50%{box-shadow:0 0 0 6px #BBDEFB} }
+  @keyframes pulse-red  { 0%,100%{box-shadow:0 0 0 3px var(--red-light)}  50%{box-shadow:0 0 0 6px #FFCDD2} }
+
+  /* Shipment info */
+  .ship-ref    { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 2px; }
+  .ship-route  { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .ship-meta   { font-size: 11px; color: var(--grey-label); display: flex; align-items: center; gap: 8px; }
+  .ship-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--grey-border); }
+
+  /* Mode badge */
+  .mode-badge-sm {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 3px 9px;
+    border-radius: var(--r-pill); border: 1px solid; flex-shrink: 0;
+  }
+
+  /* Status badge */
+  .status-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: var(--r-pill); white-space: nowrap; flex-shrink: 0;
+  }
+  .status-badge.in-transit { background: var(--blue-light);   color: var(--blue);   border: 1px solid var(--blue-border); }
+  .status-badge.delivered  { background: var(--green-light);  color: var(--green);  border: 1px solid var(--green-border); }
+  .status-badge.pending    { background: var(--amber-light);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .status-badge.delayed    { background: var(--red-light);    color: var(--red);    border: 1px solid #FFCDD2; }
+
+  /* ETA */
+  .ship-eta { text-align: right; flex-shrink: 0; }
+  .eta-label { font-size: 10px; color: var(--grey-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+  .eta-value { font-size: 13px; font-weight: 600; font-family: var(--font-mono); }
+  .eta-value.overdue { color: var(--red); }
+
+  /* Expand button */
+  .expand-btn {
+    background: none; border: 1px solid var(--grey-border);
+    border-radius: var(--r-sm); width: 28px; height: 28px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--grey-label); transition: all .15s; flex-shrink: 0;
+  }
+  .expand-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .expand-btn.open { background: var(--blue-light); border-color: var(--blue-border); color: var(--blue); }
+  .expand-btn svg { transition: transform .2s; }
+  .expand-btn.open svg { transform: rotate(180deg); }
+
+  /* ── PROGRESS BAR ── */
+  .ship-progress {
+    padding: 0 18px 12px;
+    border-top: 1px solid var(--grey-bg);
+    padding-top: 12px;
+  }
+  .progress-track {
+    position: relative; height: 4px; background: var(--grey-border);
+    border-radius: 2px; margin: 8px 0 20px;
+  }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
+  .progress-pct  { position: absolute; right: 0; top: -18px; font-size: 11px; font-weight: 600; }
+
+  /* Progress milestones */
+  .milestones { display: flex; justify-content: space-between; position: relative; }
+  .milestone  { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .milestone-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--grey-border); background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; transition: all .3s;
+  }
+  .milestone-dot.done    { background: var(--blue);  border-color: var(--blue);  }
+  .milestone-dot.active  { background: var(--white); border-color: var(--blue);  box-shadow: 0 0 0 3px var(--blue-light); }
+  .milestone-dot.done svg   { display: block; }
+  .milestone-dot.pending svg { display: none; }
+  .milestone-label { font-size: 10px; color: var(--grey-muted); text-align: center; max-width: 70px; line-height: 1.3; }
+  .milestone-label.done   { color: var(--text); font-weight: 500; }
+  .milestone-label.active { color: var(--blue); font-weight: 600; }
+  .milestone-time { font-size: 10px; color: var(--grey-muted); font-family: var(--font-mono); }
+  .milestone-line {
+    position: absolute; top: 9px; left: 10%; right: 10%;
+    height: 2px; background: var(--grey-border); z-index: 0;
+  }
+  .milestone-line-fill {
+    height: 100%; background: var(--blue); border-radius: 1px; transition: width .6s ease;
+  }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    display: none; padding: 16px 18px;
+    border-top: 1px solid var(--grey-border);
+    background: var(--white);
+  }
+  .detail-panel.open { display: block; }
+  .detail-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
+  }
+  .detail-cell { background: var(--white); border: 1px solid var(--grey-border); border-radius: var(--r-md); padding: 10px 14px; }
+  .dc-label { font-size: 10px; color: var(--grey-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-bottom: 4px; }
+  .dc-value { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  /* Event timeline */
+  .timeline-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-event { display: flex; gap: 14px; position: relative; padding-bottom: 16px; }
+  .timeline-event:last-child { padding-bottom: 0; }
+  .timeline-event:last-child .tl-line { display: none; }
+  .tl-dot-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+  .tl-line { flex: 1; width: 1px; background: var(--grey-border); margin: 4px 0; min-height: 16px; }
+  .tl-time  { font-family: var(--font-mono); font-size: 11px; color: var(--grey-muted); flex-shrink: 0; min-width: 110px; }
+  .tl-desc  { font-size: 12px; color: var(--text); flex: 1; line-height: 1.4; }
+  .tl-loc   { font-size: 11px; color: var(--grey-label); margin-top: 2px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 48px 24px;
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-lg);
+  }
+  .empty-icon { width: 48px; height: 48px; background: var(--blue-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--blue); }
+  .empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .empty-sub   { font-size: 13px; color: var(--grey-label); max-width: 300px; margin: 0 auto 20px; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .shipment-main { grid-template-columns: auto 1fr auto; }
+    .detail-grid { grid-template-columns: repeat(2,1fr); }
+    .ship-eta { display: none; }
+  }
+
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="tracking.html" class="active">My Shipments</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="for-operators.html">For operators</a>
+    <a href="forwarder-portal.html">Forwarder Portal</a>
+  </div>
+  <div class="nav-right">
+    <div class="avatar" id="trackAvatar" style="cursor:pointer;" title="User" onclick="handleTrackAvatar()">JM</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">My Shipments</div>
+      <div class="page-sub">Track active bookings and view full shipment history</div>
+    </div>
+    <a href="index.html" class="btn-new">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New booking
+    </a>
+  </div>
+
+  <!-- APPROVAL NOTIFICATION BANNER (shown when a booking was just approved) -->
+  <div id="approvalBanner" style="display:none;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:10px;padding:14px 18px;margin-bottom:16px;align-items:flex-start;gap:12px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><polyline points="20 6 9 17 4 12"/></svg>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:3px;" id="approvalBannerTitle">Booking approved</div>
+      <div style="font-size:12px;color:#1B5E20;line-height:1.5;" id="approvalBannerBody">Your freight forwarder has approved your booking. The slot has been confirmed with the operator.</div>
+    </div>
+    <button onclick="this.closest('#approvalBanner').style.display='none'" style="background:none;border:none;cursor:pointer;color:#2E7D32;font-size:20px;line-height:1;padding:0;">&times;</button>
+  </div>
+  <div id="delayAlertBanner" style="display:none;background:#FFF3E0;border:1.5px solid #FFCC80;border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none;align-items:flex-start;gap:12px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:700;color:#E65100;margin-bottom:3px;" id="delayAlertTitle">Shipment delay detected</div>
+      <div style="font-size:12px;color:#BF360C;line-height:1.5;" id="delayAlertBody">One or more of your shipments is running late. Check the details below.</div>
+    </div>
+    <button onclick="this.closest('#delayAlertBanner').style.display='none'" style="background:none;border:none;cursor:pointer;color:#E65100;font-size:20px;line-height:1;padding:0;">&times;</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Active shipments</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub"><span class="stat-dot" style="background:var(--blue)"></span>2 in transit · 1 pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Delivered this month</div>
+      <div class="stat-value">12</div>
+      <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>100% on time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total CO₂ saved</div>
+      <div class="stat-value" style="color:var(--green)">18.4t</div>
+      <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>vs road default</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total spend (May)</div>
+      <div class="stat-value">€4,820</div>
+      <div class="stat-sub"><span class="stat-dot" style="background:var(--blue)"></span>€1,240 saved vs road</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('active', this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Active
+      <span class="tab-count">3</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('history', this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      History
+      <span class="tab-count">12</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('analytics', this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </button>
+  </div>
+
+  <!-- FILTER ROW -->
+  <div class="filter-row">
+    <div class="search-input-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search by reference, route or operator…" oninput="filterCards()"/>
+    </div>
+    <select class="filter-select" id="modeFilter" onchange="filterCards()">
+      <option value="all">All modes</option>
+      <option value="barge">Barge</option>
+      <option value="rail">Rail</option>
+      <option value="road">Road</option>
+    </select>
+    <select class="filter-select" id="statusFilter" onchange="filterCards()">
+      <option value="all">All statuses</option>
+      <option value="in-transit">In transit</option>
+      <option value="pending">Pending</option>
+      <option value="delivered">Delivered</option>
+      <option value="delayed">Delayed</option>
+    </select>
+  </div>
+
+  <!-- ── ACTIVE TAB ── -->
+  <div class="tab-panel active" id="panel-active">
+    <div class="shipment-list" id="activeList">
+
+      <!-- SHIPMENT 1: In Transit - Barge -->
+      <div class="shipment-card" data-mode="barge" data-status="in-transit" data-ref="MBP-4QR7W2" data-route="Rotterdam → Antwerp">
+        <div class="shipment-main">
+          <div class="status-indicator in-transit"></div>
+          <div>
+            <div class="ship-ref">MBP-4QR7W2</div>
+            <div class="ship-route">Rotterdam Maasvlakte → Antwerp Deurganck</div>
+            <div class="ship-meta">
+              <span>24,000 kg · General freight</span>
+              <span class="ship-meta-dot"></span>
+              <span>Sophie van der Berg · Geodis NL</span>
+              <span class="ship-meta-dot"></span>
+              <span>Rhine Carrier III</span>
+            </div>
+          </div>
+          <span class="mode-badge-sm" style="background:#E3F2FD;color:#1565C0;border-color:#BBDEFB;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+            Barge
+          </span>
+          <span class="status-badge in-transit">In Transit</span>
+          <div class="ship-eta">
+            <div class="eta-label">ETA</div>
+            <div class="eta-value">21 May · 00:00</div>
+          </div>
+          <button class="expand-btn" onclick="toggleCard(this, 'detail-1')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="ship-progress">
+          <div class="milestones">
+            <div class="milestone-line"><div class="milestone-line-fill" style="width:60%"></div></div>
+            <div class="milestone">
+              <div class="milestone-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="milestone-label done">Booked</div>
+              <div class="milestone-time">20 May 05:47</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="milestone-label done">Gate in RTM</div>
+              <div class="milestone-time">20 May 05:22</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot active"></div>
+              <div class="milestone-label active">On water</div>
+              <div class="milestone-time">Since 06:00</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot pending"></div>
+              <div class="milestone-label">Gate in ANR</div>
+              <div class="milestone-time">Est. 21 May</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot pending"></div>
+              <div class="milestone-label">Delivered</div>
+              <div class="milestone-time">Est. 21 May</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-panel" id="detail-1">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">Rhine Carrier III</div></div>
+            <div class="detail-cell"><div class="dc-label">Departure</div><div class="dc-value">20 May · 06:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Arrival ETA</div><div class="dc-value">21 May · 00:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Cargo weight</div><div class="dc-value">24,000 kg</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€310.00</div></div>
+            <div class="detail-cell"><div class="dc-label">CO₂ saved</div><div class="dc-value" style="color:var(--green)">~2,000 kg vs road</div></div>
+          </div>
+          <!-- Delay warning for this shipment -->
+          <div style="margin:10px 0 0;padding:10px 12px;background:#FFF3E0;border:1px solid #FFCC80;border-radius:6px;font-size:12px;color:#E65100;display:flex;align-items:center;gap:8px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>ETA updated — vessel delayed ~45 min due to lock congestion at Wintam. New ETA: <strong>21 May · 00:45</strong>. Notifications sent to registered contacts.</span>
+          </div>
+          <div class="timeline-title">Tracking Events</div>
+          <div class="timeline">
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 10:32</div>
+              <div><div class="tl-desc" style="color:var(--amber);font-weight:600;">ETA revised — lock congestion Wintam (+45 min)</div><div class="tl-loc">Scheldt waterway</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 08:14</div>
+              <div><div class="tl-desc">Vessel underway — passing Dordrecht</div><div class="tl-loc">Rhine waterway, km 984</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 06:03</div>
+              <div><div class="tl-desc">Vessel departed Rotterdam Waalhaven berth B-14</div><div class="tl-loc">Port of Rotterdam (RTM)</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 05:22</div>
+              <div><div class="tl-desc">Cargo loaded and secured — gate in confirmed</div><div class="tl-loc">Rotterdam Waalhaven, Terminal Gate 4</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--grey-muted)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">20 May 05:47</div>
+              <div><div class="tl-desc">Booking confirmed — slot secured</div><div class="tl-loc">CorridorBook · Ref MBP-4QR7W2</div></div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-border);display:flex;gap:8px;">
+            <a href="mbp_booking_reference.html?ref=MBP-4QR7W2" style="padding:6px 14px;background:#1565C0;color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">View reference</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHIPMENT 2: In Transit - Rail -->
+      <div class="shipment-card" data-mode="rail" data-status="in-transit" data-ref="MBP-8TK3R5" data-route="Rotterdam → Antwerp">
+        <div class="shipment-main">
+          <div class="status-indicator in-transit"></div>
+          <div>
+            <div class="ship-ref">MBP-8TK3R5</div>
+            <div class="ship-route">Rotterdam Maasvlakte Rail Hub → Antwerp Rijnkaai</div>
+            <div class="ship-meta">
+              <span>18,500 kg · Industrial equipment</span>
+              <span class="ship-meta-dot"></span>
+              <span>Mark de Vries · Rhenus NL</span>
+              <span class="ship-meta-dot"></span>
+              <span>DB Cargo NL · Service DB-R4417</span>
+            </div>
+          </div>
+          <span class="mode-badge-sm" style="background:#EDE7F6;color:#5E35B1;border-color:#D1C4E9;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>
+            Rail
+          </span>
+          <span class="status-badge in-transit">In Transit</span>
+          <div class="ship-eta">
+            <div class="eta-label">ETA</div>
+            <div class="eta-value">20 May · 21:30</div>
+          </div>
+          <button class="expand-btn" onclick="toggleCard(this, 'detail-2')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="ship-progress">
+          <div class="milestones">
+            <div class="milestone-line"><div class="milestone-line-fill" style="width:45%"></div></div>
+            <div class="milestone">
+              <div class="milestone-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="milestone-label done">Booked</div>
+              <div class="milestone-time">20 May 09:02</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="milestone-label done">Loaded RTM</div>
+              <div class="milestone-time">20 May 10:18</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot active"></div>
+              <div class="milestone-label active">On track</div>
+              <div class="milestone-time">Since 10:30</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot pending"></div>
+              <div class="milestone-label">Arrived ANR</div>
+              <div class="milestone-time">Est. 21:30</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-dot pending"></div>
+              <div class="milestone-label">Delivered</div>
+              <div class="milestone-time">Est. 22:00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-panel" id="detail-2">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">DB Cargo NL</div></div>
+            <div class="detail-cell"><div class="dc-label">Departure</div><div class="dc-value">20 May · 10:30</div></div>
+            <div class="detail-cell"><div class="dc-label">Arrival ETA</div><div class="dc-value">20 May · 21:30</div></div>
+            <div class="detail-cell"><div class="dc-label">Cargo weight</div><div class="dc-value">18,500 kg</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€355.00</div></div>
+            <div class="detail-cell"><div class="dc-label">CO₂ saved</div><div class="dc-value" style="color:var(--green)">~1,600 kg vs road</div></div>
+          </div>
+          <div class="timeline-title">Tracking Events</div>
+          <div class="timeline">
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--purple)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 14:45</div>
+              <div><div class="tl-desc">Train passing Roosendaal — on schedule</div><div class="tl-loc">Roosendaal freight corridor, NL-BE border</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 10:32</div>
+              <div><div class="tl-desc">Train DB-R4417 departed Maasvlakte East terminal</div><div class="tl-loc">Rotterdam Maasvlakte Rail Hub (RRH)</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">Today 10:18</div>
+              <div><div class="tl-desc">Loading complete — 18,500 kg secured on wagon T-07</div><div class="tl-loc">Rotterdam Maasvlakte Rail Hub, Track 7</div></div>
+            </div>
+            <div class="timeline-event">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--grey-muted)"></div><div class="tl-line"></div></div>
+              <div class="tl-time">20 May 09:02</div>
+              <div><div class="tl-desc">Booking confirmed — slot secured</div><div class="tl-loc">CorridorBook · Ref MBP-8TK3R5</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHIPMENT 3: Pending - Road -->
+      <div class="shipment-card" data-mode="road" data-status="pending" data-ref="MBP-6XP1W9" data-route="Rotterdam → Antwerp">
+        <div class="shipment-main">
+          <div class="status-indicator" style="background:#F57F17;"></div>
+          <div>
+            <div class="ship-ref">MBP-6XP1W9</div>
+            <div class="ship-route">Port of Rotterdam → Port of Antwerp-Bruges</div>
+            <div class="ship-meta">
+              <span>24,000 kg · General freight</span>
+              <span class="ship-meta-dot"></span>
+              <span>Jan de Rijk · Euro-6 HGV</span>
+            </div>
+          </div>
+          <span class="mode-badge-sm" style="background:#F1F3F5;color:#495057;border-color:#CED4DA;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+            Road
+          </span>
+          <span class="status-badge" style="background:#FFF8E1;color:#F57F17;border:1px solid #FFD54F;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;">Pending Forwarder</span>
+          <div class="ship-eta">
+            <div class="eta-label">Departs</div>
+            <div class="eta-value">14:00</div>
+          </div>
+          <button class="expand-btn" onclick="toggleCard(this, 'detail-3')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="detail-panel" id="detail-3">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">Jan de Rijk</div></div>
+            <div class="detail-cell"><div class="dc-label">Departure</div><div class="dc-value">20 May · 14:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Arrival ETA</div><div class="dc-value">20 May · 18:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Cargo weight</div><div class="dc-value">24,000 kg</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€420.00</div></div>
+            <div class="detail-cell"><div class="dc-label">Route</div><div class="dc-value">E19 direct</div></div>
+          </div>
+          <!-- Pending forwarder notice -->
+          <div style="margin-top:10px;padding:10px 14px;background:#FFF8E1;border:1px solid #FFD54F;border-radius:6px;font-size:12px;color:#F57F17;display:flex;align-items:flex-start;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <strong>Awaiting freight forwarder approval</strong><br>
+              This booking is on hold until your forwarder approves it. You can cancel for free before approval.
+              <div style="margin-top:8px;">
+                <a href="forwarder-portal.html" style="padding:5px 12px;background:#F57F17;color:#fff;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;">Open Forwarder Portal</a>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-border);display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <a href="mbp_booking_reference.html?ref=MBP-6XP1W9&status=pending_forwarder" style="padding:6px 14px;background:#1565C0;color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">View reference</a>
+            <a href="index.html" style="padding:6px 14px;background:transparent;color:var(--grey-label);border:1px solid var(--grey-border);border-radius:6px;font-size:12px;font-weight:500;text-decoration:none;">Book again</a>
+            <button onclick="cancelShipment('MBP-6XP1W9', this)" style="padding:6px 14px;background:transparent;color:#C62828;border:1px solid #FFCDD2;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;margin-left:auto;">Cancel booking</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- First-visit empty state (shown when no real bookings in localStorage) -->
+    <div id="firstVisitEmpty" style="display:none;">
+      <div class="empty-state" style="border:2px dashed var(--grey-border);background:var(--white);">
+        <div class="empty-icon" style="background:var(--blue-light);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/><path d="M9 5V3h6v2"/><path d="M1 20h22"/></svg>
+        </div>
+        <div class="empty-title">No active shipments yet</div>
+        <div class="empty-sub">Your confirmed bookings will appear here. Book your first slot to get started — it takes under 90 seconds.</div>
+        <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:white;border:none;border-radius:var(--r-md);padding:10px 20px;font-family:var(--font-ui);font-size:13px;font-weight:600;text-decoration:none;margin-top:4px;cursor:pointer;transition:background .15s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Book your first shipment
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter empty state (shown when filter returns 0 results) -->
+    <div id="activeEmpty" style="display:none">
+      <div class="empty-state">
+        <div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="empty-title">No shipments match your filter</div>
+        <div class="empty-sub">Try adjusting the search or filter options above.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HISTORY TAB ── -->
+  <div class="tab-panel" id="panel-history">
+    <div id="historyEmpty" style="display:none;">
+      <div class="empty-state" style="border:2px dashed var(--grey-border);background:var(--white);">
+        <div class="empty-icon" style="background:var(--green-light);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="empty-title">No delivery history yet</div>
+        <div class="empty-sub">Completed shipments will appear here once they have been delivered.</div>
+      </div>
+    </div>
+    <div class="shipment-list">
+
+      <div class="shipment-card" data-mode="barge" data-status="delivered" data-ref="MBP-2LM9X1">
+        <div class="shipment-main">
+          <div class="status-indicator delivered"></div>
+          <div>
+            <div class="ship-ref">MBP-2LM9X1</div>
+            <div class="ship-route">Rotterdam Maasvlakte → Antwerp Deurganck</div>
+            <div class="ship-meta"><span>24,000 kg · General freight</span><span class="ship-meta-dot"></span><span>Rhine Carrier III</span><span class="ship-meta-dot"></span><span>Delivered 18 May 2026</span></div>
+          </div>
+          <span class="mode-badge-sm" style="background:#E3F2FD;color:#1565C0;border-color:#BBDEFB;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg> Barge</span>
+          <span class="status-badge delivered">Delivered</span>
+          <div class="ship-eta"><div class="eta-label">Delivered</div><div class="eta-value">18 May · 01:12</div></div>
+          <button class="expand-btn" onclick="toggleCard(this, 'hist-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        </div>
+        <div class="detail-panel" id="hist-1">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">Rhine Carrier III</div></div>
+            <div class="detail-cell"><div class="dc-label">Departed</div><div class="dc-value">17 May · 06:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Delivered</div><div class="dc-value">18 May · 01:12</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€310.00</div></div>
+            <div class="detail-cell"><div class="dc-label">On time</div><div class="dc-value" style="color:var(--green)">Yes — 48 min early</div></div>
+            <div class="detail-cell"><div class="dc-label">CO₂ saved</div><div class="dc-value" style="color:var(--green)">~2,000 kg vs road</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shipment-card" data-mode="rail" data-status="delivered" data-ref="MBP-5PQ2N8">
+        <div class="shipment-main">
+          <div class="status-indicator delivered"></div>
+          <div>
+            <div class="ship-ref">MBP-5PQ2N8</div>
+            <div class="ship-route">Rotterdam Maasvlakte Rail → Antwerp Rijnkaai</div>
+            <div class="ship-meta"><span>22,000 kg · Electronics</span><span class="ship-meta-dot"></span><span>DB Cargo NL</span><span class="ship-meta-dot"></span><span>Delivered 16 May 2026</span></div>
+          </div>
+          <span class="mode-badge-sm" style="background:#EDE7F6;color:#5E35B1;border-color:#D1C4E9;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg> Rail</span>
+          <span class="status-badge delivered">Delivered</span>
+          <div class="ship-eta"><div class="eta-label">Delivered</div><div class="eta-value">16 May · 21:15</div></div>
+          <button class="expand-btn" onclick="toggleCard(this, 'hist-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        </div>
+        <div class="detail-panel" id="hist-2">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">DB Cargo NL</div></div>
+            <div class="detail-cell"><div class="dc-label">Departed</div><div class="dc-value">16 May · 10:30</div></div>
+            <div class="detail-cell"><div class="dc-label">Delivered</div><div class="dc-value">16 May · 21:15</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€355.00</div></div>
+            <div class="detail-cell"><div class="dc-label">On time</div><div class="dc-value" style="color:var(--green)">Yes — on schedule</div></div>
+            <div class="detail-cell"><div class="dc-label">CO₂ saved</div><div class="dc-value" style="color:var(--green)">~1,600 kg vs road</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shipment-card" data-mode="road" data-status="delivered" data-ref="MBP-9YC4D3">
+        <div class="shipment-main">
+          <div class="status-indicator delivered"></div>
+          <div>
+            <div class="ship-ref">MBP-9YC4D3</div>
+            <div class="ship-route">Port of Rotterdam → Port of Antwerp-Bruges</div>
+            <div class="ship-meta"><span>15,000 kg · Perishables</span><span class="ship-meta-dot"></span><span>Jan de Rijk</span><span class="ship-meta-dot"></span><span>Delivered 15 May 2026</span></div>
+          </div>
+          <span class="mode-badge-sm" style="background:#F1F3F5;color:#495057;border-color:#CED4DA;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg> Road</span>
+          <span class="status-badge delivered">Delivered</span>
+          <div class="ship-eta"><div class="eta-label">Delivered</div><div class="eta-value">15 May · 18:22</div></div>
+          <button class="expand-btn" onclick="toggleCard(this, 'hist-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        </div>
+        <div class="detail-panel" id="hist-3">
+          <div class="detail-grid">
+            <div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">Jan de Rijk</div></div>
+            <div class="detail-cell"><div class="dc-label">Departed</div><div class="dc-value">15 May · 14:00</div></div>
+            <div class="detail-cell"><div class="dc-label">Delivered</div><div class="dc-value">15 May · 18:22</div></div>
+            <div class="detail-cell"><div class="dc-label">Total paid</div><div class="dc-value">€420.00</div></div>
+            <div class="detail-cell"><div class="dc-label">On time</div><div class="dc-value" style="color:var(--green)">Yes — 8 min early</div></div>
+            <div class="detail-cell"><div class="dc-label">Route</div><div class="dc-value">E19 direct</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <!-- ── ANALYTICS TAB ── -->
+  <div class="tab-panel" id="panel-analytics">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+
+      <div style="background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:20px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-muted);margin-bottom:16px;">Mode split (May 2026)</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500">Barge</span><span style="color:var(--grey-label)">7 shipments · 47%</span></div>
+            <div style="height:8px;background:var(--grey-bg);border-radius:4px;overflow:hidden;"><div style="width:47%;height:100%;background:#1565C0;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500">Rail</span><span style="color:var(--grey-label)">4 shipments · 27%</span></div>
+            <div style="height:8px;background:var(--grey-bg);border-radius:4px;overflow:hidden;"><div style="width:27%;height:100%;background:#5E35B1;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:500">Road</span><span style="color:var(--grey-label)">4 shipments · 27%</span></div>
+            <div style="height:8px;background:var(--grey-bg);border-radius:4px;overflow:hidden;"><div style="width:27%;height:100%;background:#C25450;border-radius:4px;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:20px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-muted);margin-bottom:2px;">CO₂ savings vs all-road</div>
+        <div style="font-size:11px;color:var(--grey-muted);margin-bottom:14px;">May 2026 · kg CO₂ saved per week</div>
+
+        <!-- Chart: label on top of bar -->
+        <div style="display:flex;gap:8px;align-items:flex-end;height:110px;margin-bottom:0;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+            <div id="lbl-wk1" style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:3px;">4.8t</div>
+            <div id="bar-wk1" style="width:100%;background:var(--green);border-radius:4px 4px 0 0;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+            <div id="lbl-wk2" style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:3px;">6.2t</div>
+            <div id="bar-wk2" style="width:100%;background:var(--green);border-radius:4px 4px 0 0;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+            <div id="lbl-wk3" style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:3px;">5.5t</div>
+            <div id="bar-wk3" style="width:100%;background:var(--green);border-radius:4px 4px 0 0;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+            <div id="lbl-wk4" style="font-size:10px;font-weight:700;color:var(--blue);margin-bottom:3px;">2.8t</div>
+            <div id="bar-wk4" style="width:100%;background:var(--blue-light);border:1px dashed var(--blue-border);border-radius:4px 4px 0 0;"></div>
+          </div>
+        </div>
+        <!-- Week labels -->
+        <div style="display:flex;gap:8px;border-top:1px solid var(--grey-border);padding-top:5px;margin-bottom:12px;">
+          <div style="flex:1;text-align:center;font-size:10px;color:var(--grey-muted);">Wk 1</div>
+          <div style="flex:1;text-align:center;font-size:10px;color:var(--grey-muted);">Wk 2</div>
+          <div style="flex:1;text-align:center;font-size:10px;color:var(--grey-muted);">Wk 3</div>
+          <div style="flex:1;text-align:center;font-size:10px;color:var(--grey-muted);">Wk 4 <span style="color:var(--blue)">(est)</span></div>
+        </div>
+
+        <!-- Summary rows -->
+        <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--grey-border);padding-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--grey-label);">Avg per week</span>
+            <span style="font-size:13px;font-weight:700;color:var(--green);font-family:var(--font-mono);">4,825 kg</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--grey-label);">Total this month</span>
+            <span style="font-size:13px;font-weight:700;color:var(--green);font-family:var(--font-mono);">19,300 kg <span style="font-size:11px;font-weight:400;color:var(--grey-muted);">(19.3t)</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--grey-border);">
+            <div>
+              <div style="font-size:12px;color:var(--grey-label);">Projected this year</div>
+              <div style="font-size:10px;color:var(--grey-muted);">at current weekly rate</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:15px;font-weight:700;color:var(--green);font-family:var(--font-mono);">250,900 kg</div>
+              <div style="font-size:11px;color:var(--green);font-weight:600;">250.9t CO₂ / year</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:20px;">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-muted);margin-bottom:16px;">Spend summary (May 2026)</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="text-align:center;padding:14px;background:var(--grey-bg);border-radius:var(--r-md);">
+          <div style="font-size:11px;color:var(--grey-muted);margin-bottom:4px;">Total spend</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);">€4,820</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:var(--green-light);border-radius:var(--r-md);">
+          <div style="font-size:11px;color:var(--green);margin-bottom:4px;">Saved vs road</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--green);">€1,240</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:var(--blue-light);border-radius:var(--r-md);">
+          <div style="font-size:11px;color:var(--blue);margin-bottom:4px;">Avg cost/shipment</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--blue);">€322</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:var(--grey-bg);border-radius:var(--r-md);">
+          <div style="font-size:11px;color:var(--grey-muted);margin-bottom:4px;">On-time rate</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);color:var(--green);">100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ── Expand/collapse card ──────────────────────────────────────────────────────
+function toggleCard(btn, panelId) {
+  var panel = document.getElementById(panelId);
+  var card  = btn.closest('.shipment-card');
+  var isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  card.classList.toggle('expanded', !isOpen);
+}
+
+// ── Filter / search ───────────────────────────────────────────────────────────
+function filterCards() {
+  var query  = document.getElementById('searchInput').value.toLowerCase();
+  var mode   = document.getElementById('modeFilter').value;
+  var status = document.getElementById('statusFilter').value;
+  var cards  = document.querySelectorAll('#activeList .shipment-card');
+  var visible = 0;
+
+  cards.forEach(function(card) {
+    var modeMatch   = mode   === 'all' || card.dataset.mode   === mode;
+    var statusMatch = status === 'all' || card.dataset.status === status;
+    var textMatch   = !query
+      || card.dataset.ref.toLowerCase().includes(query)
+      || card.dataset.route.toLowerCase().includes(query)
+      || card.textContent.toLowerCase().includes(query);
+    var show = modeMatch && statusMatch && textMatch;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  document.getElementById('activeEmpty').style.display = visible === 0 ? 'block' : 'none';
+}
+
+// ── Analytics bar chart ───────────────────────────────────────────────────────
+(function() {
+  var data = [
+    {id:'bar-wk1', lbl:'lbl-wk1', kg:4800},
+    {id:'bar-wk2', lbl:'lbl-wk2', kg:6200},
+    {id:'bar-wk3', lbl:'lbl-wk3', kg:5500},
+    {id:'bar-wk4', lbl:'lbl-wk4', kg:2800}
+  ];
+  var max = Math.max.apply(null, data.map(function(d){ return d.kg; }));
+  data.forEach(function(d) {
+    var bar = document.getElementById(d.id);
+    var lbl = document.getElementById(d.lbl);
+    if (bar) bar.style.height = Math.round((d.kg/max)*70) + 'px';
+    if (lbl) lbl.textContent = (d.kg/1000).toFixed(1) + 't';
+  });
+})();
+
+// ── Load new bookings from localStorage ──────────────────────────────────────
+function loadNewBookings() {
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+  if (!bookings.length) return;
+
+  var list = document.getElementById('activeList');
+  var modeColors = {
+    barge: {bg:'#1565C0', text:'#fff', label:'Barge'},
+    rail:  {bg:'#5E35B1', text:'#fff', label:'Rail'},
+    road:  {bg:'#C25450', text:'#fff', label:'Road'}
+  };
+  var modeIcons = {
+    barge: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>',
+    rail:  '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>',
+    road:  '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>'
+  };
+
+  bookings.forEach(function(b) {
+    if (document.querySelector('[data-ref="'+b.ref+'"]')) return;
+    var mc = modeColors[b.mode] || modeColors.barge;
+    var icon = modeIcons[b.mode] || modeIcons.barge;
+    var detailId = 'detail-dyn-' + b.ref.replace(/[^A-Z0-9]/g,'');
+    var ts = b.ts ? new Date(b.ts) : new Date();
+    var cargoLabel = (b.cqty||'1') + ' \xd7 ' + (b.ctype||'40HC') + ' \u00b7 ' + (b.weight||'24000') + ' kg';
+    var deliverNote = b.deliver_to ? '<span style="color:var(--green);font-size:11px;"> \u2192 ' + b.deliver_to + '</span>' : '';
+    var userNote    = b.user ? '<span class="ship-meta-dot"></span><span>\ud83d\udc64 ' + b.user + '</span>' : '';
+
+    var wrap = document.createElement('div');
+    wrap.className = 'shipment-card';
+    wrap.style.cursor = 'pointer';
+    wrap.title = 'Click to view booking details';
+    wrap.dataset.mode   = b.mode;
+    wrap.dataset.status = b.status === 'pending_forwarder' ? 'pending' : 'pending';
+    wrap.dataset.ref    = b.ref;
+    wrap.dataset.route  = (b.origin||'') + ' \u2192 ' + (b.dest||'');
+
+    var isPending = b.status === 'pending_forwarder';
+    var statusLabel = isPending
+      ? '<span class="status-badge" style="background:#FFF8E1;color:#F57F17;border:1px solid #FFD54F;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;">Pending Forwarder</span>'
+      : '<span class="status-badge pending">Confirmed</span>';
+    var statusDot = isPending
+      ? '<div class="status-indicator" style="background:#F57F17;"></div>'
+      : '<div class="status-indicator pending"></div>';
+
+    var mainDiv = document.createElement('div');
+    mainDiv.className = 'shipment-main';
+    mainDiv.innerHTML =
+      statusDot
+      + '<div style="flex:1;min-width:0;">'
+        + '<div class="ship-ref">' + b.ref + '</div>'
+        + '<div class="ship-route">' + (b.origin||'\u2014') + ' \u2192 ' + (b.dest||'\u2014') + deliverNote + '</div>'
+        + '<div class="ship-meta"><span>' + cargoLabel + '</span><span class="ship-meta-dot"></span><span>' + (b.operator||'\u2014') + '</span>' + userNote + '</div>'
+      + '</div>'
+      + '<span class="mode-badge-sm" style="background:' + mc.bg + ';color:' + mc.text + ';border-color:' + mc.bg + ';">' + icon + ' ' + mc.label + '</span>'
+      + statusLabel
+      + '<div class="ship-eta"><div class="eta-label">Departs</div><div class="eta-value">' + (b.depart||'\u2014') + '</div></div>';
+
+    var expandBtn = document.createElement('button');
+    expandBtn.className = 'expand-btn';
+    expandBtn.dataset.expand = detailId;
+    expandBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    mainDiv.appendChild(expandBtn);
+    wrap.appendChild(mainDiv);
+
+    var refUrl = 'mbp_booking_reference.html'
+      + '?ref='      + encodeURIComponent(b.ref||'')
+      + '&mode='     + (b.mode||'barge')
+      + '&origin='   + encodeURIComponent(b.origin||'')
+      + '&dest='     + encodeURIComponent(b.dest||'')
+      + '&date='     + (b.date||'2026-05-20')
+      + '&weight='   + (b.weight||'24000')
+      + '&ctype='    + (b.ctype||'40HC')
+      + '&cqty='     + (b.cqty||'1')
+      + '&price='    + (b.price||'')
+      + '&transit='  + encodeURIComponent(b.transit||'')
+      + '&operator=' + encodeURIComponent(b.operator||'')
+      + '&co2='      + encodeURIComponent(b.co2||'')
+      + '&depart='   + encodeURIComponent(b.depart||'')
+      + '&arrive='   + encodeURIComponent(b.arrive||'')
+      + '&deliver_to='+ encodeURIComponent(b.deliver_to||'')
+      + '&user='     + encodeURIComponent(b.user||'');
+
+    var deliverRow = b.deliver_to
+      ? '<div class="detail-cell" style="grid-column:1/-1"><div class="dc-label">Deliver to</div><div class="dc-value" style="color:var(--green);font-weight:600;">' + b.deliver_to + '</div></div>'
+      : '';
+    var userRow = b.user
+      ? '<div class="detail-cell"><div class="dc-label">Booked by</div><div class="dc-value">' + b.user + '</div></div>'
+      : '';
+
+    // Pending forwarder notice + cancel button (only shown when awaiting approval)
+    var isPending = b.status === 'pending_forwarder';
+    var pendingNotice = isPending
+      ? '<div style="margin-top:10px;padding:10px 14px;background:#FFF8E1;border:1px solid #FFD54F;border-radius:6px;font-size:12px;color:#F57F17;display:flex;align-items:flex-start;gap:8px;">'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        + '<div><strong>Awaiting freight forwarder approval</strong><br>This booking is on hold until your forwarder approves it. You can cancel for free before approval.'
+        + '<div style="margin-top:8px;display:flex;gap:6px;">'
+        + '<a href="forwarder-portal.html" onclick="event.stopPropagation()" style="padding:5px 12px;background:#F57F17;color:#fff;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;">Open Forwarder Portal</a>'
+        + '</div></div></div>'
+      : '';
+
+    var detailDiv = document.createElement('div');
+    detailDiv.className = 'detail-panel';
+    detailDiv.id = detailId;
+    detailDiv.innerHTML =
+      '<div class="detail-grid">'
+      + '<div class="detail-cell"><div class="dc-label">Ref</div><div class="dc-value" style="font-family:var(--font-mono);font-size:11px;">' + b.ref + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Mode</div><div class="dc-value">' + mc.label + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Operator</div><div class="dc-value">' + (b.operator||'\u2014') + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Container</div><div class="dc-value">' + (b.cqty||'1') + ' \xd7 ' + (b.ctype||'40HC') + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Departs</div><div class="dc-value">' + (b.depart||'\u2014') + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Arrives</div><div class="dc-value">' + (b.arrive||'\u2014') + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">Paid</div><div class="dc-value">\u20ac' + (b.price||'\u2014') + '</div></div>'
+      + '<div class="detail-cell"><div class="dc-label">CO\u2082 saved</div><div class="dc-value" style="color:var(--green)">' + (b.co2||'\u2014') + '</div></div>'
+      + deliverRow + userRow
+      + '</div>'
+      + pendingNotice
+      + '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-border);display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<a href="' + refUrl + '" onclick="event.stopPropagation()" style="padding:6px 14px;background:#1565C0;color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">View reference</a>'
+        + '<a href="index.html" onclick="event.stopPropagation()" style="padding:6px 14px;background:transparent;color:var(--grey-label);border:1px solid var(--grey-border);border-radius:6px;font-size:12px;font-weight:500;text-decoration:none;">Book again</a>'
+        + (isPending
+            ? '<button data-ref="' + b.ref + '" onclick="event.stopPropagation();cancelShipment(this.dataset.ref,this)" style="padding:6px 14px;background:transparent;color:var(--red,#C62828);border:1px solid #FFCDD2;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;margin-left:auto;">Cancel booking</button>'
+            : '')
+      + '</div>';
+    wrap.appendChild(detailDiv);
+    list.insertBefore(wrap, list.firstChild);
+  });
+
+  var activeCount = document.querySelectorAll('#activeList .shipment-card').length;
+  var tab = document.querySelector('.tab-btn[onclick*="active"] .tab-count');
+  if (tab) tab.textContent = activeCount;
+  var statEl = document.querySelector('.stat-value');
+  if (statEl) statEl.textContent = activeCount;
+}
+
+loadNewBookings();
+
+// Update stats from real booking data
+(function() {
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+  var activeCards = document.querySelectorAll('#activeList .shipment-card');
+  var activeCount = activeCards.length;
+
+  // Total spend from real bookings
+  var totalSpend = 0, totalSaved = 0;
+  bookings.forEach(function(b) {
+    var p = parseInt(b.price) || 0;
+    totalSpend += p;
+    if (b.mode !== 'road') {
+      var roadEst = b.mode === 'barge' ? Math.round(p / 0.74) : Math.round(p / 0.84);
+      totalSaved += (roadEst - p);
+    }
+  });
+
+  // Update stat cards
+  var statVals = document.querySelectorAll('.stat-value');
+  if (statVals[0]) statVals[0].textContent = activeCount;
+  if (statVals[3] && bookings.length > 0) {
+    statVals[3].textContent = '€' + totalSpend.toLocaleString();
+    var statSub3 = statVals[3].nextElementSibling;
+    if (statSub3) statSub3.innerHTML = '<span class="stat-dot" style="background:var(--green)"></span>€' + totalSaved.toLocaleString() + ' saved vs road';
+  }
+
+  // Show/hide first-visit empty state
+  var fve = document.getElementById('firstVisitEmpty');
+  if (fve) fve.style.display = bookings.length === 0 ? 'block' : 'none';
+
+  // Show/hide history empty state
+  var hEmpty = document.getElementById('historyEmpty');
+  if (hEmpty) {
+    var histCards = document.querySelectorAll('#panel-history .shipment-card');
+    hEmpty.style.display = histCards.length === 0 ? 'block' : 'none';
+  }
+
+  // Update tab count
+  var activeTab = document.querySelector('.tab-btn[onclick*="active"] .tab-count');
+  if (activeTab) activeTab.textContent = activeCount;
+})();
+
+// Event delegation for dynamically added expand buttons
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.expand-btn[data-expand]');
+  if (btn) toggleCard(btn, btn.dataset.expand);
+});
+
+// Make shipment cards clickable to open booking reference
+document.addEventListener('click', function(e) {
+  var card = e.target.closest('.shipment-card');
+  if (!card) return;
+  if (e.target.closest('.expand-btn') || e.target.closest('.detail-panel')) return;
+  var ref = card.dataset.ref;
+  if (!ref) return;
+  // Find booking data from completed bookings or static cards
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings')||'[]');
+  var b = bookings.find(function(x){ return x.ref === ref; });
+  if (b) {
+    var p = new URLSearchParams({
+      ref: b.ref, mode: b.mode||'barge',
+      origin: b.origin||'', dest: b.dest||'',
+      date: b.date||'2026-05-20', weight: b.weight||'24000',
+      ctype: b.ctype||'40HC', cqty: b.cqty||'1',
+      price: b.price||'', operator: b.operator||'',
+      co2: b.co2||'', depart: b.depart||'', arrive: b.arrive||''
+    });
+    window.location.href = 'mbp_booking_reference.html?' + p.toString();
+  } else {
+    // Static demo card — go to reference with defaults
+    window.location.href = 'mbp_booking_reference.html?ref=' + encodeURIComponent(ref);
+  }
+});
+
+// Add cursor pointer + hover hint to shipment cards
+document.querySelectorAll('.shipment-card').forEach(function(c) {
+  c.style.cursor = 'pointer';
+  c.title = 'Click to view booking details';
+});
+
+// ── User avatar ───────────────────────────────────────────────────────────────
+(function() {
+  function getInitials(name) {
+    if (!name) return 'JM';
+    var parts = name.trim().split(' ').filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  }
+  var name = localStorage.getItem('cb_user_name') || '';
+  var av = document.getElementById('trackAvatar');
+  if (av) {
+    av.textContent = getInitials(name);
+    av.title = name ? name + ' — click to sign out' : 'Not signed in — click to go to home';
+  }
+  window.handleTrackAvatar = function() {
+    var n = localStorage.getItem('cb_user_name');
+    if (n) { if(confirm('Sign out of CorridorBook?')){ localStorage.removeItem('cb_user_name'); localStorage.removeItem('cb_user_email'); location.reload(); } }
+    else { window.location.href = 'index.html'; }
+  };
+  // Show welcome banner if name exists
+  if (name) {
+    var sub = document.querySelector('.page-sub');
+    if (sub) sub.textContent = 'Welcome back, ' + name.split(' ')[0] + ' — track your active bookings and shipment history';
+  }
+})();
+
+// ── Cancellation ──────────────────────────────────────────────────────────────
+function cancelShipment(ref, btn) {
+  var confirmed = confirm(
+    'Cancel booking ' + ref + '?\n\n'
+    + 'Cancellation policy:\n'
+    + '  - Free if more than 24h before departure\n'
+    + '  - Fee applies within 24h of departure\n\n'
+    + 'This action cannot be undone.'
+  );
+  if (!confirmed) return;
+
+  // Remove from completed bookings
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+  bookings = bookings.filter(function(b){ return b.ref !== ref; });
+  localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
+
+  // Remove the card from DOM
+  var card = btn ? btn.closest('.shipment-card') : document.querySelector('[data-ref="' + ref + '"]');
+  if (card) {
+    card.style.opacity = '0.4';
+    card.style.pointerEvents = 'none';
+    var statusBadge = card.querySelector('.status-badge');
+    if (statusBadge) { statusBadge.textContent = 'Cancelled'; statusBadge.className = 'status-badge'; statusBadge.style.cssText = 'background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2;border-radius:4px;font-size:10px;font-weight:700;padding:2px 8px;'; }
+    setTimeout(function(){ if(card.parentNode) card.parentNode.removeChild(card); }, 1500);
+  }
+
+  // Show confirmation toast
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1A1A1A;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);';
+  toast.textContent = 'Booking ' + ref + ' cancelled. Refund processing within 3–5 business days.';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.remove(); }, 5000);
+}
+
+// ── Approval notification banner ──────────────────────────────────────────────
+(function() {
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+  // Find bookings approved within the last 10 minutes
+  var now = Date.now();
+  var recentlyApproved = bookings.filter(function(b) {
+    if (b.status !== 'approved') return false;
+    if (!b.fw_ts) return false;
+    var approvedAt = new Date(b.fw_ts).getTime();
+    return (now - approvedAt) < 10 * 60 * 1000; // 10 minutes
+  });
+
+  if (recentlyApproved.length > 0) {
+    var banner = document.getElementById('approvalBanner');
+    var title  = document.getElementById('approvalBannerTitle');
+    var body   = document.getElementById('approvalBannerBody');
+    if (banner) {
+      banner.style.display = 'flex';
+      var refs = recentlyApproved.map(function(b){ return b.ref; }).join(', ');
+      if (title) title.textContent = recentlyApproved.length === 1
+        ? 'Booking approved — ' + refs
+        : recentlyApproved.length + ' bookings approved';
+      if (body) {
+        var first = recentlyApproved[0];
+        body.textContent = 'Your freight forwarder has approved booking ' + refs + ' ('
+          + (first.origin || '') + ' \u2192 ' + (first.dest || '') + '). '
+          + 'The slot has been confirmed with ' + (first.operator || 'the operator') + '.';
+      }
+    }
+  }
+
+  // Also re-render cards to update any pending → approved status changes
+  var loadFn = window.loadNewBookings;
+  if (typeof loadFn === 'function') loadFn();
+})();
+(function() {
+  // Check if any in-transit card has a delay indicator
+  var delayedCards = document.querySelectorAll('.shipment-card[data-status="in-transit"]');
+  var hasDelay = false;
+  var delayRefs = [];
+  delayedCards.forEach(function(c) {
+    // Check for amber/delay indicators in the card
+    if (c.querySelector('.tl-dot[style*="amber"]') || c.innerHTML.includes('delayed') || c.innerHTML.includes('ETA revised')) {
+      hasDelay = true;
+      delayRefs.push(c.dataset.ref);
+    }
+  });
+  // Also check static demo card (MBP-4QR7W2 has the delay we added)
+  if (document.querySelector('#detail-1')) hasDelay = true;
+
+  if (hasDelay) {
+    var banner = document.getElementById('delayAlertBanner');
+    if (banner) {
+      banner.style.display = 'flex';
+      var body = document.getElementById('delayAlertBody');
+      if (body) body.textContent = 'Shipment MBP-4QR7W2 (Barge · Rotterdam → Antwerp) is running ~45 min late due to lock congestion on the Scheldt. Updated ETA: 21 May · 00:45. Your registered contacts have been notified.';
+    }
+  }
+
+  // Notify contacts from localStorage for real bookings
+  var notifEmails = JSON.parse(localStorage.getItem('cb_notif_emails') || '[]');
+  if (hasDelay && notifEmails.length > 0) {
+    // In a real app this would send emails — here we just log it
+    console.log('[CorridorBook] Delay notification would be sent to:', notifEmails.join(', '));
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;--font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webkit-font-smoothing:antialiased;}
+.nav{height:56px;background:rgba(11,24,40,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-links a{font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;font-weight:500;transition:color .15s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;}
+.nav-cta{height:32px;padding:0 16px;background:#1565C0;color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;}
+
+/* HERO */
+.about-hero{background:#0B1828;padding:80px 48px 72px;text-align:center;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#60B4FF;margin-bottom:20px;background:rgba(21,101,192,0.18);border:1px solid rgba(77,163,255,0.25);padding:5px 14px;border-radius:20px;}
+.about-hero h1{font-size:44px;font-weight:800;line-height:1.06;letter-spacing:-1.5px;color:#fff;margin-bottom:20px;max-width:700px;margin-left:auto;margin-right:auto;}
+.about-hero h1 span{color:#4DA3FF;}
+.about-hero-sub{font-size:16px;color:#8FAFC8;line-height:1.7;max-width:580px;margin:0 auto;}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:72px 48px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+.section-title{font-size:30px;font-weight:800;letter-spacing:-0.8px;margin-bottom:8px;}
+.section-sub{font-size:15px;color:var(--grey-label);margin-bottom:48px;line-height:1.6;}
+
+/* MISSION */
+.mission-block{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:80px;align-items:start;}
+.mission-text h2{font-size:28px;font-weight:800;letter-spacing:-0.8px;margin-bottom:16px;line-height:1.2;}
+.mission-text p{font-size:14px;color:var(--grey-label);line-height:1.75;margin-bottom:14px;}
+.mission-text p strong{color:var(--text);}
+.mission-quote{background:#0B1828;border-radius:16px;padding:36px;position:relative;}
+.mission-quote blockquote{font-size:18px;font-weight:600;color:#fff;line-height:1.6;margin-bottom:16px;letter-spacing:-0.3px;}
+.mission-quote cite{font-size:12px;color:#5A7A9A;font-style:normal;}
+.quote-mark{font-size:80px;color:rgba(77,163,255,0.2);font-family:Georgia,serif;line-height:0.8;margin-bottom:12px;display:block;}
+
+/* PI SECTION */
+.pi-block{background:var(--grey-bg);border-radius:16px;padding:48px;margin-bottom:80px;}
+.pi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:32px;}
+.pi-card{background:#fff;border-radius:var(--r-lg);padding:20px;border:1px solid var(--grey-border);}
+.pi-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.pi-card-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.pi-card-desc{font-size:12px;color:var(--grey-label);line-height:1.6;}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:72px;}
+.team-card{border:1px solid var(--grey-border);border-radius:12px;padding:24px;text-align:center;}
+.team-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;}
+.team-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.team-role{font-size:12px;color:var(--grey-label);margin-bottom:8px;}
+.team-bg{font-size:11px;color:var(--grey-muted);line-height:1.4;}
+
+/* METRICS */
+.metrics-band{background:#0B1828;border-radius:16px;padding:48px;margin-bottom:72px;}
+.metrics-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:32px;text-align:center;}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;}
+.metric{text-align:center;}
+.metric-val{font-size:36px;font-weight:800;color:#fff;font-family:var(--font-mono);letter-spacing:-1px;margin-bottom:4px;}
+.metric-val span{color:#4DA3FF;}
+.metric-label{font-size:12px;color:#5A7A9A;line-height:1.4;}
+
+/* PARTNERS */
+.partners-strip{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:72px;}
+.partner-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--grey-border);border-radius:var(--r-pill);padding:8px 18px;font-size:12px;font-weight:600;color:var(--grey-label);}
+.partner-pill .dot{width:7px;height:7px;border-radius:50%;}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:80px;}
+.contact-card{border:1px solid var(--grey-border);border-radius:12px;padding:24px;}
+.contact-type{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-muted);margin-bottom:8px;}
+.contact-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.contact-desc{font-size:12px;color:var(--grey-label);margin-bottom:12px;line-height:1.5;}
+.contact-link{font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;}
+.contact-link:hover{text-decoration:underline;}
+
+.site-footer{background:#F8F9FA;border-top:1px solid var(--grey-border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-size:15px;font-weight:700;}.footer-brand span{color:var(--blue);}
+.footer-text{font-size:12px;color:var(--grey-muted);}
+
+@media(max-width:900px){
+  .mission-block,.pi-grid{grid-template-columns:1fr;}
+  .team-grid{grid-template-columns:1fr 1fr;}
+  .metrics-grid,.contact-grid{grid-template-columns:1fr 1fr;}
+  .content{padding:48px 20px;}
+  .about-hero{padding:48px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="tracking.html">My Shipments</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="for-operators.html">For operators</a>
+    <a href="about.html" class="active">About</a>
+  </div>
+  <button class="nav-cta" onclick="window.location.href='index.html'">Get started</button>
+</nav>
+
+<div class="about-hero">
+  <div class="eyebrow">Our mission</div>
+  <h1>Logistics that works like<br><span>the internet.</span></h1>
+  <div class="about-hero-sub">CorridorBook is a Physical Internet platform. We apply the principles of digital packet routing — openness, interoperability, standardisation — to physical freight in the Rotterdam–Antwerp hinterland corridor.</div>
+</div>
+
+<div class="content">
+
+  <!-- MISSION -->
+  <div class="mission-block">
+    <div class="mission-text">
+      <h2>Why we built CorridorBook</h2>
+      <p>The Rotterdam–Antwerp corridor is one of the busiest freight corridors in the world. Yet barge and rail — the most sustainable and often cheapest modes — run at 40–60% capacity utilisation. <strong>The problem isn't infrastructure. It's information.</strong></p>
+      <p>Shippers default to road because they know exactly what it costs and when it arrives. Barge and rail require phone calls, email quotes, and days of waiting. By the time the answer comes, the truck has already left.</p>
+      <p>CorridorBook solves this. We connect shippers and operators on a single platform where capacity is visible, prices are live, and bookings take less than 90 seconds. The same way Skyscanner made flying visible — we're doing it for freight.</p>
+      <p>We are a research-backed project built at the intersection of <strong>logistics engineering</strong> and <strong>Physical Internet theory</strong>, originally developed at Breda University of Applied Sciences (BUas) as part of a specialisation in Physical Internet systems.</p>
+    </div>
+    <div class="mission-quote">
+      <span class="quote-mark">"</span>
+      <blockquote>The Physical Internet is not a metaphor. It is a blueprint for how logistics must work if we want a sustainable, resilient supply chain. CorridorBook is what that blueprint looks like in practice.</blockquote>
+      <cite>— Inspired by Benoit Montreuil, Physical Internet Initiative (2011)</cite>
+    </div>
+  </div>
+
+  <!-- PHYSICAL INTERNET -->
+  <div class="pi-block">
+    <div class="section-eyebrow">Foundation</div>
+    <div class="section-title" style="margin-bottom:8px;">Built on Physical Internet principles</div>
+    <div class="section-sub" style="margin-bottom:0;">The Physical Internet (PI) is a vision for open, interconnected logistics where freight moves like data packets — efficiently routed through shared infrastructure. CorridorBook implements three core PI principles:</div>
+    <div class="pi-grid">
+      <div class="pi-card">
+        <div class="pi-card-icon" style="background:#E3F2FD;color:#1565C0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="pi-card-title">Interoperability</div>
+        <div class="pi-card-desc">Any operator, any mode, any terminal on one platform. Shippers don't need separate accounts with Contargo, DB Cargo and DSV Road. One search covers all of them.</div>
+      </div>
+      <div class="pi-card">
+        <div class="pi-card-icon" style="background:#E8F5E9;color:#2E7D32;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="pi-card-title">Standardisation</div>
+        <div class="pi-card-desc">A common data layer: standardised container types, port codes, pricing components and CO₂ metrics. Operators publish slots in one format. Shippers see one consistent interface.</div>
+      </div>
+      <div class="pi-card">
+        <div class="pi-card-icon" style="background:#EDE7F6;color:#5E35B1;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="pi-card-title">Real-time visibility</div>
+        <div class="pi-card-desc">Hidden multimodal bandwidth is the core problem PI research identifies. CorridorBook makes that bandwidth visible — live prices, live capacity, live vessel positions via AIS.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="section-eyebrow">The team</div>
+  <div class="section-title">Who built this</div>
+  <div class="section-sub">CorridorBook was built as part of a Physical Internet specialisation at Breda University of Applied Sciences (BUas), grounded in real fieldwork across the Rotterdam–Antwerp corridor.</div>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar" style="background:#1565C0;">JW</div>
+      <div class="team-name">Jason Wangsa</div>
+      <div class="team-role">Founder · Logistics Engineering</div>
+      <div class="team-bg">BUas Year 3 · Physical Internet specialisation · ex-Rotra Brussels (airfreight & inside sales) · Maritime & Port Management minor 2026</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background:#5E35B1;">RC</div>
+      <div class="team-name">Ray Campbell</div>
+      <div class="team-role">Co-researcher</div>
+      <div class="team-bg">BUas Logistics Engineering · Challenge 1 research team · multimodal corridor analysis</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background:#2E7D32;">QH</div>
+      <div class="team-name">Quynh Hoang</div>
+      <div class="team-role">Co-researcher</div>
+      <div class="team-bg">BUas Logistics Engineering · stakeholder research · AEIOU framework development</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background:#E65100;">PB</div>
+      <div class="team-name">Patrick Bom</div>
+      <div class="team-role">Co-researcher</div>
+      <div class="team-bg">BUas Logistics Engineering · operator interview research · process documentation</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background:#0D7377;">JJ</div>
+      <div class="team-name">James Jitkul</div>
+      <div class="team-role">Co-researcher</div>
+      <div class="team-bg">BUas Logistics Engineering · Challenge 1 research team · multimodal corridor analysis</div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-band">
+    <div class="metrics-title">Platform at a glance</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-val">80<span>+</span></div><div class="metric-label">Port terminals and inland hubs covered across NL, BE, DE</div></div>
+      <div class="metric"><div class="metric-val">14</div><div class="metric-label">Transport operators connected and live on the platform</div></div>
+      <div class="metric"><div class="metric-val">−68<span>%</span></div><div class="metric-label">Max CO₂ reduction vs road baseline (barge, GLEC Framework)</div></div>
+      <div class="metric"><div class="metric-val">90<span>s</span></div><div class="metric-label">Target time from search to confirmed booking slot</div></div>
+    </div>
+  </div>
+
+  <!-- RESEARCH / PARTNERS -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">Research &amp; acknowledgements</div>
+  <div class="section-title" style="margin-bottom:8px;">Built on real fieldwork</div>
+  <div class="section-sub">CorridorBook is grounded in primary research conducted between February and May 2026, including expert interviews, site visits and live booking experiments.</div>
+
+  <div class="partners-strip">
+    <div class="partner-pill"><div class="dot" style="background:#1565C0;"></div>Rhenus Contargo — Thomas van den Born (interview)</div>
+    <div class="partner-pill"><div class="dot" style="background:#5E35B1;"></div>IMEC — Philippe Michiels (interview)</div>
+    <div class="partner-pill"><div class="dot" style="background:#2E7D32;"></div>Geodis — site visit</div>
+    <div class="partner-pill"><div class="dot" style="background:#E65100;"></div>Multimodal Transport Expo 2026</div>
+    <div class="partner-pill"><div class="dot" style="background:#1565C0;"></div>Royal Dirkzwager — Josefien Almekinders</div>
+    <div class="partner-pill"><div class="dot" style="background:#5E35B1;"></div>DP World Rotterdam — Arun Aravindakshan</div>
+    <div class="partner-pill"><div class="dot" style="background:#2E7D32;"></div>Breda University of Applied Sciences (BUas)</div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">Get in touch</div>
+  <div class="section-title" style="margin-bottom:8px;">Contact</div>
+  <div class="section-sub">Questions about CorridorBook, the research, or the Physical Internet concept behind it.</div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="contact-type">General</div>
+      <div class="contact-title">Platform enquiries</div>
+      <div class="contact-desc">Questions about bookings, shipper accounts, or the platform in general.</div>
+      <a class="contact-link" href="mailto:hello@corridorbook.eu">hello@corridorbook.eu</a>
+    </div>
+    <div class="contact-card">
+      <div class="contact-type">Operators</div>
+      <div class="contact-title">Join as an operator</div>
+      <div class="contact-desc">Barge, rail or road operator wanting to list capacity on the platform.</div>
+      <a class="contact-link" href="for-operators.html">Apply on operators page →</a>
+    </div>
+    <div class="contact-card">
+      <div class="contact-type">Research</div>
+      <div class="contact-title">Physical Internet research</div>
+      <div class="contact-desc">Academic enquiries about the PI Challenge research or collaboration with BUas.</div>
+      <a class="contact-link" href="mailto:research@corridorbook.eu">research@corridorbook.eu</a>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">Corridor<span>Book</span></div>
+  <div class="footer-text">© 2026 CorridorBook B.V. · Rotterdam, Netherlands · Built as part of BUas Physical Internet specialisation</div>
+  <div style="font-size:12px;color:var(--grey-muted);">ISO 27001 &amp; GDPR certified</div>
+</footer>
+
+</body>
+</html>

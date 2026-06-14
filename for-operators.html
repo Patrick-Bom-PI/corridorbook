@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Operators — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --purple:#5E35B1;--amber:#E65100;--amber-light:#FFF3E0;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;--font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webkit-font-smoothing:antialiased;}
+.nav{height:56px;background:rgba(11,24,40,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-links a{font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;font-weight:500;transition:color .15s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;}
+.nav-cta{height:32px;padding:0 16px;background:#1565C0;color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;}
+
+/* HERO */
+.op-hero{background:#0B1828;padding:80px 48px 72px;display:grid;grid-template-columns:1fr 420px;gap:64px;max-width:1200px;margin:0 auto;}
+.op-hero-left{}
+.op-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#60B4FF;margin-bottom:20px;background:rgba(21,101,192,0.18);border:1px solid rgba(77,163,255,0.25);padding:5px 14px;border-radius:20px;}
+.op-hero h1{font-size:44px;font-weight:800;line-height:1.06;letter-spacing:-1.5px;color:#fff;margin-bottom:20px;}
+.op-hero h1 span{color:#4DA3FF;}
+.op-hero-sub{font-size:15px;color:#8FAFC8;line-height:1.65;margin-bottom:36px;max-width:480px;}
+.op-hero-stats{display:flex;gap:32px;}
+.op-stat{display:flex;flex-direction:column;}
+.op-stat-val{font-size:28px;font-weight:800;color:#fff;font-family:var(--font-mono);letter-spacing:-1px;}
+.op-stat-label{font-size:11px;color:#5A7A9A;margin-top:2px;}
+
+/* OPERATOR FORM PANEL */
+.op-form-card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.form-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.form-sub{font-size:12px;color:var(--grey-label);margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:600;color:var(--grey-label);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;}
+.form-input,.form-select{width:100%;padding:9px 12px;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;color:var(--text);outline:none;transition:border-color .15s;background:#fff;}
+.form-input:focus,.form-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-modes{display:flex;gap:8px;flex-wrap:wrap;}
+.mode-check{display:none;}
+.mode-check-label{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--grey-border);border-radius:var(--r-pill);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+.mode-check:checked + .mode-check-label{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-submit{width:100%;height:44px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:6px;}
+.btn-submit:hover{background:var(--blue-hover);}
+.form-note{font-size:11px;color:var(--grey-muted);text-align:center;margin-top:10px;line-height:1.5;}
+.success-msg{display:none;background:var(--green-light);border:1px solid var(--green-border);border-radius:var(--r-md);padding:14px 16px;font-size:13px;color:var(--green);font-weight:500;text-align:center;margin-top:8px;}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:72px 48px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+.section-title{font-size:30px;font-weight:800;letter-spacing:-0.8px;margin-bottom:8px;}
+.section-sub{font-size:15px;color:var(--grey-label);margin-bottom:48px;line-height:1.6;}
+
+/* BENEFITS */
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:72px;}
+.benefit-card{padding:24px;border:1px solid var(--grey-border);border-radius:12px;transition:box-shadow .2s;}
+.benefit-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06);}
+.benefit-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.benefit-title{font-size:15px;font-weight:700;margin-bottom:8px;}
+.benefit-desc{font-size:13px;color:var(--grey-label);line-height:1.65;}
+
+/* CURRENT OPERATORS */
+.operators-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:72px;}
+.op-card{border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
+.op-card-mode{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);}
+.op-card-name{font-size:14px;font-weight:700;}
+.op-card-coverage{font-size:11px;color:var(--grey-muted);line-height:1.4;}
+.op-card-status{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* INTEGRATION */
+.integration-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:72px;}
+.int-card{border:1px solid var(--grey-border);border-radius:12px;padding:28px;}
+.int-title{font-size:17px;font-weight:700;margin-bottom:8px;}
+.int-desc{font-size:13px;color:var(--grey-label);line-height:1.65;margin-bottom:16px;}
+.code-block{background:#0F1C2E;border-radius:var(--r-md);padding:14px 16px;font-family:var(--font-mono);font-size:11px;color:#A8C8E8;line-height:1.7;overflow-x:auto;}
+.code-key{color:#60B4FF;}
+.code-str{color:#A8E6C0;}
+.code-num{color:#FFD89B;}
+
+/* CTA */
+.cta-band{background:#0B1828;border-radius:16px;padding:56px 48px;text-align:center;margin-bottom:80px;}
+.cta-band h2{font-size:30px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:12px;}
+.cta-band p{font-size:15px;color:#8FAFC8;margin-bottom:32px;}
+.btn-primary{height:46px;padding:0 28px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background .15s;}
+.btn-primary:hover{background:var(--blue-hover);}
+.btn-ghost-dark{height:46px;padding:0 24px;background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .15s;}
+.btn-ghost-dark:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+
+.site-footer{background:#F8F9FA;border-top:1px solid var(--grey-border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-size:15px;font-weight:700;}.footer-brand span{color:var(--blue);}
+.footer-text{font-size:12px;color:var(--grey-muted);}
+
+@media(max-width:900px){.op-hero{grid-template-columns:1fr;padding:48px 20px;}.benefits-grid,.operators-grid{grid-template-columns:1fr 1fr;}.integration-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="tracking.html">My Shipments</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="for-operators.html" class="active">For operators</a>
+    <a href="about.html">About</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('op-form-card').scrollIntoView({behavior:'smooth'})">Join as operator</button>
+</nav>
+
+<!-- HERO + FORM -->
+<div style="background:#0B1828;">
+  <div class="op-hero">
+    <div class="op-hero-left">
+      <div class="op-eyebrow">For transport operators</div>
+      <h1>Fill your empty<br>slots with <span>real demand.</span></h1>
+      <div class="op-hero-sub">CorridorBook connects barge, rail and road operators directly to verified shippers across the Rotterdam–Antwerp–Duisburg corridor. No cold outreach. No empty runs.</div>
+      <div class="op-hero-stats">
+        <div class="op-stat"><div class="op-stat-val">847</div><div class="op-stat-label">bookings this month</div></div>
+        <div class="op-stat"><div class="op-stat-val">14</div><div class="op-stat-label">live operators</div></div>
+        <div class="op-stat"><div class="op-stat-val">€0</div><div class="op-stat-label">upfront cost to join</div></div>
+      </div>
+    </div>
+
+    <div class="op-form-card" id="op-form-card">
+      <div class="form-title">Apply to join CorridorBook</div>
+      <div class="form-sub">We onboard new operators monthly. Free to join, commission-based model.</div>
+
+      <div class="form-group">
+        <label class="form-label">Company name</label>
+        <input class="form-input" type="text" placeholder="e.g. Rhenus Logistics BV"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Contact name</label>
+          <input class="form-input" type="text" placeholder="First &amp; last name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job title</label>
+          <input class="form-input" type="text" placeholder="e.g. Operations Manager"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Business email</label>
+        <input class="form-input" type="email" placeholder="you@yourcompany.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Transport modes you operate</label>
+        <div class="form-modes">
+          <input class="mode-check" type="checkbox" id="m-barge" checked/>
+          <label class="mode-check-label" for="m-barge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+            Barge
+          </label>
+          <input class="mode-check" type="checkbox" id="m-rail"/>
+          <label class="mode-check-label" for="m-rail">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M4 22h16"/></svg>
+            Rail
+          </label>
+          <input class="mode-check" type="checkbox" id="m-road"/>
+          <label class="mode-check-label" for="m-road">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M1 9h13"/><path d="M14 10h5.5"/></svg>
+            Road
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary corridor</label>
+        <select class="form-select">
+          <option>Rotterdam – Antwerp (Scheldt / Rhine)</option>
+          <option>Rotterdam – Duisburg (Rhine)</option>
+          <option>Antwerp – Brussels – Liège (Albert Canal)</option>
+          <option>Rotterdam – Hamburg (North Sea corridor)</option>
+          <option>Rotterdam – Basel (Upper Rhine)</option>
+          <option>Other / Multiple corridors</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Approx. monthly TEU capacity available</label>
+        <select class="form-select">
+          <option>&lt; 50 TEU/month</option>
+          <option>50–200 TEU/month</option>
+          <option selected>200–500 TEU/month</option>
+          <option>500–2000 TEU/month</option>
+          <option>&gt; 2000 TEU/month</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Submit application →</button>
+      <div class="success-msg" id="successMsg">✓ Application received! Our operator team will be in touch within 2 business days.</div>
+      <div class="form-note">No commitment required. Commission of 2.5–4% per confirmed booking depending on mode.</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- BENEFITS -->
+  <div class="section-eyebrow">Why join</div>
+  <div class="section-title">Built for operators, not just shippers</div>
+  <div class="section-sub">CorridorBook isn't a load board. It's a slot marketplace that fills your capacity with pre-qualified, payment-verified cargo.</div>
+
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#E3F2FD;color:#1565C0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="benefit-title">Your own operator dashboard</div>
+      <div class="benefit-desc">Manage your available slots, view incoming bookings, update departure schedules, and see capacity utilisation — all in one place.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#E8F5E9;color:#2E7D32;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div class="benefit-title">Fill empty capacity</div>
+      <div class="benefit-desc">Empty barge runs and underloaded trains are a known problem in the hinterland corridor. CorridorBook routes demand directly to your available slots before departure.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#EDE7F6;color:#5E35B1;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="benefit-title">Verified shippers only</div>
+      <div class="benefit-desc">All shippers on CorridorBook are KVK/VAT verified businesses. Payment is held by the platform and released on gate-in confirmation. No payment risk.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#FFF3E0;color:#E65100;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="benefit-title">Real-time slot management</div>
+      <div class="benefit-desc">Push available slots via API or our web interface. Update gate-open times, cut-off times and capacity in real-time. Changes propagate to shippers instantly.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#E3F2FD;color:#1565C0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <div class="benefit-title">Performance analytics</div>
+      <div class="benefit-desc">Monthly reports on fill rate, revenue per TEU, CO₂ performance, and route popularity. Benchmark yourself against the corridor average.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon" style="background:#E8F5E9;color:#2E7D32;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="benefit-title">No integration required to start</div>
+      <div class="benefit-desc">You can start with manual slot entry via the operator web portal. API integration (REST + webhook) is available when you're ready to automate — full docs provided.</div>
+    </div>
+  </div>
+
+  <!-- CURRENT OPERATORS -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">Live on platform</div>
+  <div class="section-title" style="margin-bottom:8px;">Operators already connected</div>
+  <div class="section-sub">These operators are live on CorridorBook today. Their slots appear in search results in real-time.</div>
+
+  <div class="operators-grid">
+    <div class="op-card"><span class="op-card-mode" style="background:#E3F2FD;color:#1565C0;">Barge</span><div class="op-card-name">Contargo</div><div class="op-card-coverage">Rhine · Meuse · Scheldt · 30+ terminals</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#E3F2FD;color:#1565C0;">Barge</span><div class="op-card-name">Rhenus Logistics</div><div class="op-card-coverage">Rotterdam · Antwerp · Cologne · Duisburg</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#E3F2FD;color:#1565C0;">Barge</span><div class="op-card-name">HGK Shipping</div><div class="op-card-coverage">Rhine · Meuse · Scheldt corridor</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#E3F2FD;color:#1565C0;">Barge</span><div class="op-card-name">Danser Group</div><div class="op-card-coverage">Rotterdam · Dordrecht · Moerdijk</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#EDE7F6;color:#5E35B1;">Rail</span><div class="op-card-name">DB Cargo NL</div><div class="op-card-coverage">RTM · ANR · DUI · HAM · MIL</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#EDE7F6;color:#5E35B1;">Rail</span><div class="op-card-name">Lineas</div><div class="op-card-coverage">ANR · BRX · RTM · Paris · Ghent</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#EDE7F6;color:#5E35B1;">Rail</span><div class="op-card-name">Rail Cargo Group</div><div class="op-card-coverage">RTM · VIE · Milan · Bucharest</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#F1F3F5;color:#495057;">Road</span><div class="op-card-name">DSV Road / Jan de Rijk</div><div class="op-card-coverage">Benelux · DACH corridor</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#F1F3F5;color:#495057;">Road</span><div class="op-card-name">Rhenus Road</div><div class="op-card-coverage">Netherlands · Belgium · Germany</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card"><span class="op-card-mode" style="background:#FFF3E0;color:#E65100;">Multi</span><div class="op-card-name">Maersk Inland</div><div class="op-card-coverage">RTM · ANR · HAM · 130+ countries</div><div class="op-card-status"><div class="live-dot"></div>Live</div></div>
+    <div class="op-card" style="border-style:dashed;align-items:center;justify-content:center;min-height:100px;text-align:center;cursor:pointer;" onclick="document.getElementById('op-form-card').scrollIntoView({behavior:'smooth'})">
+      <div style="font-size:24px;margin-bottom:6px;color:var(--grey-muted);">+</div>
+      <div style="font-size:12px;font-weight:600;color:var(--grey-label);">Join as operator</div>
+      <div style="font-size:11px;color:var(--grey-muted);margin-top:2px;">Apply above ↑</div>
+    </div>
+    <div class="op-card" style="border-style:dashed;background:var(--grey-bg);opacity:.5;">
+      <span class="op-card-mode" style="background:var(--grey-border);color:var(--grey-label);">Barge</span>
+      <div class="op-card-name">Coming soon</div>
+      <div class="op-card-coverage">Applications open</div>
+    </div>
+  </div>
+
+  <!-- API INTEGRATION -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">Technical integration</div>
+  <div class="section-title" style="margin-bottom:8px;">Connect your TMS or booking system</div>
+  <div class="section-sub">Push slots and receive bookings via our REST API. Webhooks notify your system the moment a booking is confirmed.</div>
+
+  <div class="integration-grid">
+    <div class="int-card">
+      <div class="int-title">POST a new slot</div>
+      <div class="int-desc">Push available departure slots from your TMS directly into the CorridorBook marketplace. Slots appear in search results in real-time.</div>
+      <div class="code-block"><span class="code-key">POST</span> /api/v1/slots<br><br>{<br>  <span class="code-key">"operator_id"</span>: <span class="code-str">"rhenus-nl"</span>,<br>  <span class="code-key">"mode"</span>: <span class="code-str">"barge"</span>,<br>  <span class="code-key">"origin"</span>: <span class="code-str">"RTM"</span>,<br>  <span class="code-key">"destination"</span>: <span class="code-str">"ANR"</span>,<br>  <span class="code-key">"depart"</span>: <span class="code-str">"2026-05-21T06:00Z"</span>,<br>  <span class="code-key">"capacity_teu"</span>: <span class="code-num">12</span>,<br>  <span class="code-key">"price_eur"</span>: <span class="code-num">310</span><br>}</div>
+    </div>
+    <div class="int-card">
+      <div class="int-title">Booking webhook</div>
+      <div class="int-desc">When a shipper confirms a booking on your slot, CorridorBook fires a webhook to your endpoint with full booking details in milliseconds.</div>
+      <div class="code-block"><span class="code-key">POST</span> https://your-tms.com/webhooks/cb<br><br>{<br>  <span class="code-key">"event"</span>: <span class="code-str">"booking.confirmed"</span>,<br>  <span class="code-key">"ref"</span>: <span class="code-str">"MBP-4QR7W2"</span>,<br>  <span class="code-key">"slot_id"</span>: <span class="code-str">"slot_rtm_anr_0521"</span>,<br>  <span class="code-key">"cargo_kg"</span>: <span class="code-num">24000</span>,<br>  <span class="code-key">"containers"</span>: [<span class="code-str">"1 × 40HC"</span>],<br>  <span class="code-key">"payment_status"</span>: <span class="code-str">"held"</span><br>}</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <h2>Ready to list your first slot?</h2>
+    <p>Apply above or contact our operator team directly at <span style="color:#4DA3FF;">operators@corridorbook.eu</span></p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="document.getElementById('op-form-card').scrollIntoView({behavior:'smooth'})">Apply to join</button>
+      <a href="how-it-works.html" class="btn-ghost-dark">How it works →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">Corridor<span>Book</span></div>
+  <div class="footer-text">© 2026 CorridorBook B.V. · Rotterdam, Netherlands</div>
+  <div style="font-size:12px;color:var(--grey-muted);">ISO 27001 &amp; GDPR certified</div>
+</footer>
+
+<script>
+function submitForm() {
+  var inputs = document.querySelectorAll('.form-input, .form-select');
+  var valid = true;
+  inputs.forEach(function(i){ if(!i.value.trim()){i.style.borderColor='#C62828';valid=false;}else{i.style.borderColor='';} });
+  if(!valid){return;}
+  document.querySelector('.btn-submit').disabled=true;
+  document.querySelector('.btn-submit').textContent='Sending…';
+  setTimeout(function(){
+    document.querySelector('.btn-submit').style.display='none';
+    document.getElementById('successMsg').style.display='block';
+  },1200);
+}
+</script>
+</body>
+</html>

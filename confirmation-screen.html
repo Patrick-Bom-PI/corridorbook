@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Confirmation — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white:        #FFFFFF;
+    --grey-bg:      #F5F5F5;
+    --grey-surface: #F8F9FA;
+    --grey-border:  #D0D0D0;
+    --grey-strong:  #BDBDBD;
+    --grey-label:   #6C757D;
+    --grey-muted:   #9E9E9E;
+    --blue:         #1565C0;
+    --blue-hover:   #0D47A1;
+    --blue-light:   #E3F2FD;
+    --blue-border:  #BBDEFB;
+    --green:        #2E7D32;
+    --green-light:  #E8F5E9;
+    --green-border: #A5D6A7;
+    --amber:        #E65100;
+    --amber-light:  #FFF3E0;
+    --amber-border: #FFCC80;
+    --purple:       #5E35B1;
+    --purple-light: #EDE7F6;
+    --purple-border:#D1C4E9;
+    --red:          #C62828;
+    --red-light:    #FFEBEE;
+    --text:         #1A1A1A;
+    --font-ui:      'DM Sans', -apple-system, sans-serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+    --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --r-pill: 20px;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    color: var(--text);
+    background: #E8ECF0;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOP CHROME ── */
+  .top-chrome {
+    background: var(--white); border-bottom: 1px solid var(--grey-border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 52px; flex-shrink: 0;
+  }
+  .platform-name { font-size: 15px; font-weight: 700; color: var(--text); }
+  .platform-name span { color: var(--blue); }
+  .step-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--blue-light); color: var(--blue);
+    font-size: 12px; font-weight: 600; padding: 5px 14px;
+    border-radius: var(--r-pill); border: 1px solid var(--blue-border);
+  }
+  .step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+  .back-link {
+    font-size: 13px; font-weight: 500; color: var(--grey-label);
+    text-decoration: none; display: flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: var(--r-sm);
+    transition: color .15s;
+  }
+  .back-link:hover { color: var(--blue); }
+
+  /* ── MAIN CONTENT ── */
+  .content {
+    flex: 1; display: flex; justify-content: center;
+    padding: 24px 16px 48px;
+  }
+  .screen {
+    width: 100%; max-width: 480px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: var(--r-lg); padding: 16px;
+  }
+
+  /* HEADER CARD */
+  .header-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; height: 52px;
+  }
+  .booking-ref {
+    font-family: var(--font-mono); font-size: 12px; color: var(--text); letter-spacing: .04em;
+  }
+  .booking-ref span { color: var(--grey-muted); margin-right: 6px; }
+  .slot-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--green-light); color: var(--green);
+    font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: var(--r-pill);
+    border: 1px solid var(--green-border);
+  }
+  .pulse-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+
+
+  /* SECTION LABELS */
+  .section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--grey-muted); margin-bottom: 12px;
+  }
+
+  /* ROUTE ROW */
+  .mode-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 500; padding: 3px 10px;
+    border-radius: var(--r-pill); margin-bottom: 12px;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .route-row { display: flex; align-items: center; justify-content: space-between; }
+  .route-end { display: flex; flex-direction: column; gap: 2px; }
+  .route-end.right { align-items: flex-end; }
+  .station-code {
+    font-family: var(--font-mono); font-size: 24px; font-weight: 500; color: var(--text); line-height: 1;
+  }
+  .station-name { font-size: 11px; color: var(--grey-muted); max-width: 130px; }
+  .route-end.right .station-name { text-align: right; }
+  .connector {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px;
+  }
+  .connector-line {
+    width: 100%; height: 1px; background: var(--grey-border);
+    position: relative; display: flex; align-items: center;
+  }
+  .connector-line::after {
+    content: '▶'; position: absolute; right: -6px;
+    font-size: 9px; color: var(--grey-border); top: -6px;
+  }
+  .trip-duration {
+    font-family: var(--font-mono); font-size: 11px; color: var(--grey-label);
+  }
+
+  /* TIMER */
+  .timer-inner {
+    display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px;
+  }
+  .timer-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--grey-muted); margin-bottom: 3px; }
+  .timer-sub { font-size: 11px; color: var(--grey-label); }
+  .timer-digits {
+    font-family: var(--font-mono); font-size: 30px; font-weight: 500;
+    color: var(--text); transition: color .3s;
+  }
+  .progress-wrap { height: 3px; background: #E0E0E0; border-radius: 0 0 9px 9px; overflow: hidden; margin: -16px -16px 0; }
+  .progress-fill { height: 100%; background: var(--blue); width: 100%; transition: width 1s linear, background .3s; }
+
+  /* DETAIL GRID */
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--grey-border); border-radius: var(--r-sm); overflow: hidden;
+  }
+  .grid-cell {
+    padding: 10px 14px; border-right: 1px solid var(--grey-border);
+    border-bottom: 1px solid var(--grey-border);
+  }
+  .grid-cell:nth-child(2n) { border-right: none; }
+  .grid-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .cell-label { font-size: 11px; color: var(--grey-muted); margin-bottom: 3px; }
+  .cell-value { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--text); }
+  .tag {
+    display: inline-flex; align-items: center; padding: 2px 8px;
+    border-radius: var(--r-pill); font-size: 11px; font-weight: 500; font-family: var(--font-ui);
+  }
+  .tag-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+  .tag-grey  { background: var(--white); color: var(--grey-muted); border: 1px solid var(--grey-border); }
+
+  /* FARE */
+  .fare-block { border: 1px solid var(--grey-border); border-radius: var(--r-sm); overflow: hidden; margin-top: 12px; }
+  .fare-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 14px; border-bottom: 1px solid var(--grey-border);
+  }
+  .fare-row:last-child { border-bottom: none; }
+  .fare-desc { font-size: 13px; color: var(--grey-label); }
+  .fare-price { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text); }
+  .fare-total { background: var(--white); }
+  .fare-total .fare-desc { font-size: 12px; font-weight: 600; color: var(--text); }
+  .fare-total .fare-price { font-size: 20px; font-weight: 600; }
+
+  /* ACTIONS */
+  .actions { display: flex; flex-direction: column; gap: 8px; }
+  .btn-primary {
+    width: 100%; height: 48px; background: var(--blue); color: var(--white);
+    border: none; border-radius: var(--r-md); font-family: var(--font-ui);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--blue-hover); }
+  .btn-primary:disabled { opacity: .65; cursor: not-allowed; }
+  .btn-ghost {
+    width: 100%; height: 44px; background: transparent; color: var(--text);
+    border: 1px solid var(--grey-border); border-radius: var(--r-md);
+    font-family: var(--font-ui); font-size: 14px; cursor: pointer; transition: background .15s;
+  }
+  .btn-ghost:hover { background: var(--white); }
+  .footer-note {
+    font-size: 11px; color: var(--grey-muted); text-align: center; line-height: 1.5; padding: 2px 0;
+  }
+  .footer-note.urgent { color: var(--red); font-weight: 500; }
+
+  /* SPINNER */
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3);
+    border-top-color: var(--white); border-radius: 50%; animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* STATES */
+  .state-overlay {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; background: var(--white); border: 1px solid var(--grey-border);
+    border-radius: 12px; padding: 40px 24px; gap: 12px;
+  }
+  .state-overlay.visible { display: flex; }
+  .state-icon { display:flex; align-items:center; justify-content:center; }
+  .state-title { font-size: 20px; font-weight: 700; }
+  .state-sub { font-size: 14px; color: var(--grey-label); line-height: 1.5; max-width: 300px; }
+  .state-ref {
+    font-family: var(--font-mono); font-size: 13px;
+    background: var(--white); padding: 8px 16px;
+    border-radius: var(--r-sm); border: 1px solid var(--grey-border);
+  }
+  .state-btn {
+    margin-top: 6px; padding: 12px 28px;
+    background: var(--blue); color: var(--white); border: none;
+    border-radius: var(--r-md); font-family: var(--font-ui);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .state-btn:hover { background: var(--blue-hover); }
+
+
+</style>
+</head>
+<body>
+
+<div class="top-chrome">
+  <a class="back-link" href="results-screen.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to results
+  </a>
+  <div style="display:flex;align-items:center;gap:20px;"><a href="index.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a><a href="tracking.html" style="font-size:13px;font-weight:500;color:var(--grey-label);text-decoration:none;">My Shipments</a></div>
+  <div class="step-pill">
+    <div class="step-dot"></div>
+    Step 2 of 3 · Confirm booking
+  </div>
+</div>
+
+<div class="content">
+  <div class="screen" id="mainScreen">
+
+    <!-- HEADER CARD -->
+    <div class="card header-card">
+      <div class="booking-ref"><span>Ref</span><span id="refNum">MBP-20265520</span></div>
+      <div id="routeSummary" style="font-size:11px;color:var(--grey-label);margin-left:8px;"></div>
+      <div class="slot-pill"><div class="pulse-dot"></div>Slot held</div>
+    </div>
+
+    <!-- MODE DISPLAY (single booked mode) -->
+    <div class="card" id="modeDisplayCard">
+      <div class="card-body" style="display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 16px;">
+        <span id="modeDisplayIcon"></span>
+        <div>
+          <div style="font-size:14px;font-weight:600;" id="modeDisplayName">Barge</div>
+          <div style="font-size:12px;color:var(--grey-label);" id="modeDisplaySub">Inland waterway</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROUTE CARD -->
+    <div class="card">
+      <div class="mode-badge" id="modeBadge" style="background:#E3F2FD;color:#1565C0;">Barge · Inland Waterway</div>
+      <div class="route-row">
+        <div class="route-end">
+          <div class="station-code" id="originCode">RTM</div>
+          <div class="station-name" id="originName">Port of Rotterdam (Waalhaven)</div>
+        </div>
+        <div class="connector">
+          <div class="connector-line"></div>
+          <div class="trip-duration" id="tripDuration">18h 00m</div>
+        </div>
+        <div class="route-end right">
+          <div class="station-code" id="destCode">ANR</div>
+          <div class="station-name" id="destName">Port of Antwerp-Bruges (Noord)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMER CARD -->
+    <div class="card" style="padding-bottom:0">
+      <div class="timer-inner">
+        <div>
+          <div class="timer-label">Slot hold expires in</div>
+          <div class="timer-sub" id="timerSub">Your slot is reserved for 20 minutes</div>
+        </div>
+        <div class="timer-digits" id="timerDigits">20:00</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- JOURNEY DETAILS -->
+    <div class="card">
+      <div class="section-label">Journey Details</div>
+      <div class="detail-grid" id="journeyGrid"></div>
+      <!-- Delay notification row injected by JS -->
+      <div id="delayNotifRow" style="display:none;margin-top:10px;padding:10px 12px;background:#FFF3E0;border:1px solid #FFCC80;border-radius:var(--r-md);font-size:12px;color:#E65100;display:none;align-items:center;gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span id="delayNotifText">Notifications enabled if shipment is delayed.</span>
+      </div>
+    </div>
+
+    <!-- CARGO DETAILS -->
+    <div class="card">
+      <div class="section-label">Cargo Details</div>
+      <div class="detail-grid" id="cargoGrid"></div>
+    </div>
+
+    <!-- FREIGHT FORWARDER NOTIFICATION -->
+    <div class="card">
+      <div class="section-label" style="margin-bottom:12px;">Notifications</div>
+      <div style="font-size:12px;color:var(--grey-label);margin-bottom:10px;line-height:1.5;">
+        Enter an email address to receive automatic notifications if the container is late or the shipment status changes — for you or your freight forwarder.
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="notif-email" type="email" placeholder="your@company.com or forwarder@company.com"
+          style="flex:1;padding:9px 12px;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;outline:none;transition:border-color .15s;"
+          onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor=''"/>
+        <button onclick="addNotifEmail()" style="height:38px;padding:0 16px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">Add</button>
+      </div>
+      <div id="notif-list" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
+      <div style="font-size:11px;color:var(--grey-muted);margin-top:6px;">You will be notified for: departure confirmation · arrival ETA change · delay &gt;30 min · final delivery</div>
+    </div>
+
+    <!-- FARE BREAKDOWN -->
+    <div class="card">
+      <div class="section-label">Fare Breakdown</div>
+      <div class="fare-block" id="fareBlock"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="btn-primary" id="confirmBtn" onclick="handleConfirm()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span id="confirmLabel">Confirm &amp; pay · €310.00</span>
+      </button>
+      <div class="footer-note" id="footerNote">By confirming you agree to the Terms &amp; Conditions. Payment secured via Stripe.</div>
+    </div>
+
+    <!-- PLATFORM FEEDBACK PROMPT -->
+    <div id="feedbackPrompt" style="background:#F0F7FF;border:1px solid #BBDEFB;border-radius:10px;padding:14px 16px;margin-top:4px;">
+      <div style="font-size:12px;font-weight:700;color:#1565C0;margin-bottom:6px;">💡 Help us improve CorridorBook</div>
+      <div style="font-size:12px;color:#1565C0;margin-bottom:10px;">Based on what you've seen today — would you pay for this platform?</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="recordFeedback('yes-current')" style="flex:1;min-width:100px;padding:7px 10px;background:#1565C0;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-ui);">Yes, at current pricing</button>
+        <button onclick="recordFeedback('yes-lower')" style="flex:1;min-width:100px;padding:7px 10px;background:transparent;color:#1565C0;border:1.5px solid #1565C0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-ui);">Yes, at a lower price</button>
+        <button onclick="recordFeedback('not-yet')" style="flex:1;min-width:100px;padding:7px 10px;background:transparent;color:#6C757D;border:1px solid #D0D0D0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-ui);">Not yet — missing features</button>
+      </div>
+      <div id="feedbackThanks" style="display:none;font-size:12px;color:#2E7D32;font-weight:600;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span>✓ Thanks — this helps us validate the platform!</span>
+        <a href="feedback-dashboard.html" style="font-size:11px;color:#1565C0;font-weight:700;text-decoration:none;">View all responses →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXPIRED STATE -->
+  <div class="state-overlay" id="expiredState">
+    <div class="state-icon">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="32" fill="#FFF3E0"/>
+        <circle cx="32" cy="32" r="26" fill="#E65100"/>
+        <circle cx="32" cy="32" r="12" stroke="white" stroke-width="2.5" fill="none"/>
+        <path d="M32 26v6l4 2" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="state-title">Slot expired</div>
+    <div class="state-sub">Your 20-minute slot hold has ended. The slot may have been taken by another booking.</div>
+    <button class="state-btn" onclick="window.location.href='results-screen.html'">Search again</button>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="state-overlay" id="successState">
+    <div class="state-icon">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="32" fill="#E8F5E9"/>
+        <circle cx="32" cy="32" r="26" fill="#2E7D32"/>
+        <path d="M20 32L28 40L44 24" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="state-title">Booking confirmed</div>
+    <div class="state-ref" id="successRef">MBP-4QR7W2</div>
+    <div class="state-sub" id="successSub">Your barge slot from RTM → ANR is confirmed. Departure 06:00 on 20 May 2026.</div>
+    <button class="state-btn" id="viewRefBtn" onclick="goToRef()">View booking reference →</button>
+  </div>
+</div>
+
+<script>
+var TOTAL = 1200, interval = null, currentMode = 'barge';
+// Persist timer across page refreshes
+var _timerKey = 'cb_timer_start';
+var _timerStart = parseInt(localStorage.getItem(_timerKey)) || Date.now();
+if (!localStorage.getItem(_timerKey) || parseInt(localStorage.getItem(_timerKey)) > Date.now()) localStorage.setItem(_timerKey, _timerStart);
+var remaining = Math.max(0, TOTAL - Math.floor((Date.now() - _timerStart) / 1000));
+
+var modeData = {
+  barge: {
+    badge: { bg:'#E3F2FD', color:'#1565C0', text:'Barge · Inland Waterway' },
+    origin:'RTM', originName:'Port of Rotterdam (Waalhaven)',
+    dest:'ANR',   destName:'Port of Antwerp-Bruges (Noord)',
+    duration:'18h 00m',
+    journey:[['Departs','06:00, 20 May'],['Arrives','00:00, 21 May'],['Gate open','04:30, 20 May'],['Cut-off','05:30, 20 May'],['Operator','Rhine Carrier III'],['Berth','Waalhaven B-14']],
+    cargo:[['Cargo weight', (parseInt(localStorage.getItem('cb_weight'))||24000).toLocaleString()+' kg'],['Commodity','General freight'],['Container','Dry freight'],['ADR',null],['Insurance',true],['Handling','Standard']],
+    fare:[['Freight base rate','€240.00'],['Terminal handling (RTM)','€42.00'],['Terminal handling (ANR)','€18.00'],['Fuel surcharge','€10.00']],
+    total:'€310.00', successSub:'Your barge slot from RTM → ANR is confirmed. Departure 06:00 on 20 May 2026.'
+  },
+  rail: {
+    badge: { bg:'#EEEDFE', color:'#534AB7', text:'Rail · Freight Train' },
+    origin:'RTM', originName:'Rotterdam Maasvlakte Rail Hub',
+    dest:'ANR',   destName:'Antwerp Rijnkaai Terminal',
+    duration:'11h 00m',
+    journey:[['Departs','10:30, 20 May'],['Arrives','21:30, 20 May'],['Date','20 May 2026'],['Service','DB-R4417'],['Terminal','Maasvlakte East'],['Track','T-07']],
+    cargo:[['Cargo weight', (parseInt(localStorage.getItem('cb_weight'))||24000).toLocaleString()+' kg'],['Commodity','General freight'],['Load type','FTL dry'],['ADR',null],['Insurance',true],['Handling','Standard']],
+    fare:[['Freight base rate','€270.00'],['Rail network fee','€50.00'],['Handling fee','€25.00'],['Fuel surcharge','€10.00']],
+    total:'€355.00', successSub:'Your rail slot from RTM → ANR is confirmed. Departure 10:30 on 20 May 2026.'
+  },
+  road: {
+    badge: { bg:'#FFF3E0', color:'#E65100', text:'Road · HGV Transport' },
+    origin:'RTM', originName:'Port of Rotterdam',
+    dest:'ANR',   destName:'Port of Antwerp-Bruges',
+    duration:'04h 00m',
+    journey:[['Pickup','14:00, 20 May'],['Delivery','18:00, 20 May'],['Date','20 May 2026'],['Vehicle','Euro-6 HGV'],['Driver','P. van der Berg'],['Route','E19 direct']],
+    cargo:[['Cargo weight', (parseInt(localStorage.getItem('cb_weight'))||24000).toLocaleString()+' kg'],['Commodity','General freight'],['Load type','FTL dry'],['ADR',null],['Insurance',true],['Tail lift','Not required']],
+    fare:[['Freight base rate','€330.00'],['Cross-border toll','€50.00'],['Fuel surcharge','€30.00'],['Driver wait time','€10.00']],
+    total:'€420.00', successSub:'Your road booking from RTM → ANR is confirmed. Pickup 14:00 on 20 May 2026.'
+  }
+};
+
+function renderMode(mode){
+  var d = modeData[mode];
+  var badge = document.getElementById('modeBadge');
+  badge.style.background = d.badge.bg; badge.style.color = d.badge.color; badge.textContent = d.badge.text;
+  document.getElementById('originCode').textContent = d.origin;
+  document.getElementById('originName').textContent = d.originName;
+  document.getElementById('destCode').textContent   = d.dest;
+  document.getElementById('destName').textContent   = d.destName;
+  document.getElementById('tripDuration').textContent = d.duration;
+  document.getElementById('journeyGrid').innerHTML = d.journey.map(function(r){
+    return '<div class="grid-cell"><div class="cell-label">'+r[0]+'</div><div class="cell-value">'+r[1]+'</div></div>';
+  }).join('');
+  document.getElementById('cargoGrid').innerHTML = d.cargo.map(function(r){
+    var v = r[1]===true ? '<span class="tag tag-green">Included</span>'
+           : r[1]===null ? '<span class="tag tag-grey">None</span>'
+           : '<div class="cell-value">'+r[1]+'</div>';
+    return '<div class="grid-cell"><div class="cell-label">'+r[0]+'</div>'+v+'</div>';
+  }).join('');
+  document.getElementById('fareBlock').innerHTML = d.fare.map(function(r){
+    return '<div class="fare-row"><span class="fare-desc">'+r[0]+'</span><span class="fare-price">'+r[1]+'</span></div>';
+  }).join('') + '<div class="fare-row fare-total"><span class="fare-desc">Total due</span><span class="fare-price">'+d.total+'</span></div>';
+  document.getElementById('confirmLabel').textContent = 'Confirm & pay · ' + d.total;
+  document.getElementById('successSub').textContent = d.successSub;
+}
+
+// Icon definitions for each mode
+var modeIcons = {
+  barge: { bg:'#E3F2FD', color:'#1565C0', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/><path d="M9 5V3h6v2"/><path d="M1 20h22"/></svg>', name:'Barge', sub:'Inland waterway' },
+  rail:  { bg:'#EDE7F6', color:'#5E35B1', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M12 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M4 22h16"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/></svg>', name:'Rail', sub:'Freight train' },
+  road:  { bg:'#F1F3F5', color:'#495057', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M1 9h13"/><path d="M14 10h5.5"/></svg>', name:'Road', sub:'HGV transport' }
+};
+
+function switchMode(mode){
+  currentMode = mode;
+  renderMode(mode);
+  // Update mode display card
+  var mi = modeIcons[mode];
+  document.getElementById('modeDisplayIcon').innerHTML =
+    '<span style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:'+mi.bg+';border-radius:10px;color:'+mi.color+'">'+
+    mi.svg.replace('<svg ', '<svg width="26" height="26" ')+'</span>';
+  document.getElementById('modeDisplayName').textContent = mi.name;
+  document.getElementById('modeDisplaySub').textContent  = mi.sub;
+  // Update confirm button
+  var btn = document.getElementById('confirmBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="confirmLabel">Confirm &amp; pay · '+modeData[mode].total+'</span>';
+}
+
+function updateTimer(){
+  if(remaining<=0){ clearInterval(interval); showState('expired'); return; }
+  remaining--;
+  var m=Math.floor(remaining/60), s=remaining%60;
+  var display=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  var digits=document.getElementById('timerDigits');
+  var bar=document.getElementById('progressBar');
+  var footer=document.getElementById('footerNote');
+  var sub=document.getElementById('timerSub');
+  digits.textContent=display;
+  bar.style.width=((remaining/TOTAL)*100)+'%';
+  if(remaining<=60){
+    digits.style.color='#C62828'; bar.style.backgroundColor='#C62828';
+    footer.textContent='Less than 1 minute remaining — confirm now to secure this slot.';
+    footer.className='footer-note urgent'; sub.textContent='Slot expiring imminently';
+  } else if(remaining<=300){
+    digits.style.color='#E65100'; bar.style.backgroundColor='#E65100';
+    footer.textContent='Less than 5 minutes remaining — please confirm soon.';
+    footer.className='footer-note'; sub.textContent='Slot expiring soon';
+  } else {
+    digits.style.color=var_text; bar.style.backgroundColor='#1565C0';
+    footer.textContent='By confirming you agree to the Terms & Conditions. Payment secured via Stripe.';
+    footer.className='footer-note'; sub.textContent='Your slot is reserved for 20 minutes';
+  }
+}
+var var_text='#1A1A1A';
+
+function showState(name){
+  document.getElementById('mainScreen').style.display='none';
+  if(name==='expired') document.getElementById('expiredState').classList.add('visible');
+  else if(name==='success') {
+    document.getElementById('successState').classList.add('visible');
+    var sr = document.getElementById('successRef');
+    if (sr) sr.textContent = localStorage.getItem('cb_ref') || 'MBP-4QR7W2';
+    // Update success sub with real route
+    var ssd = document.getElementById('successSub');
+    if (ssd && modeData[currentMode]) ssd.textContent = modeData[currentMode].successSub;
+  }
+}
+
+function buildRefParams(ref) {
+  return new URLSearchParams({
+    ref:        ref,
+    mode:       localStorage.getItem('cb_mode')           || 'barge',
+    origin:     localStorage.getItem('cb_origin')         || '',
+    dest:       localStorage.getItem('cb_dest')           || '',
+    date:       localStorage.getItem('cb_date')           || '2026-05-20',
+    weight:     localStorage.getItem('cb_weight')         || '24000',
+    ctype:      localStorage.getItem('cb_container_type') || '40HC',
+    cqty:       localStorage.getItem('cb_container_qty')  || '1',
+    price:      localStorage.getItem('cb_price')          || '',
+    transit:    localStorage.getItem('cb_transit')        || '',
+    operator:   localStorage.getItem('cb_operator')       || '',
+    co2:        localStorage.getItem('cb_co2')            || '',
+    depart:     localStorage.getItem('cb_depart')         || '',
+    arrive:     localStorage.getItem('cb_arrive')         || '',
+    deliver_to: localStorage.getItem('cb_deliver_to')     || '',
+    user:       localStorage.getItem('cb_user_name')      || ''
+  });
+}
+
+function goToRef() {
+  var ref = localStorage.getItem('cb_ref') || 'MBP-XXXXXXX';
+  window.location.href = 'mbp_booking_reference.html?' + buildRefParams(ref).toString();
+}
+
+function handleConfirm(){
+  var btn=document.getElementById('confirmBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div><span>Processing…</span>';
+  clearInterval(interval);
+  localStorage.removeItem(_timerKey);
+  var ref = localStorage.getItem('cb_ref') || 'MBP-XXXXXXX';
+  var notifEmails = JSON.parse(localStorage.getItem('cb_notif_emails') || '[]');
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings')||'[]');
+  var newB = {
+    ref:       ref,
+    status:    'pending_forwarder',   // awaiting freight forwarder approval
+    mode:      localStorage.getItem('cb_mode')           || 'barge',
+    origin:    localStorage.getItem('cb_origin')         || '',
+    dest:      localStorage.getItem('cb_dest')           || '',
+    date:      localStorage.getItem('cb_date')           || '2026-05-20',
+    weight:    localStorage.getItem('cb_weight')         || '24000',
+    ctype:     localStorage.getItem('cb_container_type') || '40HC',
+    cqty:      localStorage.getItem('cb_container_qty')  || '1',
+    price:     localStorage.getItem('cb_price')          || '',
+    transit:   localStorage.getItem('cb_transit')        || '',
+    operator:  localStorage.getItem('cb_operator')       || '',
+    co2:       localStorage.getItem('cb_co2')            || '',
+    depart:    localStorage.getItem('cb_depart')         || '',
+    arrive:    localStorage.getItem('cb_arrive')         || '',
+    deliver_to:localStorage.getItem('cb_deliver_to')     || '',
+    user:      localStorage.getItem('cb_user_name')      || '',
+    notifEmails: notifEmails,
+    ts:        new Date().toISOString()
+  };
+  if (!bookings.find(function(b){ return b.ref===ref; })) {
+    bookings.unshift(newB);
+    if (bookings.length > 50) bookings = bookings.slice(0,50);
+    localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
+  }
+  setTimeout(function(){
+    window.location.href = 'mbp_booking_reference.html?' + buildRefParams(ref).toString() + '&status=pending_forwarder';
+  }, 2000);
+}
+
+function handleCancel(){
+  clearInterval(interval);
+  if(confirm('Cancel this booking and release the slot?')) {
+    localStorage.removeItem(_timerKey);
+    window.location.href='results-screen.html';
+  }
+}
+
+// Generate unique booking ref if not already set
+function generateRef() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var ref = 'MBP-';
+  for (var i=0; i<7; i++) ref += chars[Math.floor(Math.random()*chars.length)];
+  return ref;
+}
+if (!localStorage.getItem('cb_ref')) {
+  localStorage.setItem('cb_ref', generateRef());
+}
+var _bookingRef = localStorage.getItem('cb_ref');
+
+// Show ref in header card
+document.getElementById('refNum').textContent = _bookingRef;
+// Show route in header
+var rSummary = document.getElementById('routeSummary');
+if (rSummary) {
+  var _o = localStorage.getItem('cb_origin') || 'Rotterdam Maasvlakte';
+  var _d = localStorage.getItem('cb_dest')   || 'Antwerp Deurganck';
+  rSummary.textContent = _o.split(' ').slice(0,2).join(' ') + ' → ' + _d.split(' ').slice(0,2).join(' ');
+}
+// Show user name if signed in
+(function(){
+  var name = localStorage.getItem('cb_user_name') || '';
+  var topChrome = document.querySelector('.top-chrome');
+  if (name && topChrome && !document.getElementById('conf-user-badge')) {
+    var badge = document.createElement('span');
+    badge.id = 'conf-user-badge';
+    badge.style.cssText = 'font-size:12px;color:var(--grey-label);font-weight:500;';
+    badge.textContent = '👤 ' + name;
+    topChrome.appendChild(badge);
+  }
+})();
+
+// Read URL params and merge with localStorage
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('mode'))       localStorage.setItem('cb_mode',            p.get('mode'));
+  if (p.get('origin'))     localStorage.setItem('cb_origin',          p.get('origin'));
+  if (p.get('dest'))       localStorage.setItem('cb_dest',            p.get('dest'));
+  if (p.get('date'))       localStorage.setItem('cb_date',            p.get('date'));
+  if (p.get('weight'))     localStorage.setItem('cb_weight',          p.get('weight'));
+  if (p.get('ctype'))      localStorage.setItem('cb_container_type',  p.get('ctype'));
+  if (p.get('cqty'))       localStorage.setItem('cb_container_qty',   p.get('cqty'));
+  if (p.get('deliver_to')) localStorage.setItem('cb_deliver_to',      p.get('deliver_to'));
+  if (p.get('price'))      localStorage.setItem('cb_price',           p.get('price'));
+  if (p.get('transit'))    localStorage.setItem('cb_transit',         p.get('transit'));
+  if (p.get('depart'))     localStorage.setItem('cb_depart',          p.get('depart'));
+  if (p.get('arrive'))     localStorage.setItem('cb_arrive',          p.get('arrive'));
+  if (p.get('operator'))   localStorage.setItem('cb_operator',        p.get('operator'));
+  if (p.get('co2'))        localStorage.setItem('cb_co2',             p.get('co2'));
+})();
+
+// Read selected mode from localStorage, default to barge
+var initMode = localStorage.getItem('cb_mode') || 'barge';
+
+// Override modeData with real values from results screen
+(function() {
+  var price    = localStorage.getItem('cb_price')           || '';
+  var transit  = localStorage.getItem('cb_transit')         || '';
+  var depart   = localStorage.getItem('cb_depart')          || '';
+  var arrive   = localStorage.getItem('cb_arrive')          || '';
+  var operator = localStorage.getItem('cb_operator')        || '';
+  var co2      = localStorage.getItem('cb_co2')             || '';
+  var origin   = localStorage.getItem('cb_origin')          || 'Rotterdam Maasvlakte';
+  var dest     = localStorage.getItem('cb_dest')            || 'Antwerp Deurganck';
+  var date     = localStorage.getItem('cb_date')            || '2026-05-20';
+  var oFull    = localStorage.getItem('cb_origin_full')     || origin;
+  var dFull    = localStorage.getItem('cb_dest_full')       || dest;
+  var weight   = parseInt(localStorage.getItem('cb_weight'))|| 24000;
+  var ctype    = localStorage.getItem('cb_container_type')  || '40HC';
+  var cqty     = parseInt(localStorage.getItem('cb_container_qty')) || 1;
+  var cargoLabel = cqty + ' × ' + ctype + ' · ' + weight.toLocaleString() + ' kg';
+  var dt = new Date(date);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateShort = dt.getDate() + ' ' + months[dt.getMonth()];
+  var dateFull  = dateShort + ' ' + dt.getFullYear();
+
+  // Departure/arrival strings
+  var departStr = (depart || '06:00') + ', ' + dateShort;
+  var arriveStr = arrive ? arrive + ', ' + dateShort : '—';
+
+  // Port codes — extended lookup
+  function getCode(name) {
+    var c2 = {'Rotterdam Maasvlakte':'RTM','Rotterdam Waalhaven':'RWH','Rotterdam Europoort':'REU',
+      'Rotterdam Botlek':'RBT','Rotterdam Maasvlakte Rail':'RRH',
+      'Antwerp Deurganck':'ANR','Antwerp Noord Terminal':'ANK','Antwerp Waaslandhaven':'AWH',
+      'Antwerp Rijnkaai Rail':'ARK','Zeebrugge Container Terminal':'ZBR','Ghent Sea Terminal':'GNT',
+      'Hamburg Container Terminal':'HAM','Bremen / Bremerhaven':'BRE',
+      'Wilhelmshaven JadeWeserPort':'WVN','Duisburg Logport':'DUI',
+      'Cologne Niehl Terminal':'CGN','Basel Rhine Port':'BSL',
+      'Le Havre Grand Port':'LHV','Dunkerque Port':'DKK','Calais Port':'CQF',
+      'Marseille Fos Terminal':'MRS','Barcelona Port Exterior':'BCN',
+      'Valencia MSC Terminal':'VLC','Algeciras APM Terminal':'ALG',
+      'Felixstowe Port':'FXT','Southampton DP World':'SOU','London Gateway Port':'TIL',
+      'Gothenburg Skandia Terminal':'GOT','Oslo Sjursoya Terminal':'OSL',
+      'Copenhagen Nordhavn':'CPH','Helsinki Vuosaari':'HEL',
+      'Genoa Port of Genova':'GOA','Piraeus Cosco Terminal':'PIR','Istanbul Marport':'IST',
+      'Dubai Jebel Ali (DP World)':'DXB','Abu Dhabi Khalifa Port':'AUH',
+      'Singapore PSA Port':'SGP','Shanghai Yangshan Port':'SHA',
+      'Hong Kong Kwai Tsing':'HKG','Busan New Port':'PUS',
+      'Tokyo Oi Container Terminal':'TYO',
+      'New York / New Jersey Port':'EWR','Los Angeles / Long Beach':'LAX',
+      'Houston Bayport Terminal':'HOU','Vancouver Deltaport':'VAN',
+      'Santos Container Terminal':'SSZ','Tanger Med Terminal':'TNG',
+      'Durban Pier 1 Terminal':'DUR','Mombasa Kilindini Harbour':'MBA',
+      'Sydney Port Botany':'SYD','Melbourne Webb Dock':'MEL'};
+    return c2[name] || name.replace(/[^A-Z]/g,'').substring(0,3) || name.substring(0,3).toUpperCase();
+  }
+
+  var oCode = getCode(origin);
+  var dCode = getCode(dest);
+
+  // Update ALL modes with real origin/dest so switching tabs also shows correct data
+  ['barge','rail','road'].forEach(function(m) {
+    var d2 = modeData[m];
+    if (!d2) return;
+    // Always update origin/dest from localStorage
+    d2.origin     = oCode;
+    d2.originName = oFull;
+    d2.dest       = dCode;
+    d2.destName   = dFull;
+    d2.cargo.forEach(function(row) {
+      if (row[0] === 'Cargo weight') row[1] = cargoLabel;
+      if (row[0] === 'Container')    row[1] = cargoLabel;
+    });
+    d2.successSub = 'Your ' + m + ' from ' + oCode + ' → ' + dCode + ' is confirmed. Departure ' + (depart||'06:00') + ' on ' + dateFull + '.';
+  });
+
+  // Update the active mode with real price, transit, operator, times
+  var d2 = modeData[initMode];
+  if (d2) {
+    if (price)    { d2.total = '€' + price + '.00'; }
+    if (transit)  { d2.duration = transit; }
+    if (operator) { d2.journey.forEach(function(r){ if(r[0]==='Operator') r[1]=operator; }); }
+    var dk = initMode==='road' ? 'Pickup' : 'Departs';
+    var ak = initMode==='road' ? 'Delivery' : 'Arrives';
+    d2.journey.forEach(function(r){
+      if (r[0]===dk||r[0]==='Departs'||r[0]==='Pickup')   r[1] = departStr;
+      if (r[0]===ak||r[0]==='Arrives'||r[0]==='Delivery') r[1] = arriveStr;
+    });
+    // Add deliver-to row if provided
+    var deliverTo = localStorage.getItem('cb_deliver_to') || '';
+    if (deliverTo) {
+      var hasRow = d2.journey.some(function(r){ return r[0] === 'Deliver to'; });
+      if (!hasRow) d2.journey.push(['Deliver to', deliverTo]);
+      else d2.journey.forEach(function(r){ if(r[0]==='Deliver to') r[1]=deliverTo; });
+    }
+    // Recalculate fare breakdown so components sum exactly to total price
+    if (price) {
+      var rp      = parseInt(price);
+      var rfuel   = Math.round(rp * 0.04);
+      var rhand   = Math.round(rp * (isEuroRoute ? 0.18 : 0.10));
+      var rhandO  = Math.round(rhand * 0.65);
+      var rhandD  = rhand - rhandO;
+      var rbase   = rp - rhand - rfuel; // ensures rbase+rhandO+rhandD+rfuel = rp exactly
+      d2.total    = '\u20ac' + price + '.00';
+      d2.fare     = initMode === 'rail'
+        ? [['Freight base rate','\u20ac'+rbase+'.00'],
+           ['Rail network fee','\u20ac'+rhandO+'.00'],
+           ['Handling fee','\u20ac'+rhandD+'.00'],
+           ['Fuel surcharge','\u20ac'+rfuel+'.00']]
+        : [['Freight base rate','\u20ac'+rbase+'.00'],
+           ['Terminal handling ('+oCode+')','\u20ac'+rhandO+'.00'],
+           ['Terminal handling ('+dCode+')','\u20ac'+rhandD+'.00'],
+           ['Fuel surcharge','\u20ac'+rfuel+'.00']];
+    }
+
+    // Update mode badge — Ship for international, Barge for European
+    var isEurope = function(name) {
+      var europePorts = ['Rotterdam','Amsterdam','Antwerp','Zeebrugge','Ghent','Hamburg',
+        'Bremen','Duisburg','Cologne','Basel','Le Havre','Dunkerque','Calais','Marseille',
+        'Barcelona','Valencia','Algeciras','Bilbao','Lisbon','Sines','Genoa','Piraeus',
+        'Istanbul','Felixstowe','Southampton','London','Grimsby','Liverpool','Gothenburg',
+        'Oslo','Copenhagen','Helsinki','Stockholm'];
+      return europePorts.some(function(p){ return name.indexOf(p)>=0; });
+    };
+    var isEuroRoute = isEurope(origin) && isEurope(dest);
+    var modeName = initMode === 'barge' ? (isEuroRoute ? 'Barge' : 'Ship') :
+                   initMode === 'rail'  ? 'Rail' : 'Road';
+    var modeSub  = initMode === 'barge' ? (isEuroRoute ? 'Inland waterway' : 'Deep-sea container') :
+                   initMode === 'rail'  ? 'Freight train' : 'HGV transport';
+    if (modeData[initMode] && modeData[initMode].badge) {
+      modeData[initMode].badge.text = modeName + ' · ' + modeSub;
+    }
+    // Update the mode display card
+    var mdn = document.getElementById('modeDisplayName');
+    var mds = document.getElementById('modeDisplaySub');
+    if (mdn) mdn.textContent = modeName;
+    if (mds) mds.textContent = modeSub;
+  }
+})();
+currentMode = initMode;
+switchMode(initMode);
+interval = setInterval(updateTimer, 1000);
+updateTimer();
+
+// ── Notification emails ───────────────────────────────────────────────────────
+var _notifEmails = JSON.parse(localStorage.getItem('cb_notif_emails') || '[]');
+function renderNotifList() {
+  var list = document.getElementById('notif-list');
+  if (!list) return;
+  list.innerHTML = '';
+  _notifEmails.forEach(function(email, i) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--grey-bg);border-radius:var(--r-sm);font-size:12px;';
+    row.innerHTML = '<span style="display:flex;align-items:center;gap:6px;">'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+      + email + '</span>'
+      + '<button onclick="removeNotifEmail(' + i + ')" style="background:none;border:none;cursor:pointer;color:var(--grey-muted);font-size:16px;line-height:1;padding:0 4px;">&times;</button>';
+    list.appendChild(row);
+  });
+}
+function addNotifEmail() {
+  var inp = document.getElementById('notif-email');
+  var email = inp ? inp.value.trim() : '';
+  if (!email || !email.includes('@')) {
+    if (inp) { inp.style.borderColor='#C62828'; setTimeout(function(){ inp.style.borderColor=''; },2000); }
+    return;
+  }
+  if (_notifEmails.indexOf(email) === -1) {
+    _notifEmails.push(email);
+    localStorage.setItem('cb_notif_emails', JSON.stringify(_notifEmails));
+  }
+  if (inp) inp.value = '';
+  renderNotifList();
+}
+function removeNotifEmail(i) {
+  _notifEmails.splice(i, 1);
+  localStorage.setItem('cb_notif_emails', JSON.stringify(_notifEmails));
+  renderNotifList();
+}
+// Pre-fill with user email if signed in
+(function(){
+  var userEmail = localStorage.getItem('cb_user_email') || '';
+  if (userEmail && _notifEmails.indexOf(userEmail) === -1) {
+    _notifEmails.push(userEmail);
+    localStorage.setItem('cb_notif_emails', JSON.stringify(_notifEmails));
+  }
+  renderNotifList();
+})();
+
+// ── Commercial validation feedback ───────────────────────────────────────────
+function recordFeedback(answer) {
+  var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+  feedback.push({ answer: answer, ts: new Date().toISOString(), ref: localStorage.getItem('cb_ref') || '' });
+  localStorage.setItem('cb_feedback', JSON.stringify(feedback));
+  document.querySelectorAll('#feedbackPrompt button').forEach(function(b){ b.disabled=true; b.style.opacity='0.5'; });
+  var thanks = document.getElementById('feedbackThanks');
+  if (thanks) { thanks.style.display = 'flex'; }
+}
+
+// ── Cancellation deadline removed — cancel only available in My Shipments ──────
+</script>
+</body>
+</html>
