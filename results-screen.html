@@ -3879,63 +3879,241 @@ function applyDisruptionFilter() {
 // ── Wire disruption check into loadSearchAndUpdate ───────────────────────────
 var _origLoadSearch = window.loadSearchAndUpdate;
 document.addEventListener('DOMContentLoaded', function() {
+  // Run on initial load
   var o = localStorage.getItem('cb_origin') || '';
   var d = localStorage.getItem('cb_dest')   || '';
   var dist = 100;
   checkDisruptions(o, d);
 });
+</script>
 
-// ── Log search to Supabase for demand signal ──────────────────────────────────
-document.addEventListener('DOMContentLoaded', async function() {
-  // Wait for CB to be ready
-  if (typeof CB === 'undefined') return;
-  var origin  = localStorage.getItem('cb_origin') || '';
-  var dest    = localStorage.getItem('cb_dest')   || '';
-  var date    = localStorage.getItem('cb_date')   || new Date().toISOString().split('T')[0];
-  var weight  = parseFloat(localStorage.getItem('cb_weight') || '1000');
+<!-- ── Supabase scripts ─────────────────────────────────────── -->
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
+
+<script>
+// ── Auth guard ────────────────────────────────────────────────
+(async function() {
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'index.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
+
+  // Update avatar with real initials
+  var avatar = document.getElementById('userAvatar');
+  if (avatar && profile.company_name) {
+    var parts = profile.company_name.trim().split(' ').filter(Boolean);
+    avatar.textContent = parts.length > 1
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : parts[0].substring(0,2).toUpperCase();
+    avatar.title = profile.company_name + ' — click to sign out';
+    avatar.onclick = function() {
+      if (confirm('Sign out of CorridorBook?')) CB.logout();
+    };
+  }
+
+  // ── Load real slots from Supabase and overlay onto cards ──
+  await loadRealSlots(profile);
+})();
+
+async function loadRealSlots(profile) {
+  var origin   = localStorage.getItem('cb_origin')  || '';
+  var dest     = localStorage.getItem('cb_dest')     || '';
+  var date     = localStorage.getItem('cb_date')     || new Date().toISOString().split('T')[0];
+  var weightKg = parseInt(localStorage.getItem('cb_weight') || '24000');
 
   if (!origin || !dest) return;
 
-  // Try to get real slots from Supabase and log the search
+  var slots = [];
   try {
-    var slots = await CB.getSlots({
-      origin:          origin,
-      destination:     dest,
-      date:            date,
-      cargo_weight_kg: weight
+    slots = await CB.getSlots({
+      origin: origin.split(' ')[0],      // first word e.g. "Rotterdam"
+      destination: dest.split(' ')[0],
+      date: date,
+      cargo_weight_kg: weightKg
     });
-
-    // Log the search with result counts per mode
-    await CB.logSearch({
-      origin, destination: dest, date, cargo_weight_kg: weight, slots
-    });
-
-    // If real slots exist, score and inject them into the page
-    if (slots.length > 0) {
-      var sortMode = localStorage.getItem('cb_sort') || 'default';
-      var scored = CB.scoreSlots(slots, {
-        sortMode:        sortMode,
-        requestedDate:   date,
-        cargo_weight_kg: weight
-      });
-
-      // Store scored slots for the confirmation screen
-      localStorage.setItem('cb_real_slots', JSON.stringify(scored));
-
-      // Show a subtle banner indicating real data is available
-      var banner = document.createElement('div');
-      banner.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:10px 16px;font-size:12px;color:#2E7D32;font-family:inherit;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
-      banner.textContent = scored.length + ' live slot' + (scored.length > 1 ? 's' : '') + ' found for this route';
-      document.body.appendChild(banner);
-      setTimeout(function(){ banner.remove(); }, 4000);
-    }
   } catch(e) {
-    console.warn('Supabase search log failed:', e.message);
+    console.warn('[CB] Slot fetch failed:', e.message);
+    return;
   }
-});
-</script>
 
-<script src="corridorbook.js"></script>
-<script src="auth-modal.js"></script>
+  if (!slots || slots.length === 0) return;
+
+  // Score and sort
+  var scored = CB.scoreSlots(slots, {
+    sortMode: 'default',
+    requestedDate: date,
+    cargo_weight_kg: weightKg
+  });
+
+  // Store the full scored slots so confirmation screen can use them
+  localStorage.setItem('cb_real_slots', JSON.stringify(scored));
+
+  // Show a live data banner
+  showLiveBanner(scored.length);
+
+  // Overlay each mode card with real slot data
+  ['barge','rail','road'].forEach(function(mode) {
+    var modeSlots = scored.filter(function(s){ return s.mode === mode; });
+    if (!modeSlots.length) return;
+    var best = modeSlots[0]; // top scorer for this mode
+    overlayCardWithSlot(mode, best, weightKg);
+  });
+
+  // Log the search to Supabase
+  try {
+    await CB.logSearch({
+      origin: origin.split(' ')[0],
+      destination: dest.split(' ')[0],
+      date: date,
+      cargo_weight_kg: weightKg,
+      slots: slots
+    });
+  } catch(e) { /* non-fatal */ }
+}
+
+function overlayCardWithSlot(mode, slot, weightKg) {
+  var card = document.getElementById('card-' + mode);
+  if (!card) return;
+
+  // Store slot ID on card for booking
+  card.dataset.slotId = slot.id;
+
+  // Price — replace displayed price
+  var totalPrice = Math.round(slot.price_per_tonne * weightKg / 1000);
+  var priceEl = card.querySelector('.price-main');
+  if (priceEl) {
+    priceEl.textContent = '€' + totalPrice;
+    priceEl.dataset.eurPrice = totalPrice;
+    card.dataset.price = totalPrice;
+  }
+
+  // Departure / arrival times
+  var dep = new Date(slot.departure_at);
+  var arr = new Date(slot.arrival_at);
+  var depStr = dep.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'});
+  var arrStr = arr.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'});
+  var transitH = Math.round((arr - dep) / 36e5);
+
+  var timeVals = card.querySelectorAll('.time-val');
+  if (timeVals[0]) timeVals[0].textContent = depStr;
+  if (timeVals[1]) {
+    // Clear children, set text
+    timeVals[1].textContent = '';
+    timeVals[1].appendChild(document.createTextNode(arrStr));
+  }
+
+  var durEl = card.querySelector('.time-dur');
+  if (durEl) durEl.textContent = transitH + 'h transit';
+  card.dataset.transit = transitH;
+
+  // Operator name
+  var opTag = card.querySelector('.op-tag');
+  if (opTag && slot.operator_name) opTag.textContent = slot.operator_name;
+
+  // CO2 pill — compare vs road baseline
+  var ROAD_CO2 = 0.096;
+  var distKm = 90; // Rotterdam–Antwerp approx
+  var roadEmit = ROAD_CO2 * (weightKg/1000) * distKm;
+  var slotEmit = slot.co2_per_tonne_km * (weightKg/1000) * distKm;
+  var savedKg  = Math.round(roadEmit - slotEmit);
+  var savedPct = Math.round((1 - slotEmit/roadEmit) * 100);
+
+  var co2pill = card.querySelector('.co2-pill');
+  if (co2pill && mode !== 'road') {
+    co2pill.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> saves ' + savedKg + 'kg CO₂';
+  }
+  card.dataset.co2 = -savedPct;
+
+  // Recommended badge
+  if (slot.recommended && mode !== 'road') {
+    var existing = card.querySelector('.rec-badge');
+    if (!existing) {
+      var badge = document.createElement('div');
+      badge.className = 'rec-badge';
+      badge.textContent = '⭐ RECOMMENDED';
+      card.insertBefore(badge, card.firstChild);
+    }
+    card.classList.add('recommended');
+  }
+
+  // Save real slot data to localStorage for confirmation screen
+  var savedSlot = {
+    id:           slot.id,
+    mode:         slot.mode,
+    operator:     slot.operator_name,
+    origin:       slot.origin,
+    destination:  slot.destination,
+    departure_at: slot.departure_at,
+    arrival_at:   slot.arrival_at,
+    price_per_tonne: slot.price_per_tonne,
+    co2_per_tonne_km: slot.co2_per_tonne_km,
+    total_price:  totalPrice,
+    transit_h:    transitH,
+    depart_str:   depStr,
+    arrive_str:   arrStr,
+    saved_co2_kg: savedKg
+  };
+  localStorage.setItem('cb_slot_' + mode, JSON.stringify(savedSlot));
+}
+
+function showLiveBanner(count) {
+  // Don't show if already there
+  if (document.getElementById('cb-live-banner')) return;
+  var banner = document.createElement('div');
+  banner.id = 'cb-live-banner';
+  banner.style.cssText = [
+    'background:#E8F5E9;border-bottom:1px solid #A5D6A7;',
+    'padding:7px 24px;font-size:12px;color:#2E7D32;font-weight:600;',
+    'display:flex;align-items:center;gap:8px;flex-shrink:0;'
+  ].join('');
+  banner.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#2E7D32;display:inline-block;"></span>'
+    + ' Showing ' + count + ' live slot' + (count !== 1 ? 's' : '') + ' from CorridorBook operators — prices and times are real';
+  // Insert after filter bar
+  var filterBar = document.querySelector('.filter-bar');
+  if (filterBar && filterBar.nextSibling) {
+    filterBar.parentNode.insertBefore(banner, filterBar.nextSibling);
+  }
+}
+
+// ── Override goToConfirmation to pass real slot ID ────────────────────────
+var _origGoToConfirmation = window.goToConfirmation;
+window.goToConfirmation = function() {
+  var mode = window._sel || localStorage.getItem('cb_mode') || 'barge';
+  var realSlot = null;
+  try { realSlot = JSON.parse(localStorage.getItem('cb_slot_' + mode) || 'null'); } catch(e) {}
+
+  if (realSlot) {
+    // Pass the slot ID so confirmation can write a real booking
+    localStorage.setItem('cb_slot_id',      realSlot.id);
+    localStorage.setItem('cb_mode',         mode);
+    localStorage.setItem('cb_price',        realSlot.total_price);
+    localStorage.setItem('cb_transit',      realSlot.transit_h + 'h');
+    localStorage.setItem('cb_depart',       realSlot.depart_str);
+    localStorage.setItem('cb_arrive',       realSlot.arrive_str);
+    localStorage.setItem('cb_operator',     realSlot.operator);
+    localStorage.setItem('cb_co2',          'saves ' + realSlot.saved_co2_kg + 'kg CO₂');
+    localStorage.setItem('cb_origin_full',  realSlot.origin);
+    localStorage.setItem('cb_dest_full',    realSlot.destination);
+    localStorage.removeItem('cb_timer_start');
+    localStorage.removeItem('cb_ref');
+    window.location.href = 'confirmation-screen.html';
+  } else {
+    // Fall back to original behaviour (demo data)
+    _origGoToConfirmation();
+  }
+};
+
+// Also override selectAndBook (the direct card click path)
+var _origSelectAndBook = window.selectAndBook;
+window.selectAndBook = function(mode) {
+  _origSelectAndBook(mode);
+  // goToConfirmation is called inside selectAndBook after a timeout — override handles it
+};
+</script>
 </body>
 </html>

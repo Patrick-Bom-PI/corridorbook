@@ -858,26 +858,196 @@ function removeNotifEmail(i) {
 })();
 
 // ── Commercial validation feedback ───────────────────────────────────────────
-async function recordFeedback(answer) {
-  var ref = localStorage.getItem('cb_ref') || '';
-  // Disable buttons immediately for instant feedback
+function recordFeedback(answer) {
+  var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
+  feedback.push({ answer: answer, ts: new Date().toISOString(), ref: localStorage.getItem('cb_ref') || '' });
+  localStorage.setItem('cb_feedback', JSON.stringify(feedback));
   document.querySelectorAll('#feedbackPrompt button').forEach(function(b){ b.disabled=true; b.style.opacity='0.5'; });
   var thanks = document.getElementById('feedbackThanks');
   if (thanks) { thanks.style.display = 'flex'; }
-  // Write to Supabase, fall back to localStorage if not logged in
-  try {
-    await CB.submitFeedback({ booking_ref: ref, answer: answer });
-  } catch(e) {
-    var feedback = JSON.parse(localStorage.getItem('cb_feedback') || '[]');
-    feedback.push({ answer: answer, ts: new Date().toISOString(), ref: ref });
-    localStorage.setItem('cb_feedback', JSON.stringify(feedback));
-  }
 }
 
 // ── Cancellation deadline removed — cancel only available in My Shipments ──────
 </script>
 
+<!-- ── Supabase scripts ─────────────────────────────────────── -->
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+
+<script>
+// ── Auth guard ────────────────────────────────────────────────
+(async function() {
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'index.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
+  // Store profile for booking
+  window._cbProfile = profile;
+})();
+
+// ── Real booking confirmation ─────────────────────────────────
+// Called when user hits the final "Confirm booking" button.
+// Wraps the existing UI flow: if a real slot ID exists, write to
+// Supabase; otherwise fall back to localStorage (demo mode).
+var _originalConfirmDone = window.confirmDone;
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Find confirm button(s) and intercept
+  var confirmBtns = document.querySelectorAll('[onclick*="confirmDone"], [onclick*="confirm"]');
+  // We intercept via the global function override below instead
+
+  // Override confirmDone globally
+  window.confirmDone = async function() {
+    var slotId  = localStorage.getItem('cb_slot_id');
+    var weightKg = parseInt(localStorage.getItem('cb_weight') || '24000');
+
+    if (!slotId) {
+      // No real slot — run demo flow
+      runDemoConfirm();
+      return;
+    }
+
+    // Show loading state on button
+    var btn = document.querySelector('[onclick*="confirmDone"]') ||
+              document.querySelector('.confirm-btn') ||
+              document.querySelector('button[class*="confirm"]');
+    var origText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+
+    try {
+      // Fetch the slot object we stored
+      var slotRaw = localStorage.getItem('cb_slot_' + localStorage.getItem('cb_mode'));
+      var slotData = slotRaw ? JSON.parse(slotRaw) : null;
+
+      if (!slotData) throw new Error('Slot data missing. Please go back and reselect.');
+
+      // Build slot object in the shape CB.confirmBooking expects
+      var slot = {
+        id:              slotData.id,
+        operator_id:     null,  // filled server-side via RLS
+        operator_name:   slotData.operator,
+        mode:            slotData.mode,
+        origin:          slotData.origin,
+        destination:     slotData.destination,
+        departure_at:    slotData.departure_at,
+        arrival_at:      slotData.arrival_at,
+        price_per_tonne: slotData.price_per_tonne,
+        co2_per_tonne_km:slotData.co2_per_tonne_km
+      };
+
+      var booking = await CB.confirmBooking({ slot: slot, cargo_weight_kg: weightKg });
+
+      // Store reference and switch to confirmed state
+      localStorage.setItem('cb_ref', booking.reference);
+      localStorage.setItem('cb_booking_id', booking.id);
+      localStorage.removeItem('cb_slot_id');  // consumed
+
+      // Update the reference number displayed on screen
+      var refEls = document.querySelectorAll('.booking-ref, [id*="ref"]');
+      refEls.forEach(function(el) {
+        if (el.querySelector) {
+          var span = el.querySelector('span');
+          if (span) el.innerHTML = '<span>REF</span> ' + booking.reference;
+        }
+      });
+
+      showConfirmSuccess(booking.reference);
+
+    } catch(err) {
+      if (btn) { btn.disabled = false; btn.textContent = origText; }
+      showToast('Booking failed: ' + (err.message || 'Please try again.'), 'error');
+    }
+  };
+
+  // Render the reference number from localStorage on page load
+  var storedRef = localStorage.getItem('cb_ref');
+  if (storedRef) {
+    var refEls = document.querySelectorAll('.booking-ref');
+    refEls.forEach(function(el) {
+      var span = el.querySelector('span');
+      if (span) el.innerHTML = '<span>REF</span> ' + storedRef;
+    });
+  }
+});
+
+function runDemoConfirm() {
+  // Generate a demo ref
+  var ref = 'CB-' + Math.random().toString(36).substring(2,7).toUpperCase();
+  localStorage.setItem('cb_ref', ref);
+  showConfirmSuccess(ref);
+}
+
+function showConfirmSuccess(ref) {
+  // The existing UI already shows a "confirmed" state via switchMode / timer
+  // We just ensure the reference is right and show a toast
+  showToast('Booking ' + ref + ' confirmed!', 'success');
+
+  // Persist to cb_completed_bookings for tracking page
+  var mode     = localStorage.getItem('cb_mode')     || 'barge';
+  var price    = localStorage.getItem('cb_price')    || '';
+  var origin   = localStorage.getItem('cb_origin')   || '';
+  var dest     = localStorage.getItem('cb_dest')     || '';
+  var date     = localStorage.getItem('cb_date')     || '';
+  var weight   = localStorage.getItem('cb_weight')   || '24000';
+  var operator = localStorage.getItem('cb_operator') || '';
+  var depart   = localStorage.getItem('cb_depart')   || '';
+  var arrive   = localStorage.getItem('cb_arrive')   || '';
+  var ctype    = localStorage.getItem('cb_container_type') || '40HC';
+  var cqty     = localStorage.getItem('cb_container_qty')  || '1';
+  var co2      = localStorage.getItem('cb_co2')      || '';
+
+  var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+  var exists   = bookings.some(function(b){ return b.ref === ref; });
+  if (!exists) {
+    bookings.push({
+      ref: ref, mode: mode, price: price,
+      origin: origin, dest: dest, date: date, weight: weight,
+      operator: operator, depart: depart, arrive: arrive,
+      ctype: ctype, cqty: cqty, co2: co2,
+      status: 'confirmed', fw_ts: new Date().toISOString()
+    });
+    localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
+  }
+}
+
+// ── Real feedback submission ──────────────────────────────────
+// Override the existing recordFeedback to also write to Supabase
+var _origRecordFeedback = window.recordFeedback;
+window.recordFeedback = async function(answer) {
+  // Run the original localStorage write first (keeps UI working)
+  if (typeof _origRecordFeedback === 'function') _origRecordFeedback(answer);
+
+  // Also write to Supabase
+  var ref = localStorage.getItem('cb_ref') || '';
+  try {
+    await CB.submitFeedback({ booking_ref: ref, answer: answer });
+  } catch(e) {
+    console.warn('[CB] Feedback write failed:', e.message);
+  }
+};
+
+// ── Toast helper ──────────────────────────────────────────────
+function showToast(msg, type) {
+  var existing = document.getElementById('cb-toast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'cb-toast';
+  var bg = type === 'error' ? '#C62828' : type === 'success' ? '#2E7D32' : '#1A1A1A';
+  toast.style.cssText = [
+    'position:fixed;bottom:24px;right:24px;z-index:99999;',
+    'background:' + bg + ';color:#fff;',
+    'padding:12px 20px;border-radius:8px;',
+    'font-size:13px;font-weight:500;',
+    'box-shadow:0 4px 20px rgba(0,0,0,.25);',
+    'max-width:340px;line-height:1.4;'
+  ].join('');
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 5000);
+}
+</script>
 </body>
 </html>
