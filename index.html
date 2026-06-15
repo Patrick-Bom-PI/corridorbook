@@ -10,104 +10,117 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --blue:#1565C0;--blue-hover:#0D47A1;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
   --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
-  --amber:#F57F17;
   --red:#C62828;--red-light:#FFEBEE;
-  --text:#1A1A1A;--grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --text:#1A1A1A;
   --font-ui:'DM Sans',-apple-system,sans-serif;
   --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
 }
 html,body{height:100%;font-family:var(--font-ui);color:var(--text);-webkit-font-smoothing:antialiased;}
 
 /* ── LAYOUT ── */
-.page{min-height:100vh;display:grid;grid-template-columns:1fr 480px;background:#0B1828;}
+.page{min-height:100vh;display:grid;grid-template-columns:1fr 440px;}
 
-/* ── LEFT PANEL ── */
-.left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:36px 48px 40px;}
-
-/* background barge photo */
-.left::before{content:'';position:absolute;inset:0;
-  background-image:url('https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1400&q=85');
-  background-size:cover;background-position:center 55%;z-index:0;}
-/* dark overlay */
-.left::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(7,15,28,0.93) 0%,rgba(7,15,28,0.80) 50%,rgba(7,15,28,0.60) 100%);z-index:1;}
-
+/* ── LEFT ── */
+.left{background:#0B1828;display:flex;flex-direction:column;padding:32px 40px;position:relative;overflow:hidden;}
+.left-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1400&q=85');background-size:cover;background-position:center 55%;z-index:0;}
+.left-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,15,28,0.95) 0%,rgba(7,15,28,0.82) 55%,rgba(7,15,28,0.65) 100%);z-index:1;}
 .left > *{position:relative;z-index:2;}
 
-.brand{font-size:20px;font-weight:800;color:#F0F7FF;letter-spacing:-.5px;text-decoration:none;}
+.brand{font-size:19px;font-weight:800;color:#F0F7FF;letter-spacing:-.4px;text-decoration:none;margin-bottom:28px;display:block;}
 .brand span{color:#4DA3FF;}
 
-.hero-text{margin-top:auto;}
-.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(77,163,255,.12);border:1px solid rgba(77,163,255,.25);border-radius:20px;padding:4px 12px;margin-bottom:20px;}
-.hero-pill-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;animation:pulse 2s ease infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero-pill-text{font-size:11px;font-weight:700;color:#4DA3FF;letter-spacing:.08em;text-transform:uppercase;}
-.hero-h1{font-size:44px;font-weight:800;line-height:1.1;letter-spacing:-1px;color:#fff;margin-bottom:16px;}
-.hero-h1 span{color:#4DA3FF;}
-.hero-desc{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;max-width:400px;margin-bottom:32px;}
-
-.hero-stats{display:flex;gap:32px;}
-.stat-item{display:flex;align-items:center;gap:8px;}
-.stat-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0;}
-.stat-text{font-size:13px;color:rgba(255,255,255,.7);}
-.stat-text strong{color:#fff;font-weight:700;}
-
-/* ── RIGHT PANEL ── */
-.right{background:#F0F3F7;display:flex;align-items:center;justify-content:center;padding:32px 40px;}
-
-.auth-box{width:100%;max-width:380px;}
-.auth-title{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--text);margin-bottom:4px;}
-.auth-sub{font-size:13px;color:var(--grey-label);margin-bottom:28px;}
-
 /* Role toggle */
-.role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;background:#E2E6EC;border-radius:10px;padding:4px;margin-bottom:24px;}
-.role-btn{padding:10px;border:none;border-radius:7px;font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--grey-label);transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.role-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.1);}
-.role-btn .role-icon{font-size:18px;}
-.role-btn .role-label{font-size:12px;}
+.left-toggle{display:flex;gap:0;background:rgba(255,255,255,.08);border-radius:8px;padding:3px;width:fit-content;margin-bottom:32px;}
+.lt-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-ui);transition:all .2s;}
+.lt-btn.active{background:#fff;color:#0B1828;}
+.lt-btn.inactive{background:transparent;color:rgba(255,255,255,.5);}
+
+/* Live indicator */
+.live-pill{display:flex;align-items:center;gap:6px;margin-bottom:16px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;animation:pulse 2s ease infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-label{font-size:10px;font-weight:700;color:#4ADE80;letter-spacing:.1em;text-transform:uppercase;}
+
+.hero-h1{font-size:36px;font-weight:800;line-height:1.15;letter-spacing:-.8px;color:#fff;margin-bottom:12px;}
+.hero-h1 span{color:#4DA3FF;}
+.hero-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.65;max-width:380px;margin-bottom:28px;}
+
+/* Mode rows (forwarder) */
+.mode-rows{display:flex;flex-direction:column;gap:6px;}
+.mode-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;}
+.mode-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mode-info{flex:1;}
+.mode-name{font-size:12px;font-weight:600;color:#E8F4FF;margin-bottom:4px;}
+.mode-bar-track{height:3px;background:rgba(255,255,255,.1);border-radius:2px;}
+.mode-bar-fill{height:3px;border-radius:2px;}
+.mode-price{font-size:13px;font-weight:700;color:#fff;text-align:right;}
+.mode-co2{font-size:10px;font-weight:700;color:#4ADE80;text-align:right;margin-top:2px;}
+.mode-co2.base{color:#3A5070;}
+.mode-row.muted{opacity:.5;}
+
+/* API block (operator) */
+.api-block{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+.api-label{font-size:10px;color:rgba(255,255,255,.3);font-family:var(--font-mono);letter-spacing:.05em;margin-bottom:8px;}
+.api-code{font-family:var(--font-mono);font-size:11px;line-height:1.9;color:#4DA3FF;}
+.api-code .str{color:#4ADE80;}
+.api-code .num{color:#FAC775;}
+.op-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.op-stat{background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center;}
+.op-stat-num{font-size:18px;font-weight:800;color:#fff;}
+.op-stat-label{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;}
+
+.left-footer{margin-top:auto;padding-top:24px;font-size:10px;color:rgba(255,255,255,.18);}
+
+/* ── RIGHT ── */
+.right{background:#F0F3F7;display:flex;align-items:center;justify-content:center;padding:32px 40px;}
+.auth-box{width:100%;max-width:360px;}
+.auth-title{font-size:22px;font-weight:800;letter-spacing:-.4px;color:var(--text);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--grey-label);margin-bottom:24px;}
 
 /* Tabs */
-.tab-row{display:flex;border-bottom:2px solid #D8DCE2;margin-bottom:20px;}
-.tab{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:600;color:var(--grey-muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
+.tab-row{display:flex;border-bottom:1.5px solid var(--grey-border);margin-bottom:20px;}
+.tab{flex:1;text-align:center;padding:9px;font-size:13px;font-weight:600;color:var(--grey-muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1.5px;cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
 .tab.active{color:var(--blue);border-bottom-color:var(--blue);}
 
+/* Role cards */
+.role-cards{display:none;margin-bottom:16px;}
+.role-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-label);margin-bottom:8px;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.role-card{border:1.5px solid var(--grey-border);border-radius:var(--r-md);padding:12px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.role-card.selected{border-color:var(--blue);background:var(--blue-light);}
+.role-card svg{display:block;margin:0 auto 6px;}
+.role-card-name{font-size:12px;font-weight:600;color:var(--grey-label);}
+.role-card.selected .role-card-name{color:var(--blue);}
+
 /* Fields */
-.field{margin-bottom:14px;}
+.field{margin-bottom:13px;}
 .field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-label);margin-bottom:5px;}
-.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid #D0D6DE;border-radius:8px;font-family:var(--font-ui);font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
+.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid #D0D6DE;border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
 .field input:focus,.field select:focus{border-color:var(--blue);}
 
-/* CTA button */
-.btn-cta{width:100%;height:44px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px;}
+.btn-cta{width:100%;height:44px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px;}
 .btn-cta:hover{background:var(--blue-hover);}
-.btn-cta:disabled{opacity:.55;cursor:not-allowed;}
+.btn-cta:disabled{opacity:.5;cursor:not-allowed;}
 
-/* Messages */
-.msg{font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:12px;display:none;}
+.msg{font-size:12px;padding:8px 12px;border-radius:var(--r-sm);margin-bottom:12px;display:none;}
 .msg.error{background:var(--red-light);color:var(--red);border:1px solid #FFCDD2;display:block;}
 .msg.success{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);display:block;}
 
-.auth-footer{text-align:center;font-size:12px;color:var(--grey-muted);margin-top:16px;}
-.auth-footer a{color:var(--blue);font-weight:600;cursor:pointer;text-decoration:none;}
+.auth-switch{text-align:center;font-size:12px;color:var(--grey-muted);margin-top:14px;}
+.auth-switch a{color:var(--blue);font-weight:600;cursor:pointer;}
 
-/* Role badge shown after register success */
-.role-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
-.role-badge.forwarder{background:#E3F2FD;color:#1565C0;}
-.role-badge.operator{background:#FFF3E0;color:#E65100;}
-
-@media(max-width:768px){
+@media(max-width:800px){
   .page{grid-template-columns:1fr;}
   .left{display:none;}
   .right{min-height:100vh;background:#0B1828;}
-  .auth-box{max-width:100%;}
-  .auth-title{color:#fff;}
-  .auth-sub{color:rgba(255,255,255,.6);}
-  .field input,.field select{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;}
-  .field label{color:rgba(255,255,255,.5);}
-  .role-toggle{background:rgba(255,255,255,.1);}
-  .role-btn.active{background:rgba(255,255,255,.15);color:#fff;}
+  .auth-title,.auth-sub{color:#fff;}
+  .auth-sub{color:rgba(255,255,255,.55);}
+  .field input,.field select,.role-card{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;}
+  .field label,.role-label{color:rgba(255,255,255,.5);}
   .tab{color:rgba(255,255,255,.4);}
   .tab.active{color:#4DA3FF;border-bottom-color:#4DA3FF;}
   .tab-row{border-bottom-color:rgba(255,255,255,.15);}
@@ -115,101 +128,137 @@ html,body{height:100%;font-family:var(--font-ui);color:var(--text);-webkit-font-
 </style>
 </head>
 <body>
-
 <div class="page">
 
-  <!-- LEFT — hero -->
+  <!-- ── LEFT ── -->
   <div class="left">
-    <a href="#" class="brand">Corridor<span>Book</span></a>
+    <div class="left-bg"></div>
+    <div class="left-overlay"></div>
 
-    <div class="hero-text">
-      <div class="hero-pill">
-        <div class="hero-pill-dot"></div>
-        <span class="hero-pill-text">Physical Internet Platform</span>
-      </div>
-      <div class="hero-h1">Every mode.<br><span>Booked in</span><br>seconds.</div>
-      <div class="hero-desc">Compare barge, rail and road capacity on the Rotterdam–Antwerp corridor in real time. No quotes, no calls — just instant booking.</div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-dot"></div>
-          <div class="stat-text"><strong>14</strong> operators live</div>
+    <a href="index.html" class="brand">Corridor<span>Book</span></a>
+
+    <!-- Role toggle -->
+    <div class="left-toggle">
+      <button class="lt-btn active" id="lt-fw" onclick="setRole('forwarder')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        Freight Forwarder
+      </button>
+      <button class="lt-btn inactive" id="lt-op" onclick="setRole('operator')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+        Transport Operator
+      </button>
+    </div>
+
+    <!-- Forwarder panel -->
+    <div id="lp-fw">
+      <div class="live-pill"><div class="live-dot"></div><span class="live-label">Live corridor capacity</span></div>
+      <div class="hero-h1">Every mode.<br><span>Booked in<br>seconds.</span></div>
+      <div class="hero-desc">Compare barge, rail and road on the Rotterdam–Antwerp corridor in real time. No quotes, no calls — just instant booking.</div>
+      <div class="mode-rows">
+        <div class="mode-row">
+          <div class="mode-icon" style="background:rgba(21,101,192,.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4DA3FF" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+          </div>
+          <div class="mode-info">
+            <div class="mode-name">Barge</div>
+            <div class="mode-bar-track"><div class="mode-bar-fill" style="width:72%;background:#1565C0;"></div></div>
+          </div>
+          <div><div class="mode-price">€310</div><div class="mode-co2">−68% CO₂</div></div>
         </div>
-        <div class="stat-item">
-          <div class="stat-dot"></div>
-          <div class="stat-text"><strong>841</strong> booked this month</div>
+        <div class="mode-row">
+          <div class="mode-icon" style="background:rgba(94,53,177,.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9C64F0" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>
+          </div>
+          <div class="mode-info">
+            <div class="mode-name">Rail</div>
+            <div class="mode-bar-track"><div class="mode-bar-fill" style="width:55%;background:#5E35B1;"></div></div>
+          </div>
+          <div><div class="mode-price">€355</div><div class="mode-co2">−54% CO₂</div></div>
+        </div>
+        <div class="mode-row muted">
+          <div class="mode-icon" style="background:rgba(255,255,255,.06);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#637080" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+          </div>
+          <div class="mode-info">
+            <div class="mode-name" style="color:#637080;">Road</div>
+            <div class="mode-bar-track"><div class="mode-bar-fill" style="width:100%;background:#1E2C3A;"></div></div>
+          </div>
+          <div><div class="mode-price" style="color:#637080;">€420</div><div class="mode-co2 base">baseline</div></div>
         </div>
       </div>
     </div>
 
-    <div style="font-size:11px;color:rgba(255,255,255,.25);position:relative;z-index:2;">© 2026 CorridorBook B.V. · Rotterdam</div>
+    <!-- Operator panel -->
+    <div id="lp-op" style="display:none;">
+      <div class="live-pill"><div class="live-dot"></div><span class="live-label">For transport operators</span></div>
+      <div class="hero-h1">Fill empty slots<br>with <span>real<br>demand.</span></div>
+      <div class="hero-desc">Connect your TMS via REST API. Forwarders find and book your capacity in real time — no cold outreach, no empty runs.</div>
+      <div class="api-block">
+        <div class="api-label">POST /api/v1/slots</div>
+        <div class="api-code">
+          "mode": <span class="str">"barge"</span>,<br>
+          "origin": <span class="str">"RTM"</span>,<br>
+          "capacity_kg": <span class="num">800000</span>,<br>
+          "price_eur": <span class="num">18</span>
+        </div>
+      </div>
+      <div class="op-stats">
+        <div class="op-stat"><div class="op-stat-num">847</div><div class="op-stat-label">bookings/month</div></div>
+        <div class="op-stat"><div class="op-stat-num">14</div><div class="op-stat-label">operators live</div></div>
+        <div class="op-stat"><div class="op-stat-num">€0</div><div class="op-stat-label">upfront cost</div></div>
+      </div>
+    </div>
+
+    <div class="left-footer">© 2026 CorridorBook B.V. · Rotterdam, Netherlands</div>
   </div>
 
-  <!-- RIGHT — auth -->
+  <!-- ── RIGHT ── -->
   <div class="right">
     <div class="auth-box">
-
       <div class="auth-title">Welcome to CorridorBook</div>
       <div class="auth-sub">Sign in or create an account to continue</div>
 
-      <!-- Role selector (shown on register tab only) -->
-      <div class="role-toggle" id="roleToggle" style="display:none;">
-        <button class="role-btn active" id="roleForwarder" onclick="setRole('forwarder')">
-          <span class="role-icon">📦</span>
-          <span class="role-label">Freight Forwarder</span>
-        </button>
-        <button class="role-btn" id="roleOperator" onclick="setRole('operator')">
-          <span class="role-icon">🚢</span>
-          <span class="role-label">Transport Operator</span>
-        </button>
-      </div>
-
-      <!-- Login / Register tabs -->
       <div class="tab-row">
-        <button class="tab active" id="tab-login" onclick="showTab('login')">Sign in</button>
-        <button class="tab" id="tab-register" onclick="showTab('register')">Create account</button>
+        <button class="tab active" id="tab-in" onclick="showTab('in')">Sign in</button>
+        <button class="tab" id="tab-up" onclick="showTab('up')">Create account</button>
       </div>
 
-      <!-- ── LOGIN FORM ── -->
-      <div id="form-login">
+      <!-- Role cards — register only -->
+      <div class="role-cards" id="role-cards">
+        <div class="role-label">I am a…</div>
+        <div class="role-grid">
+          <div class="role-card selected" id="rc-fw" onclick="selectRole('forwarder')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <div class="role-card-name">Freight Forwarder</div>
+          </div>
+          <div class="role-card" id="rc-op" onclick="selectRole('operator')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6C757D" stroke-width="1.8" id="rc-op-icon"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>
+            <div class="role-card-name">Transport Operator</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign in -->
+      <div id="form-in">
         <div id="login-msg" class="msg"></div>
-        <div class="field">
-          <label>Email</label>
-          <input id="login-email" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()">
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input id="login-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-        </div>
+        <div class="field"><label>Email</label><input id="login-email" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="field"><label>Password</label><input id="login-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <button class="btn-cta" id="login-btn" onclick="doLogin()">Sign in →</button>
-        <div class="auth-footer">No account? <a onclick="showTab('register')">Create one</a></div>
+        <div class="auth-switch">No account? <a onclick="showTab('up')">Create one</a></div>
       </div>
 
-      <!-- ── REGISTER FORM ── -->
-      <div id="form-register" style="display:none;">
+      <!-- Register -->
+      <div id="form-up" style="display:none;">
         <div id="reg-msg" class="msg"></div>
-        <div class="field">
-          <label>Company name</label>
-          <input id="reg-company" type="text" placeholder="Your company">
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input id="reg-email" type="email" placeholder="you@company.com">
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input id="reg-password" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doRegister()">
-        </div>
-        <!-- Modality — only shown for operators -->
+        <div class="field"><label>Company name</label><input id="reg-company" type="text" placeholder="Your company"></div>
+        <div class="field"><label>Email</label><input id="reg-email" type="email" placeholder="you@company.com"></div>
+        <div class="field"><label>Password</label><input id="reg-password" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doRegister()"></div>
         <div class="field" id="modality-field" style="display:none;">
-          <label>Your transport mode</label>
-          <select id="reg-modality">
-            <option value="barge">Barge</option>
-            <option value="rail">Rail</option>
-            <option value="road">Road</option>
-          </select>
+          <label>Transport mode</label>
+          <select id="reg-modality"><option value="barge">Barge</option><option value="rail">Rail</option><option value="road">Road</option></select>
         </div>
         <button class="btn-cta" id="reg-btn" onclick="doRegister()">Create account →</button>
-        <div class="auth-footer">Already have an account? <a onclick="showTab('login')">Sign in</a></div>
+        <div class="auth-switch">Already have one? <a onclick="showTab('in')">Sign in</a></div>
       </div>
 
     </div>
@@ -219,110 +268,89 @@ html,body{height:100%;font-family:var(--font-ui);color:var(--text);-webkit-font-
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
 <script>
-// ── If already logged in, redirect to correct portal ──────────
-(async function() {
-  await CB.redirectIfLoggedIn();
-})();
+// Redirect if already logged in
+(async function() { await CB.redirectIfLoggedIn(); })();
 
-// ── State ─────────────────────────────────────────────────────
 var currentRole = 'forwarder';
-var currentTab  = 'login';
 
-// ── Tab switching ─────────────────────────────────────────────
-function showTab(tab) {
-  currentTab = tab;
-  var isLogin = tab === 'login';
-
-  document.getElementById('form-login').style.display    = isLogin ? '' : 'none';
-  document.getElementById('form-register').style.display = isLogin ? 'none' : '';
-  document.getElementById('roleToggle').style.display    = isLogin ? 'none' : '';
-
-  document.getElementById('tab-login').classList.toggle('active', isLogin);
-  document.getElementById('tab-register').classList.toggle('active', !isLogin);
-
-  // Clear messages
-  document.getElementById('login-msg').className = 'msg';
-  document.getElementById('reg-msg').className   = 'msg';
-}
-
-// ── Role selection ────────────────────────────────────────────
 function setRole(role) {
   currentRole = role;
-  document.getElementById('roleForwarder').classList.toggle('active', role === 'forwarder');
-  document.getElementById('roleOperator').classList.toggle('active',  role === 'operator');
-  document.getElementById('modality-field').style.display = role === 'operator' ? '' : 'none';
+  var isFw = role === 'forwarder';
+
+  // Left toggle
+  document.getElementById('lt-fw').className = 'lt-btn ' + (isFw ? 'active' : 'inactive');
+  document.getElementById('lt-op').className = 'lt-btn ' + (isFw ? 'inactive' : 'active');
+
+  // Left panel
+  document.getElementById('lp-fw').style.display = isFw ? '' : 'none';
+  document.getElementById('lp-op').style.display = isFw ? 'none' : '';
+
+  // Right role cards (if register tab open)
+  var rcFw = document.getElementById('rc-fw');
+  var rcOp = document.getElementById('rc-op');
+  rcFw.classList.toggle('selected', isFw);
+  rcOp.classList.toggle('selected', !isFw);
+  rcFw.querySelector('svg').style.stroke = isFw ? '#1565C0' : '#6C757D';
+  rcOp.querySelector('svg').style.stroke = isFw ? '#6C757D' : '#1565C0';
+
+  // Modality field
+  document.getElementById('modality-field').style.display = isFw ? 'none' : '';
 }
 
-// ── Login ─────────────────────────────────────────────────────
+function selectRole(role) {
+  setRole(role);
+}
+
+function showTab(t) {
+  var isIn = t === 'in';
+  document.getElementById('form-in').style.display = isIn ? '' : 'none';
+  document.getElementById('form-up').style.display = isIn ? 'none' : '';
+  document.getElementById('role-cards').style.display = isIn ? 'none' : '';
+  document.getElementById('tab-in').className = 'tab' + (isIn ? ' active' : '');
+  document.getElementById('tab-up').className = 'tab' + (isIn ? '' : ' active');
+  document.getElementById('login-msg').className = 'msg';
+  document.getElementById('reg-msg').className = 'msg';
+  if (!isIn) document.getElementById('role-cards').style.display = '';
+}
+
 async function doLogin() {
-  var email    = document.getElementById('login-email').value.trim();
-  var password = document.getElementById('login-password').value;
-  var msgEl    = document.getElementById('login-msg');
-  var btn      = document.getElementById('login-btn');
-
-  msgEl.className = 'msg';
-  if (!email || !password) {
-    msgEl.textContent = 'Please enter your email and password.';
-    msgEl.className = 'msg error'; return;
-  }
-
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-password').value;
+  var msg   = document.getElementById('login-msg');
+  var btn   = document.getElementById('login-btn');
+  msg.className = 'msg';
+  if (!email || !pass) { msg.textContent = 'Please enter your email and password.'; msg.className = 'msg error'; return; }
   btn.disabled = true; btn.textContent = 'Signing in…';
-
   try {
-    await CB.login({ email, password });
+    await CB.login({ email, password: pass });
     var profile = await CB.getProfile();
-    if (profile && profile.user_type === 'operator') {
-      window.location.href = 'operator-portal.html';
-    } else {
-      window.location.href = 'search.html';
-    }
+    window.location.href = (profile && profile.user_type === 'operator') ? 'operator-portal.html' : 'search.html';
   } catch(e) {
-    msgEl.textContent = e.message || 'Login failed. Check your email and password.';
-    msgEl.className = 'msg error';
+    msg.textContent = e.message || 'Login failed. Check your email and password.';
+    msg.className = 'msg error';
     btn.disabled = false; btn.textContent = 'Sign in →';
   }
 }
 
-// ── Register ──────────────────────────────────────────────────
 async function doRegister() {
   var company  = document.getElementById('reg-company').value.trim();
   var email    = document.getElementById('reg-email').value.trim();
-  var password = document.getElementById('reg-password').value;
+  var pass     = document.getElementById('reg-password').value;
   var modality = document.getElementById('reg-modality').value;
-  var msgEl    = document.getElementById('reg-msg');
+  var msg      = document.getElementById('reg-msg');
   var btn      = document.getElementById('reg-btn');
-
-  msgEl.className = 'msg';
-  if (!company || !email || !password) {
-    msgEl.textContent = 'Please fill in all fields.';
-    msgEl.className = 'msg error'; return;
-  }
-  if (password.length < 6) {
-    msgEl.textContent = 'Password must be at least 6 characters.';
-    msgEl.className = 'msg error'; return;
-  }
-
+  msg.className = 'msg';
+  if (!company || !email || !pass) { msg.textContent = 'Please fill in all fields.'; msg.className = 'msg error'; return; }
+  if (pass.length < 6) { msg.textContent = 'Password must be at least 6 characters.'; msg.className = 'msg error'; return; }
   btn.disabled = true; btn.textContent = 'Creating account…';
-
   try {
-    await CB.register({
-      email, password,
-      company_name: company,
-      user_type:    currentRole,
-      modality:     currentRole === 'operator' ? modality : null
-    });
-
-    // Auto sign in after register (email confirm is off)
-    await CB.login({ email, password });
+    await CB.register({ email, password: pass, company_name: company, user_type: currentRole, modality: currentRole === 'operator' ? modality : null });
+    await CB.login({ email, password: pass });
     var profile = await CB.getProfile();
-    if (profile && profile.user_type === 'operator') {
-      window.location.href = 'operator-portal.html';
-    } else {
-      window.location.href = 'search.html';
-    }
+    window.location.href = (profile && profile.user_type === 'operator') ? 'operator-portal.html' : 'search.html';
   } catch(e) {
-    msgEl.textContent = e.message || 'Registration failed. Please try again.';
-    msgEl.className = 'msg error';
+    msg.textContent = e.message || 'Registration failed. Please try again.';
+    msg.className = 'msg error';
     btn.disabled = false; btn.textContent = 'Create account →';
   }
 }

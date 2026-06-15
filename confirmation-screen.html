@@ -255,7 +255,7 @@
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     Back to results
   </a>
-  <div style="display:flex;align-items:center;gap:20px;"><a href="index.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a><a href="tracking.html" style="font-size:13px;font-weight:500;color:var(--grey-label);text-decoration:none;">My Shipments</a></div>
+  <div style="display:flex;align-items:center;gap:20px;"><a href="search.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a><a href="tracking.html" style="font-size:13px;font-weight:500;color:var(--grey-label);text-decoration:none;">My Shipments</a></div>
   <div class="step-pill">
     <div class="step-dot"></div>
     Step 2 of 3 · Confirm booking
@@ -877,8 +877,14 @@ function recordFeedback(answer) {
 <script>
 // ── Auth guard ────────────────────────────────────────────────
 (async function() {
-  var profile = await CB.authGuard({ forwarderOnly: true });
-  if (!profile) return;
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'search.html'; return; }
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'search.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
+  // Store profile for booking
   window._cbProfile = profile;
 })();
 

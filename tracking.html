@@ -423,6 +423,8 @@
   <div class="tab-panel active" id="panel-active">
     <div class="shipment-list" id="activeList">
 
+      <!-- Demo cards — hidden when real bookings exist -->
+      <div id="demo-cards" style="display:none;">
       <!-- SHIPMENT 1: In Transit - Barge -->
       <div class="shipment-card" data-mode="barge" data-status="in-transit" data-ref="MBP-4QR7W2" data-route="Rotterdam → Antwerp">
         <div class="shipment-main">
@@ -681,6 +683,7 @@
         </div>
       </div>
 
+      </div><!-- /demo-cards -->
     </div>
     <!-- First-visit empty state (shown when no real bookings in localStorage) -->
     <div id="firstVisitEmpty" style="display:none;">
@@ -690,7 +693,7 @@
         </div>
         <div class="empty-title">No active shipments yet</div>
         <div class="empty-sub">Your confirmed bookings will appear here. Book your first slot to get started — it takes under 90 seconds.</div>
-        <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:white;border:none;border-radius:var(--r-md);padding:10px 20px;font-family:var(--font-ui);font-size:13px;font-weight:600;text-decoration:none;margin-top:4px;cursor:pointer;transition:background .15s;">
+        <a href="search.html" style="display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:white;border:none;border-radius:var(--r-md);padding:10px 20px;font-family:var(--font-ui);font-size:13px;font-weight:600;text-decoration:none;margin-top:4px;cursor:pointer;transition:background .15s;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Book your first shipment
         </a>
@@ -720,6 +723,7 @@
     </div>
     <div class="shipment-list">
 
+      <div id="demo-history" style="display:none;">
       <div class="shipment-card" data-mode="barge" data-status="delivered" data-ref="MBP-2LM9X1">
         <div class="shipment-main">
           <div class="status-indicator delivered"></div>
@@ -794,6 +798,7 @@
           </div>
         </div>
       </div>
+      </div><!-- /demo-history -->
 
     </div>
   </div>
@@ -1313,8 +1318,13 @@ function cancelShipment(ref, btn) {
 <script>
 // ── Auth guard + real bookings ────────────────────────────────
 (async function() {
-  var profile = await CB.authGuard({ forwarderOnly: true });
-  if (!profile) return;
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'index.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
 
   // Update avatar and welcome text with real name
   var av = document.getElementById('trackAvatar');
@@ -1396,9 +1406,32 @@ async function loadRealBookings() {
   var badge = document.querySelector('.tab-btn.active .tab-count');
   if (badge) badge.textContent = activeCount + (document.querySelectorAll('#panel-active .shipment-card').length - bookings.length);
 
-  // Hide first-visit empty state
+  // Show/hide demo cards based on whether real bookings exist
+  var demoCards = document.getElementById('demo-cards');
+  var demoHistory = document.getElementById('demo-history');
   var fve = document.getElementById('firstVisitEmpty');
-  if (fve) fve.style.display = 'none';
+
+  if (bookings && bookings.length > 0) {
+    // Real bookings exist — hide demo cards, hide empty state
+    if (demoCards) demoCards.style.display = 'none';
+    if (demoHistory) demoHistory.style.display = 'none';
+    if (fve) fve.style.display = 'none';
+  } else {
+    // No real bookings — show demo cards so page isn't empty, with a label
+    if (demoCards) {
+      demoCards.style.display = '';
+      // Add demo label if not already there
+      if (!document.getElementById('demo-label')) {
+        var label = document.createElement('div');
+        label.id = 'demo-label';
+        label.style.cssText = 'margin-bottom:10px;padding:8px 14px;background:#FFF8E1;border:1px solid #FFD54F;border-radius:6px;font-size:12px;color:#F57F17;display:flex;align-items:center;gap:8px;';
+        label.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <span>Sample data — your real bookings will appear here once you complete a booking.</span>';
+        demoCards.parentNode.insertBefore(label, demoCards);
+      }
+    }
+    if (demoHistory) demoHistory.style.display = '';
+    if (fve) fve.style.display = 'none';
+  }
 }
 
 function buildBookingCard(b) {

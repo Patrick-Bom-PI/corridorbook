@@ -208,7 +208,7 @@
 <body>
 
 <header class="header">
-  <a href="index.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a>
+  <a href="search.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a>
   <div class="header-right">
     <a href="tracking.html" class="header-link" style="text-decoration:none;color:var(--grey-label);font-size:13px;font-weight:500;">My Shipments</a>
     <button onclick="openHelp()" class="header-link" style="background:none;border:1px solid var(--grey-border);border-radius:var(--r-pill);padding:4px 14px;cursor:pointer;color:var(--grey-label);font-size:13px;font-weight:500;font-family:var(--font-ui);display:flex;align-items:center;gap:5px;transition:all .15s;" onmouseover="this.style.borderColor='#1565C0';this.style.color='#1565C0'" onmouseout="this.style.borderColor='var(--grey-border)';this.style.color='var(--grey-label)'">
@@ -629,7 +629,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp
   </div>
 </div>
 
-  <button class="back-btn" onclick="window.location.href='index.html'">
+  <button class="back-btn" onclick="window.location.href='search.html'">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     Back to search
   </button>
@@ -3785,7 +3785,7 @@ document.addEventListener('click', function(e) {
   window.handleAvatarClick = function() {
     var n = localStorage.getItem('cb_user_name');
     if (n) { if(confirm('Sign out of CorridorBook?')){ localStorage.removeItem('cb_user_name'); localStorage.removeItem('cb_user_email'); var a=document.getElementById('userAvatar'); if(a)a.textContent='?'; } }
-    else { window.location.href='index.html'; }
+    else { window.location.href='search.html'; }
   };
 })();
 
@@ -3892,10 +3892,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="auth-modal.js"></script>
 
 <script>
-// ── Auth guard — uses CB.authGuard() which retries on timing race ──
+// ── Auth guard ────────────────────────────────────────────────
 (async function() {
-  var profile = await CB.authGuard({ forwarderOnly: true });
-  if (!profile) return; // redirected
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'index.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
 
   // Update avatar with real initials
   var avatar = document.getElementById('userAvatar');

@@ -110,11 +110,11 @@ body{font-family:var(--font-ui);color:var(--text);background:#E8ECF0;min-height:
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
   <span class="nav-badge">Freight Forwarder Portal</span>
   <div class="nav-right">
-    <a href="tracking.html" class="nav-link">Shipper view</a>
-    <a href="index.html" class="nav-link">Home</a>
+    <a href="search.html" class="nav-link">Search slots</a>
+    <a href="tracking.html" class="nav-link">My Shipments</a>
   </div>
 </nav>
 
@@ -496,14 +496,5 @@ setInterval(loadAndRenderAll, 10000);
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
-<script>
-(async function() {
-  var profile = await CB.authGuard({ forwarderOnly: true });
-  if (!profile) return;
-  // Update nav with real company name
-  var companyEls = document.querySelectorAll('.cb-auth-zone span, .nav-company');
-  companyEls.forEach(function(el){ el.textContent = profile.company_name; });
-})();
-</script>
 </body>
 </html>
