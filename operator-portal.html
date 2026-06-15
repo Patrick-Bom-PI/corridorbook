@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operator Portal — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --amber:#F57F17;--amber-light:#FFF8E1;--amber-border:#FFD54F;
+  --red:#C62828;--red-light:#FFEBEE;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+body{font-family:var(--font-ui);color:var(--text);background:#E8ECF0;min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+.nav{height:56px;background:rgba(11,24,40,0.97);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-badge{background:#F57F17;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);letter-spacing:.04em;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;}
+.nav-link:hover{color:#fff;}
+.nav-company{font-size:12px;color:rgba(255,255,255,.45);font-family:var(--font-mono);}
+
+/* PAGE */
+.page{max-width:960px;margin:0 auto;padding:28px 20px 64px;}
+
+/* HEADER */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.page-sub{font-size:13px;color:var(--grey-label);margin-top:3px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:16px;}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-muted);margin-bottom:4px;}
+.stat-value{font-size:24px;font-weight:800;letter-spacing:-0.5px;}
+.stat-sub{font-size:11px;color:var(--grey-label);margin-top:3px;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--grey-border);margin-bottom:20px;gap:0;}
+.tab-btn{padding:10px 20px;font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--grey-label);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+/* CARD — shared */
+.card{background:#fff;border:1px solid var(--grey-border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+
+/* SLOT FORM CARD */
+.form-card{background:#fff;border:1px solid var(--grey-border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.form-card-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-muted);}
+.form-group input,.form-group select{font-family:var(--font-ui);font-size:13px;color:var(--text);border:1px solid var(--grey-border);border-radius:var(--r-md);padding:8px 10px;background:#fff;outline:none;transition:border-color .15s;width:100%;}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue);}
+.form-actions{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.btn-primary{height:38px;padding:0 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
+.btn-primary:hover{background:var(--blue-hover);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.btn-secondary{height:38px;padding:0 16px;background:#fff;color:var(--grey-label);border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-secondary:hover{border-color:var(--grey-muted);color:var(--text);}
+.form-msg{font-size:12px;padding:6px 12px;border-radius:var(--r-sm);display:none;}
+.form-msg.success{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);display:block;}
+.form-msg.error{background:var(--red-light);color:var(--red);border:1px solid #FFCDD2;display:block;}
+
+/* SLOT TABLE */
+.section-card{background:#fff;border:1px solid var(--grey-border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.section-head{padding:14px 20px;border-bottom:1px solid var(--grey-border);display:flex;align-items:center;justify-content:space-between;}
+.section-title{font-size:14px;font-weight:700;}
+.section-count{font-size:11px;font-weight:700;background:var(--grey-bg);color:var(--grey-label);padding:2px 8px;border-radius:var(--r-pill);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-muted);padding:10px 16px;border-bottom:1px solid var(--grey-border);white-space:nowrap;background:var(--grey-surface);}
+td{padding:12px 16px;border-bottom:1px solid var(--grey-border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:#fafbfd;}
+
+/* MODE PILL */
+.mode-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--r-sm);}
+.mode-pill.barge{background:#E3F2FD;color:#1565C0;}
+.mode-pill.rail{background:#EDE7F6;color:#5E35B1;}
+.mode-pill.road{background:#FFF3E0;color:#E65100;}
+
+/* CAPACITY BAR */
+.cap-wrap{display:flex;flex-direction:column;gap:3px;min-width:100px;}
+.cap-track{height:5px;background:var(--grey-bg);border-radius:3px;overflow:hidden;}
+.cap-fill{height:100%;border-radius:3px;background:var(--green);transition:width .4s ease;}
+.cap-fill.warn{background:var(--amber);}
+.cap-fill.low{background:var(--red);}
+.cap-label{font-family:var(--font-mono);font-size:11px;color:var(--grey-muted);}
+
+/* DANGER BTN */
+.btn-danger{font-size:12px;font-weight:600;color:var(--red);background:transparent;border:1px solid #FFCDD2;border-radius:var(--r-sm);padding:4px 10px;cursor:pointer;font-family:var(--font-ui);transition:background .15s;}
+.btn-danger:hover{background:var(--red-light);}
+
+/* DEMAND TABLE */
+.demand-num{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--text);}
+.demand-zero{color:var(--grey-border);}
+.demand-high{color:var(--red);}
+.demand-med{color:var(--amber);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 24px;color:var(--grey-muted);}
+.empty-icon{width:48px;height:48px;background:var(--grey-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.empty-title{font-size:14px;font-weight:600;color:var(--grey-label);margin-bottom:5px;}
+.empty-sub{font-size:12px;}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:32px;color:var(--grey-muted);font-size:13px;}
+.spinner{width:16px;height:16px;border:2px solid var(--grey-border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.table-scroll{overflow-x:auto;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
+  <span class="nav-badge">Operator Portal</span>
+  <div class="nav-right">
+    <span class="nav-company" id="nav-company"></span>
+    <a href="index.html" class="nav-link">Home</a>
+    <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.5);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Operator Portal</div>
+      <div class="page-sub">Manage your capacity slots and monitor corridor demand</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Active slots</div>
+      <div class="stat-value" id="stat-slots" style="color:var(--blue);">—</div>
+      <div class="stat-sub">Available for booking</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total capacity</div>
+      <div class="stat-value" id="stat-capacity">—</div>
+      <div class="stat-sub">Across all active slots</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Searches in 30d</div>
+      <div class="stat-value" id="stat-searches" style="color:var(--green);">—</div>
+      <div class="stat-sub">Forwarder demand signal</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('slots',this)">My Slots</button>
+    <button class="tab-btn" onclick="switchTab('demand',this)">Demand Signals</button>
+  </div>
+
+  <!-- ── TAB: MY SLOTS ── -->
+  <div id="panel-slots">
+
+    <!-- Add slot form -->
+    <div class="form-card">
+      <div class="form-card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add a new slot
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="f-mode">Mode</label>
+          <select id="f-mode">
+            <option value="">Select…</option>
+            <option value="barge">Barge</option>
+            <option value="rail">Rail</option>
+            <option value="road">Road</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="f-origin">Origin</label>
+          <input id="f-origin" type="text" placeholder="e.g. Rotterdam">
+        </div>
+        <div class="form-group">
+          <label for="f-destination">Destination</label>
+          <input id="f-destination" type="text" placeholder="e.g. Antwerp">
+        </div>
+        <div class="form-group">
+          <label for="f-departure">Departure</label>
+          <input id="f-departure" type="datetime-local">
+        </div>
+        <div class="form-group">
+          <label for="f-arrival">Arrival</label>
+          <input id="f-arrival" type="datetime-local">
+        </div>
+        <div class="form-group">
+          <label for="f-price">Price per tonne (€)</label>
+          <input id="f-price" type="number" min="0" step="0.01" placeholder="18">
+        </div>
+        <div class="form-group">
+          <label for="f-capacity">Capacity (kg)</label>
+          <input id="f-capacity" type="number" min="1" placeholder="800000">
+        </div>
+        <div class="form-group">
+          <label for="f-co2">CO₂ per tonne-km (kg)</label>
+          <input id="f-co2" type="number" min="0" step="0.001" placeholder="0.031">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" id="btn-submit" onclick="submitSlot()">Add slot</button>
+        <button class="btn-secondary" onclick="resetForm()">Clear</button>
+        <div id="form-msg" class="form-msg"></div>
+      </div>
+    </div>
+
+    <!-- Slot list -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">Your active slots</div>
+        <span class="section-count" id="slot-count">0</span>
+      </div>
+      <div id="slot-list"><div class="loading"><div class="spinner"></div> Loading slots…</div></div>
+    </div>
+
+  </div>
+
+  <!-- ── TAB: DEMAND SIGNALS ── -->
+  <div id="panel-demand" style="display:none;">
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">Corridor demand — last 30 days</div>
+        <span class="section-count" style="background:var(--green-light);color:var(--green);">Live</span>
+      </div>
+      <div style="padding:12px 20px;font-size:12px;color:var(--grey-label);border-bottom:1px solid var(--grey-border);">
+        Searches logged by forwarders. <strong>Unmet</strong> = search returned 0 results. <strong>Unfulfilled</strong> = capacity existed but no booking confirmed.
+      </div>
+      <div id="demand-list"><div class="loading"><div class="spinner"></div> Loading demand signals…</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
+<script>
+// ── Auth guard ────────────────────────────────────────────────
+(async () => {
+  const profile = await CB.authGuard({ operatorOnly: true });
+  if (!profile) return;
+
+  document.getElementById('nav-company').textContent = profile.company_name || '';
+
+  await loadSlots();
+  await loadDemand();
+})();
+
+// ── Tab switching ─────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.getElementById('panel-slots').style.display  = name === 'slots'  ? '' : 'none';
+  document.getElementById('panel-demand').style.display = name === 'demand' ? '' : 'none';
+}
+
+// ── Form ──────────────────────────────────────────────────────
+function resetForm() {
+  ['f-mode','f-origin','f-destination','f-departure','f-arrival','f-price','f-capacity','f-co2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  setMsg('','');
+}
+
+function setMsg(text, type) {
+  var el = document.getElementById('form-msg');
+  el.textContent = text || '';
+  el.className = 'form-msg' + (type ? ' ' + type : '');
+}
+
+async function submitSlot() {
+  var btn  = document.getElementById('btn-submit');
+  var mode = document.getElementById('f-mode').value;
+  var origin      = document.getElementById('f-origin').value.trim();
+  var destination = document.getElementById('f-destination').value.trim();
+  var departure   = document.getElementById('f-departure').value;
+  var arrival     = document.getElementById('f-arrival').value;
+  var price       = parseFloat(document.getElementById('f-price').value);
+  var capacity    = parseFloat(document.getElementById('f-capacity').value);
+  var co2         = parseFloat(document.getElementById('f-co2').value);
+
+  if (!mode || !origin || !destination || !departure || !arrival || isNaN(price) || isNaN(capacity) || isNaN(co2)) {
+    setMsg('Please fill in all fields.', 'error'); return;
+  }
+  if (new Date(arrival) <= new Date(departure)) {
+    setMsg('Arrival must be after departure.', 'error'); return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Saving…'; setMsg('','');
+
+  try {
+    await CB.submitSlot({
+      mode, origin, destination,
+      departure_at:     new Date(departure).toISOString(),
+      arrival_at:       new Date(arrival).toISOString(),
+      price_per_tonne:  price,
+      capacity_kg:      capacity,
+      co2_per_tonne_km: co2
+    });
+    setMsg('Slot added successfully.', 'success');
+    resetForm();
+    await loadSlots();
+    showToast('Slot is now live in search results', 'green');
+  } catch(e) {
+    setMsg('Error: ' + (e.message || 'Could not save slot.'), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add slot';
+  }
+}
+
+// ── Load slots ────────────────────────────────────────────────
+async function loadSlots() {
+  var list    = document.getElementById('slot-list');
+  var countEl = document.getElementById('slot-count');
+
+  try {
+    var slots = await CB.getMySlots();
+    countEl.textContent = slots ? slots.length : 0;
+
+    // Update stats
+    var totalCap = (slots || []).reduce(function(s,sl){ return s + (sl.remaining_kg || 0); }, 0);
+    document.getElementById('stat-slots').textContent    = (slots || []).filter(function(s){ return s.status === 'active'; }).length;
+    document.getElementById('stat-capacity').textContent = totalCap >= 1000000
+      ? (totalCap/1000000).toFixed(1) + 'kt'
+      : Math.round(totalCap/1000) + 't';
+
+    if (!slots || slots.length === 0) {
+      list.innerHTML = emptyState('No slots yet', 'Add your first slot using the form above.');
+      return;
+    }
+
+    list.innerHTML = '<div class="table-scroll"><table>'
+      + '<thead><tr><th>Mode</th><th>Route</th><th>Departure</th><th>Arrival</th><th>€/t</th><th>Remaining capacity</th><th></th></tr></thead>'
+      + '<tbody>' + slots.map(slotRow).join('') + '</tbody></table></div>';
+
+  } catch(e) {
+    list.innerHTML = '<div class="empty-state"><p style="color:var(--red)">Failed to load slots: ' + e.message + '</p></div>';
+    countEl.textContent = '!';
+  }
+}
+
+function slotRow(s) {
+  var total   = s.capacity_kg || 1;
+  var remain  = s.remaining_kg != null ? s.remaining_kg : total;
+  var pct     = Math.max(0, Math.min(100, remain / total * 100));
+  var fillCls = pct > 50 ? '' : pct > 20 ? 'warn' : 'low';
+  var totalT  = Math.round(total  / 1000).toLocaleString('nl-NL');
+  var remT    = Math.round(remain / 1000).toLocaleString('nl-NL');
+
+  return '<tr>'
+    + '<td><span class="mode-pill ' + s.mode + '">' + s.mode + '</span></td>'
+    + '<td style="font-weight:600;">' + esc(s.origin) + ' → ' + esc(s.destination) + '</td>'
+    + '<td style="font-family:var(--font-mono);font-size:12px;">' + fmtDt(s.departure_at) + '</td>'
+    + '<td style="font-family:var(--font-mono);font-size:12px;">' + fmtDt(s.arrival_at) + '</td>'
+    + '<td style="font-family:var(--font-mono);">€' + (s.price_per_tonne || 0).toFixed(0) + '</td>'
+    + '<td><div class="cap-wrap">'
+    +   '<div class="cap-track"><div class="cap-fill ' + fillCls + '" style="width:' + pct + '%"></div></div>'
+    +   '<div class="cap-label">' + remT + 't / ' + totalT + 't free</div>'
+    + '</div></td>'
+    + '<td><button class="btn-danger" onclick="cancelSlot(\'' + s.id + '\')">Cancel</button></td>'
+    + '</tr>';
+}
+
+async function cancelSlot(id) {
+  if (!confirm('Cancel this slot? Any pending bookings may be affected.')) return;
+  try {
+    await CB.cancelSlot(id);
+    showToast('Slot cancelled', 'red');
+    await loadSlots();
+  } catch(e) {
+    showToast('Could not cancel: ' + e.message, 'red');
+  }
+}
+
+// ── Load demand signals ───────────────────────────────────────
+async function loadDemand() {
+  var list = document.getElementById('demand-list');
+
+  try {
+    var rows = await CB.getDemandSignals();
+
+    // Update stat
+    var total = (rows || []).reduce(function(s,r){ return s + (r.total_searches || 0); }, 0);
+    document.getElementById('stat-searches').textContent = total;
+
+    if (!rows || rows.length === 0) {
+      list.innerHTML = emptyState('No demand data yet', 'Demand signals appear once forwarders run searches on the platform.');
+      return;
+    }
+
+    list.innerHTML = '<div class="table-scroll"><table>'
+      + '<thead><tr><th>Mode</th><th>Route</th><th>Total searches</th><th>Unmet (0 results)</th><th>Unfulfilled (no booking)</th></tr></thead>'
+      + '<tbody>' + rows.map(demandRow).join('') + '</tbody></table></div>';
+
+  } catch(e) {
+    list.innerHTML = '<div class="empty-state"><p style="color:var(--red)">Failed to load demand: ' + e.message + '</p></div>';
+  }
+}
+
+function demandRow(r) {
+  var total  = r.total_searches     || 0;
+  var unmet  = r.unmet_searches     || 0;
+  var unful  = r.unfulfilled_searches || 0;
+  var unmetCls = unmet > 10 ? 'demand-high' : unmet > 3 ? 'demand-med' : '';
+  var unfulCls = unful  > 5 ? 'demand-med'  : '';
+
+  return '<tr>'
+    + '<td><span class="mode-pill ' + r.mode + '">' + r.mode + '</span></td>'
+    + '<td style="font-weight:600;">' + esc(r.origin) + ' → ' + esc(r.destination) + '</td>'
+    + '<td><span class="demand-num ' + (total ? '' : 'demand-zero') + '">' + total + '</span></td>'
+    + '<td><span class="demand-num ' + unmetCls + '">' + unmet + '</span></td>'
+    + '<td><span class="demand-num ' + unfulCls + '">' + unful + '</span></td>'
+    + '</tr>';
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function fmtDt(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  return d.toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit'})
+    + ' ' + d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function emptyState(title, sub) {
+  return '<div class="empty-state">'
+    + '<div class="empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--grey-muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>'
+    + '<div class="empty-title">' + title + '</div>'
+    + '<div class="empty-sub">' + sub + '</div>'
+    + '</div>';
+}
+
+function showToast(msg, color) {
+  var existing = document.getElementById('cb-toast');
+  if (existing) existing.remove();
+  var t = document.createElement('div');
+  t.id = 'cb-toast';
+  t.className = 'toast';
+  t.style.background = color === 'green' ? '#2E7D32' : color === 'red' ? '#C62828' : '#1A1A1A';
+  t.style.color = '#fff';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 4000);
+}
+</script>
+</body>
+</html>

@@ -134,7 +134,15 @@ body{font-family:var(--font-ui);background:#E8ECF0;color:var(--text);min-height:
   </div>
 </div>
 
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 <script>
+// Auth guard — feedback dashboard is internal, require login
+(async function() {
+  var profile = await CB.authGuard();
+  if (!profile) return;
+})();
+
 async function loadAndRender() {
   // Load from Supabase instead of localStorage
   var feedback = [];
@@ -229,7 +237,5 @@ loadAndRender();
 setInterval(loadAndRender, 10000);
 </script>
 
-<script src="corridorbook.js"></script>
-<script src="auth-modal.js"></script>
 </body>
 </html>

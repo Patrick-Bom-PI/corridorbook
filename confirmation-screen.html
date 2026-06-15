@@ -877,14 +877,8 @@ function recordFeedback(answer) {
 <script>
 // ── Auth guard ────────────────────────────────────────────────
 (async function() {
-  var session = await CB.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
-  var profile = await CB.getProfile();
-  if (!profile) { window.location.href = 'index.html'; return; }
-  if (profile.user_type === 'operator') {
-    window.location.href = 'operator-portal.html'; return;
-  }
-  // Store profile for booking
+  var profile = await CB.authGuard({ forwarderOnly: true });
+  if (!profile) return;
   window._cbProfile = profile;
 })();
 

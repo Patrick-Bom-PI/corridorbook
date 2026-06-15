@@ -1093,5 +1093,28 @@ updateLiveStrip();
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+<script>
+// If already logged in, skip the landing page and go straight to their portal
+(async function() {
+  await CB.redirectIfLoggedIn();
+})();
+
+// Gate the search form — must be logged in to search
+var _origSearchSubmit = window.submitSearch;
+window.submitSearch = async function() {
+  var session = await CB.getSession();
+  if (!session) {
+    CB.showAuthModal();
+    return;
+  }
+  if (typeof _origSearchSubmit === 'function') {
+    _origSearchSubmit();
+  } else {
+    // Find and click the actual search submit
+    var btn = document.querySelector('[onclick*="results-screen"], [onclick*="submitSearch"]');
+    if (btn) btn.click();
+  }
+};
+</script>
 </body>
 </html>

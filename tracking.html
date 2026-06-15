@@ -1313,13 +1313,8 @@ function cancelShipment(ref, btn) {
 <script>
 // ── Auth guard + real bookings ────────────────────────────────
 (async function() {
-  var session = await CB.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
-  var profile = await CB.getProfile();
-  if (!profile) { window.location.href = 'index.html'; return; }
-  if (profile.user_type === 'operator') {
-    window.location.href = 'operator-portal.html'; return;
-  }
+  var profile = await CB.authGuard({ forwarderOnly: true });
+  if (!profile) return;
 
   // Update avatar and welcome text with real name
   var av = document.getElementById('trackAvatar');
