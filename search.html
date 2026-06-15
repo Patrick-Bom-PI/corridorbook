@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Slots — CorridorBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
+  --grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;--grey-strong:#BDBDBD;
+  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
+  --amber:#F57F17;--amber-light:#FFF8E1;
+  --red:#C62828;--red-light:#FFEBEE;
+  --text:#1A1A1A;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+}
+html,body{height:100%;font-family:var(--font-ui);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ── NAV ── */
+.nav{height:56px;background:rgba(11,24,40,0.97);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-.5px;}
+.nav-brand span{color:#4DA3FF;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;}
+.nav-link:hover{color:#fff;}
+.nav-company{font-size:12px;color:rgba(255,255,255,.4);font-family:var(--font-mono);}
+
+/* ── PAGE ── */
+.page{min-height:calc(100vh - 56px);background:#0B1828;display:flex;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden;}
+
+/* Background photo */
+.page::before{content:'';position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1400&q=85');
+  background-size:cover;background-position:center 55%;z-index:0;}
+.page::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(7,15,28,0.92) 0%,rgba(7,15,28,0.75) 60%,rgba(7,15,28,0.55) 100%);z-index:1;}
+
+.page-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 420px;gap:48px;max-width:1000px;width:100%;align-items:center;}
+
+/* ── LEFT TEXT ── */
+.hero-text{}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(77,163,255,.12);border:1px solid rgba(77,163,255,.25);border-radius:20px;padding:4px 12px;margin-bottom:18px;}
+.hero-pill-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-pill-text{font-size:11px;font-weight:700;color:#4DA3FF;letter-spacing:.08em;text-transform:uppercase;}
+.hero-h1{font-size:38px;font-weight:800;line-height:1.1;letter-spacing:-1px;color:#fff;margin-bottom:14px;}
+.hero-h1 span{color:#4DA3FF;}
+.hero-desc{font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;max-width:380px;margin-bottom:28px;}
+.hero-stats{display:flex;gap:24px;}
+.stat-item{display:flex;align-items:center;gap:7px;}
+.stat-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0;}
+.stat-text{font-size:13px;color:rgba(255,255,255,.65);}
+.stat-text strong{color:#fff;}
+
+/* ── SEARCH CARD ── */
+.search-card{background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.5),0 4px 16px rgba(0,0,0,0.25);overflow:hidden;}
+.search-card-body{padding:20px;}
+
+.field-row{display:flex;align-items:stretch;gap:8px;margin-bottom:10px;}
+.field-box{flex:1;min-width:0;background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:8px 12px;position:relative;transition:border-color .15s;}
+.field-box:focus-within{border-color:#1565C0;}
+.field-box-label{font-size:9px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.field-box input,.field-box select{border:none;background:transparent;font-family:var(--font-ui);font-size:13px;font-weight:600;color:#0F1C2E;outline:none;width:100%;}
+.field-box select{cursor:pointer;-webkit-appearance:none;}
+
+.swap-btn{width:32px;height:32px;flex-shrink:0;align-self:center;background:#fff;border:2px solid #E0E6EE;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7A8D;transition:all .15s;}
+.swap-btn:hover{background:#EEF3FA;border-color:#BBDEFB;}
+
+.meta-row{display:grid;gap:8px;margin-bottom:8px;}
+.meta-row.two{grid-template-columns:1fr 1fr;}
+.meta-row.three{grid-template-columns:1fr 80px 1fr;}
+
+.container-info{font-size:10px;color:#6B7A8D;margin:-4px 0 8px;padding:0 4px;}
+
+.search-btn{width:100%;height:42px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(21,101,192,0.35);transition:all .15s;margin-bottom:12px;}
+.search-btn:hover{background:#0D47A1;box-shadow:0 6px 20px rgba(21,101,192,0.5);}
+
+.mode-chips{display:flex;align-items:center;gap:6px;padding:10px 0 0;border-top:1px solid #EAEFF5;}
+.chip{background:#EEF3FA;border:1px solid #D4DCE8;border-radius:20px;padding:3px 10px;font-size:11px;color:#4A6080;cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
+.chip:hover{border-color:#1565C0;color:#1565C0;}
+.chip.active{background:#1565C0;color:#fff;border-color:#1565C0;}
+.chip-label{font-size:11px;color:#94A3B8;font-weight:500;}
+
+/* ── LIVE STRIP ── */
+.live-strip{background:rgba(10,22,44,0.85);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px;margin-top:10px;backdrop-filter:blur(12px);}
+.live-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;color:#4ADE80;text-transform:uppercase;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;animation:pulse 2s ease infinite;}
+.live-route{font-size:11px;color:#7090A8;font-family:var(--font-mono);}
+.live-mode{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.live-mode:last-child{margin-bottom:0;}
+.lm-icon{width:28px;height:28px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.lm-name{font-size:12px;font-weight:700;color:#E8F4FF;margin-bottom:4px;}
+.lm-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.lm-price{font-size:14px;font-weight:800;color:#fff;font-family:var(--font-mono);text-align:right;}
+.lm-co2{font-size:10px;font-weight:700;color:#22C55E;text-align:right;margin-top:2px;}
+.lm-co2-base{color:#3A5070;}
+
+/* ── AUTOCOMPLETE ── */
+.autocomplete-wrap{position:relative;}
+.dropdown-list{display:none;position:fixed;background:#fff;border:1.5px solid #D4DCE8;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.16);z-index:99999;max-height:260px;overflow-y:auto;padding:4px 0;}
+.dropdown-list.open{display:block;}
+.dropdown-group-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#94A3B8;padding:8px 14px 4px;border-top:1px solid #F1F5F9;}
+.dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .1s;}
+.dropdown-item:hover,.dropdown-item.highlighted{background:#EEF4FF;}
+.dropdown-item-icon{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.dropdown-item-name{font-size:13px;font-weight:600;color:#0F1C2E;}
+.dropdown-item-sub{font-size:11px;color:#7090A8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+.dropdown-item-code{margin-left:auto;font-family:var(--font-mono);font-size:11px;font-weight:600;color:#1565C0;background:#E3F2FD;padding:2px 6px;border-radius:4px;flex-shrink:0;}
+.dropdown-no-results{padding:12px 14px;font-size:13px;color:#9E9E9E;text-align:center;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+@media(max-width:900px){
+  .page-inner{grid-template-columns:1fr;}
+  .hero-text{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
+  <div class="nav-right">
+    <span class="nav-company" id="nav-company"></span>
+    <a href="tracking.html" class="nav-link">My Shipments</a>
+    <a href="forwarder-portal.html" class="nav-link">My Bookings</a>
+    <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.5);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-inner">
+
+    <!-- LEFT -->
+    <div class="hero-text">
+      <div class="hero-pill"><div class="hero-pill-dot"></div><span class="hero-pill-text">Live Corridor Capacity</span></div>
+      <div class="hero-h1">Every mode.<br><span>Booked in</span><br>seconds.</div>
+      <div class="hero-desc">Compare barge, rail and road capacity on the Rotterdam–Antwerp corridor in real time. No quotes, no calls.</div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-dot"></div><div class="stat-text"><strong>14</strong> operators live</div></div>
+        <div class="stat-item"><div class="stat-dot"></div><div class="stat-text"><strong id="ctr-bookings">841</strong> booked this month</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT — search card -->
+    <div>
+      <div class="search-card">
+        <div class="search-card-body">
+
+          <!-- From / Swap / To -->
+          <div class="field-row">
+            <div class="field-box">
+              <div class="field-box-label">From</div>
+              <div class="autocomplete-wrap">
+                <input type="text" id="originInput" value="Rotterdam Maasvlakte" placeholder="Origin port…" autocomplete="off"
+                  onkeydown="if(event.key==='Enter')doSearch()"
+                  oninput="openDropdown('originInput')" onfocus="openDropdown('originInput')"
+                  onblur="setTimeout(function(){closeDropdown('originDropdown')},200)">
+              </div>
+            </div>
+            <button class="swap-btn" onclick="swapLocations()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
+            </button>
+            <div class="field-box">
+              <div class="field-box-label">To</div>
+              <div class="autocomplete-wrap">
+                <input type="text" id="destInput" value="Antwerp Deurganck" placeholder="Destination…" autocomplete="off"
+                  onkeydown="if(event.key==='Enter')doSearch()"
+                  oninput="openDropdown('destInput')" onfocus="openDropdown('destInput')"
+                  onblur="setTimeout(function(){closeDropdown('destDropdown')},200)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Date / Depart -->
+          <div class="meta-row two">
+            <div class="field-box">
+              <div class="field-box-label">Date</div>
+              <input id="dateInput" type="date" style="font-size:12px;font-weight:600;cursor:pointer;">
+            </div>
+            <div class="field-box">
+              <div class="field-box-label">Depart</div>
+              <input id="departInput" type="time" value="06:00" style="font-size:12px;font-weight:600;cursor:pointer;">
+            </div>
+          </div>
+
+          <!-- Container / Qty / Weight -->
+          <div class="meta-row three">
+            <div class="field-box">
+              <div class="field-box-label">Container type</div>
+              <select id="containerType" onchange="recalcWeight()">
+                <option value="20GP" data-tare="2200" data-maxpay="28000">20ft GP</option>
+                <option value="40GP" data-tare="3800" data-maxpay="28600">40ft GP</option>
+                <option value="40HC" data-tare="4000" data-maxpay="28600" selected>40ft HC</option>
+                <option value="45HC" data-tare="4500" data-maxpay="27600">45ft HC</option>
+                <option value="20RF" data-tare="2900" data-maxpay="27100">20ft Reefer</option>
+                <option value="40RF" data-tare="4800" data-maxpay="26580">40ft Reefer</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div class="field-box">
+              <div class="field-box-label">Qty</div>
+              <input id="containerQty" type="number" value="1" min="1" max="99" onchange="recalcWeight()" oninput="recalcWeight()" style="font-size:12px;font-weight:600;">
+            </div>
+            <div class="field-box">
+              <div class="field-box-label">Total cargo (kg)</div>
+              <input id="cargoWeight" type="number" value="24000" min="100" style="font-size:12px;font-weight:600;" oninput="updateLiveStrip()">
+            </div>
+          </div>
+          <div class="container-info" id="containerInfo">40ft HC · max payload 28,600 kg · tare 4,000 kg</div>
+
+          <!-- Search button -->
+          <button class="search-btn" onclick="doSearch()">Search slots →</button>
+
+          <!-- Mode chips -->
+          <div class="mode-chips">
+            <span class="chip-label">Show:</span>
+            <span class="chip active" onclick="setChip(this)">All modes</span>
+            <span class="chip" onclick="setChip(this)">Barge</span>
+            <span class="chip" onclick="setChip(this)">Rail</span>
+            <span class="chip" onclick="setChip(this)">Truck</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Live strip -->
+      <div class="live-strip">
+        <div class="live-header">
+          <div class="live-badge"><div class="live-dot"></div>Live capacity</div>
+          <div class="live-route" id="liveRoute">RTM → ANR</div>
+        </div>
+        <div class="live-mode">
+          <div class="lm-icon" style="background:rgba(21,101,192,0.2);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4DA3FF" stroke-width="2"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6"/><rect x="13" y="5" width="4" height="6"/></svg>
+          </div>
+          <div style="flex:1"><div class="lm-name">Barge</div><div class="lm-bar"><div style="width:72%;height:3px;background:#1565C0;border-radius:2px;"></div></div></div>
+          <div style="min-width:52px;text-align:right;"><div class="lm-price" id="liveBargePrice">€310</div><div class="lm-co2" id="liveBargeCo2">−68% CO₂</div></div>
+        </div>
+        <div class="live-mode">
+          <div class="lm-icon" style="background:rgba(94,53,177,0.2);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9C64F0" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>
+          </div>
+          <div style="flex:1"><div class="lm-name">Rail</div><div class="lm-bar"><div style="width:55%;height:3px;background:#5E35B1;border-radius:2px;"></div></div></div>
+          <div style="min-width:52px;text-align:right;"><div class="lm-price" id="liveRailPrice">€355</div><div class="lm-co2" id="liveRailCo2">−54% CO₂</div></div>
+        </div>
+        <div class="live-mode">
+          <div class="lm-icon" style="background:rgba(255,255,255,0.06);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#637080" stroke-width="2"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+          </div>
+          <div style="flex:1"><div class="lm-name" style="color:#637080;">Road</div><div class="lm-bar"><div style="width:100%;height:3px;background:#1E2C3A;border-radius:2px;"></div></div></div>
+          <div style="min-width:52px;text-align:right;"><div class="lm-price" id="liveRoadPrice" style="color:#637080;">€420</div><div class="lm-co2 lm-co2-base">baseline</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Autocomplete dropdowns -->
+<div class="dropdown-list" id="originDropdown" style="position:fixed;"></div>
+<div class="dropdown-list" id="destDropdown" style="position:fixed;"></div>
+
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
+<script>
+// ── Auth guard — forwarders only ──────────────────────────────
+(async function() {
+  var profile = await CB.authGuard({ forwarderOnly: true });
+  if (!profile) return;
+  var el = document.getElementById('nav-company');
+  if (el) el.textContent = profile.company_name || '';
+})();
+
+// ── Set today as default date ─────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var d = document.getElementById('dateInput');
+  if (d) {
+    var today = new Date();
+    today.setDate(today.getDate() + 1); // default tomorrow
+    d.value = today.toISOString().split('T')[0];
+  }
+  recalcWeight();
+  updateLiveStrip();
+});
+
+// ── Search ────────────────────────────────────────────────────
+function doSearch() {
+  var origin = (document.getElementById('originInput').value || '').trim();
+  var dest   = (document.getElementById('destInput').value   || '').trim();
+  var date   = document.getElementById('dateInput').value;
+  var weight = parseInt(document.getElementById('cargoWeight').value) || 24000;
+  var cType  = document.getElementById('containerType').value;
+  var cQty   = parseInt(document.getElementById('containerQty').value) || 1;
+
+  if (!origin) { shakeField('originInput'); return; }
+  if (!dest)   { shakeField('destInput');   return; }
+  if (!date)   { alert('Please select a date.'); return; }
+
+  localStorage.setItem('cb_origin',         origin);
+  localStorage.setItem('cb_dest',           dest);
+  localStorage.setItem('cb_date',           date);
+  localStorage.setItem('cb_weight',         weight);
+  localStorage.setItem('cb_container_type', cType);
+  localStorage.setItem('cb_container_qty',  cQty);
+
+  var p = new URLSearchParams({origin,dest,date,weight,ctype:cType,cqty:cQty});
+  window.location.href = 'results-screen.html?' + p.toString();
+}
+
+function shakeField(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var box = el.closest('.field-box');
+  if (box) { box.style.borderColor='#C62828'; setTimeout(function(){ box.style.borderColor=''; }, 2000); }
+  el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'shake 0.35s ease';
+}
+
+function swapLocations() {
+  var a = document.getElementById('originInput'), b = document.getElementById('destInput');
+  var t = a.value; a.value = b.value; b.value = t;
+  updateLiveStrip();
+}
+
+function setChip(el) {
+  el.closest('.mode-chips').querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+// ── Container weight calc ─────────────────────────────────────
+var CONTAINER_SPECS = {
+  '20GP':{tare:2200,maxpay:28000,label:'20ft General Purpose'},
+  '40GP':{tare:3800,maxpay:28600,label:'40ft General Purpose'},
+  '40HC':{tare:4000,maxpay:28600,label:'40ft High Cube'},
+  '45HC':{tare:4500,maxpay:27600,label:'45ft High Cube'},
+  '20RF':{tare:2900,maxpay:27100,label:'20ft Reefer'},
+  '40RF':{tare:4800,maxpay:26580,label:'40ft Reefer'},
+  'custom':{tare:0,maxpay:0,label:'Custom'}
+};
+
+function recalcWeight() {
+  var sel  = document.getElementById('containerType');
+  var qty  = Math.max(1, parseInt(document.getElementById('containerQty').value)||1);
+  var wtEl = document.getElementById('cargoWeight');
+  var info = document.getElementById('containerInfo');
+  var type = sel.value;
+  var spec = CONTAINER_SPECS[type] || CONTAINER_SPECS['40HC'];
+  if (type !== 'custom') {
+    wtEl.value = Math.round(spec.maxpay * 0.80) * qty;
+    if (info) info.textContent = spec.label + ' · max payload ' + spec.maxpay.toLocaleString() + ' kg · tare ' + spec.tare.toLocaleString() + ' kg';
+  } else {
+    if (info) info.textContent = 'Custom — enter total cargo weight manually';
+  }
+  updateLiveStrip();
+}
+
+// ── Autocomplete ──────────────────────────────────────────────
+var LOCATIONS = [
+  {group:'Netherlands — Rotterdam',code:'RTM',name:'Rotterdam Maasvlakte',sub:'Deep-sea container terminal, ECT Delta',type:'port'},
+  {group:'Netherlands — Rotterdam',code:'RWH',name:'Rotterdam Waalhaven',sub:'Multipurpose terminal, break-bulk & containers',type:'port'},
+  {group:'Netherlands — Rotterdam',code:'RTB',name:'Rotterdam Maasvlakte Barge',sub:'Inland barge transhipment hub',type:'barge'},
+  {group:'Netherlands — Rotterdam',code:'RRH',name:'Rotterdam Maasvlakte Rail',sub:'Block train hub, Maasvlakte East',type:'rail'},
+  {group:'Netherlands — Inland',code:'VEN',name:'Venlo Freight Hub',sub:'Largest inland logistics park NL',type:'hub'},
+  {group:'Netherlands — Inland',code:'TLB',name:'Tilburg Rail Terminal',sub:'Container rail depot',type:'rail'},
+  {group:'Netherlands — Inland',code:'NIM',name:'Nijmegen Rhine Terminal',sub:'Inland barge, Rhine corridor',type:'barge'},
+  {group:'Belgium — Antwerp',code:'ANR',name:'Antwerp Deurganck',sub:'Deep-sea container terminal, PSA',type:'port'},
+  {group:'Belgium — Antwerp',code:'ANK',name:'Antwerp Noord Terminal',sub:'Container and general cargo, left bank',type:'port'},
+  {group:'Belgium — Antwerp',code:'ABT',name:'Antwerp Barge Terminal',sub:'Inland waterway hub, Contargo network',type:'barge'},
+  {group:'Belgium — Antwerp',code:'ARK',name:'Antwerp Rijnkaai Rail',sub:'Freight rail terminal, DB Cargo NL',type:'rail'},
+  {group:'Belgium — Other',code:'GNT',name:'Ghent Sea Terminal',sub:'Industrial port, canal barge to Antwerp',type:'port'},
+  {group:'Belgium — Other',code:'ZBR',name:'Zeebrugge Container Terminal',sub:'North Sea deep-sea gateway',type:'port'},
+  {group:'Belgium — Other',code:'LGE',name:'Liege Trilogiport',sub:'Trimodal hub, barge rail road',type:'hub'},
+  {group:'Germany — Rhine',code:'DUI',name:'Duisburg Logport',sub:'Largest inland port in the world',type:'hub'},
+  {group:'Germany — Rhine',code:'COL',name:'Cologne Niehl Terminal',sub:'Trimodal hub, Rhine barge and rail',type:'hub'},
+  {group:'Germany — Rhine',code:'BSL',name:'Basel Rhine Port',sub:'Swiss-German border trimodal terminal',type:'hub'},
+  {group:'Germany — North Sea',code:'HAM',name:'Hamburg Container Terminal',sub:'Largest German port',type:'port'},
+  {group:'Germany — North Sea',code:'BRE',name:'Bremen / Bremerhaven',sub:'Second largest German port',type:'port'},
+  {group:'France',code:'LHV',name:'Le Havre Grand Port',sub:'Largest French container port',type:'port'},
+  {group:'United Kingdom',code:'FXT',name:'Felixstowe Port',sub:'Largest UK container port',type:'port'},
+  {group:'United Kingdom',code:'SOT',name:'Southampton DP World',sub:'Second largest UK container terminal',type:'port'}
+];
+
+var TYPE_COLORS = {port:{bg:'#E3F2FD',color:'#1565C0'},barge:{bg:'#E8F5E9',color:'#2E7D32'},rail:{bg:'#EDE7F6',color:'#5E35B1'},hub:{bg:'#FFF3E0',color:'#E65100'}};
+var SVG_ICONS = {
+  port:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3"/><path d="M12 11v10"/><path d="M5 21h14"/></svg>',
+  barge:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6"/><rect x="13" y="5" width="4" height="6"/></svg>',
+  rail:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>',
+  hub:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="13" rx="1"/><path d="M1 9l11-7 11 7"/></svg>'
+};
+
+var _activeInput = null;
+
+function buildDropdown(query, excludeName) {
+  query = (query||'').toLowerCase().trim();
+  var groups = {}, total = 0;
+  LOCATIONS.forEach(function(loc) {
+    if (loc.name === excludeName) return;
+    var match = !query || loc.name.toLowerCase().indexOf(query)>=0 || loc.code.toLowerCase().indexOf(query)>=0 || loc.sub.toLowerCase().indexOf(query)>=0;
+    if (!match) return;
+    if (!groups[loc.group]) groups[loc.group]=[];
+    groups[loc.group].push(loc); total++;
+  });
+  if (total===0) return '<div class="dropdown-no-results">No locations found</div>';
+  var html='';
+  Object.keys(groups).forEach(function(grp) {
+    html+='<div class="dropdown-group-label">'+grp+'</div>';
+    groups[grp].forEach(function(loc) {
+      var tc=TYPE_COLORS[loc.type]||TYPE_COLORS.hub;
+      html+='<div class="dropdown-item" data-locname="'+loc.name+'">'
+        +'<div class="dropdown-item-icon" style="background:'+tc.bg+';color:'+tc.color+';">'+(SVG_ICONS[loc.type]||SVG_ICONS.hub)+'</div>'
+        +'<div><div class="dropdown-item-name">'+loc.name+'</div><div class="dropdown-item-sub">'+loc.sub+'</div></div>'
+        +'<div class="dropdown-item-code">'+loc.code+'</div></div>';
+    });
+  });
+  return html;
+}
+
+function openDropdown(inputId) {
+  _activeInput = inputId;
+  var ddlId = inputId==='originInput'?'originDropdown':'destDropdown';
+  var othId = inputId==='originInput'?'destDropdown':'originDropdown';
+  var othInp= inputId==='originInput'?'destInput':'originInput';
+  var inp=document.getElementById(inputId), ddl=document.getElementById(ddlId), oth=document.getElementById(othId);
+  oth.classList.remove('open'); oth.innerHTML='';
+  ddl.innerHTML=buildDropdown(inp.value, document.getElementById(othInp).value);
+  var r=inp.getBoundingClientRect();
+  ddl.style.left=r.left+'px'; ddl.style.top=(r.bottom+4)+'px'; ddl.style.width=Math.max(280,r.width)+'px';
+  ddl.classList.add('open');
+  ddl.querySelectorAll('.dropdown-item').forEach(function(item) {
+    item.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      inp.value=this.dataset.locname;
+      ddl.classList.remove('open'); ddl.innerHTML='';
+      updateLiveStrip();
+    });
+  });
+}
+
+function closeDropdown(id) {
+  var el=document.getElementById(id); if(el){el.classList.remove('open'); el.innerHTML='';}
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key==='Escape') { closeDropdown('originDropdown'); closeDropdown('destDropdown'); }
+});
+
+// ── Live strip ────────────────────────────────────────────────
+var PORT_CODES = {'Rotterdam Maasvlakte':'RTM','Rotterdam Waalhaven':'RWH','Antwerp Deurganck':'ANR','Antwerp Noord Terminal':'ANK','Antwerp Barge Terminal':'ANR','Duisburg Logport':'DUI','Hamburg Container Terminal':'HAM','Ghent Sea Terminal':'GNT'};
+var LIVE_COORDS = {'Rotterdam Maasvlakte':[51.951,4.045],'Rotterdam Waalhaven':[51.895,4.396],'Antwerp Deurganck':[51.282,4.272],'Antwerp Noord Terminal':[51.302,4.298],'Duisburg Logport':[51.430,6.740],'Hamburg Container Terminal':[53.530,9.950],'Ghent Sea Terminal':[51.100,3.730],'Liege Trilogiport':[50.660,5.620],'Basel Rhine Port':[47.557,7.593]};
+
+function getCode(name) {
+  if (!name) return '—';
+  if (PORT_CODES[name]) return PORT_CODES[name];
+  return name.replace(/[^A-Za-z ]/g,'').toUpperCase().split(' ').filter(Boolean).map(function(w){return w[0];}). join('').substring(0,3) || name.substring(0,3).toUpperCase();
+}
+
+function haversine(a,b) {
+  var R=6371,dLat=(b[0]-a[0])*Math.PI/180,dLng=(b[1]-a[1])*Math.PI/180;
+  var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+function updateLiveStrip() {
+  var origin = (document.getElementById('originInput')||{}).value||'';
+  var dest   = (document.getElementById('destInput')||{}).value||'';
+  var oCode=getCode(origin.trim()), dCode=getCode(dest.trim());
+  var routeEl=document.getElementById('liveRoute');
+  if (routeEl) routeEl.textContent=oCode+' → '+dCode;
+
+  var oC=LIVE_COORDS[origin.trim()], dC=LIVE_COORDS[dest.trim()];
+  if (!oC||!dC||origin===dest) return;
+  var dist=Math.round(haversine(oC,dC));
+  var w=parseInt(document.getElementById('cargoWeight').value)||24000;
+  var barge=Math.max(200,Math.round(dist*0.4/100)*100);
+  var rail =Math.max(300,Math.round(dist*0.55/100)*100);
+  var road =Math.max(400,Math.round(dist*0.7/100)*100);
+  var fmt=function(n){return '€'+n.toLocaleString();};
+  var bp=document.getElementById('liveBargePrice'),bc=document.getElementById('liveBargeCo2');
+  var rp=document.getElementById('liveRailPrice'), rc=document.getElementById('liveRailCo2');
+  var dp=document.getElementById('liveRoadPrice');
+  if(bp) bp.textContent=fmt(barge);
+  if(bc) bc.textContent='−'+Math.min(72,Math.round((1-barge/road)*100))+'% CO₂';
+  if(rp) rp.textContent=fmt(rail);
+  if(rc) rc.textContent='−'+Math.min(58,Math.round((1-rail/road)*100))+'% CO₂';
+  if(dp) dp.textContent=fmt(road);
+}
+</script>
+</body>
+</html>

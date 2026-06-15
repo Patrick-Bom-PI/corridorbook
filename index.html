@@ -10,1111 +10,322 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --white:#FFFFFF;--grey-bg:#F5F5F5;--grey-surface:#F8F9FA;
-  --grey-border:#D0D0D0;--grey-strong:#BDBDBD;--grey-label:#6C757D;--grey-muted:#9E9E9E;
-  --blue:#1565C0;--blue-hover:#0D47A1;--blue-light:#E3F2FD;--blue-border:#BBDEFB;
+  --blue:#1565C0;--blue-hover:#0D47A1;
   --green:#2E7D32;--green-light:#E8F5E9;--green-border:#A5D6A7;
-  --amber:#E65100;--amber-light:#FFF3E0;
-  --purple:#5E35B1;--purple-light:#EDE7F6;--purple-border:#D1C4E9;
+  --amber:#F57F17;
   --red:#C62828;--red-light:#FFEBEE;
-  --text:#1A1A1A;
-  --font-ui:'DM Sans',-apple-system,sans-serif;--font-mono:'IBM Plex Mono',monospace;
-  --r-sm:6px;--r-md:8px;--r-lg:10px;--r-pill:20px;
+  --text:#1A1A1A;--grey-border:#D0D0D0;--grey-label:#6C757D;--grey-muted:#9E9E9E;
+  --font-ui:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
 }
-body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webkit-font-smoothing:antialiased;}
+html,body{height:100%;font-family:var(--font-ui);color:var(--text);-webkit-font-smoothing:antialiased;}
 
-/* ── NAV ── */
-.nav{height:56px;background:rgba(11,24,40,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
-.nav-brand{font-size:17px;font-weight:800;color:#F0F7FF;text-decoration:none;letter-spacing:-0.5px;}
-.nav-brand span{color:#4DA3FF;}
-.nav-links{display:flex;align-items:center;gap:28px;}
-.nav-links a{font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;font-weight:500;transition:color .15s;}
-.nav-links a:hover,.nav-links a.active{color:#fff;}
-.nav-cta{height:32px;padding:0 16px;background:#1565C0;color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;}
-.nav-cta:hover{background:#0D47A1;}
+/* ── LAYOUT ── */
+.page{min-height:100vh;display:grid;grid-template-columns:1fr 480px;background:#0B1828;}
 
-/* ── HERO ── */
-.hero{position:relative;background:#0B1828;overflow:hidden;min-height:640px;display:flex;flex-direction:column;}
+/* ── LEFT PANEL ── */
+.left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:36px 48px 40px;}
 
-/* Background layers */
-.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;}
-/* dot grid */
-.hero-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.045) 1px,transparent 1px);background-size:28px 28px;z-index:1;pointer-events:none;}
-
-/* Real barge photo — Rhine container barge, right side */
-.hpb-barge{
-  position:absolute;
-  top:0;right:0;width:68%;height:100%;
+/* background barge photo */
+.left::before{content:'';position:absolute;inset:0;
   background-image:url('https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1400&q=85');
-  background-size:cover;
-  background-position:center 55%;
-  clip-path:polygon(8% 0%,100% 0%,100% 100%,0% 100%);
-}
+  background-size:cover;background-position:center 55%;z-index:0;}
+/* dark overlay */
+.left::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(7,15,28,0.93) 0%,rgba(7,15,28,0.80) 50%,rgba(7,15,28,0.60) 100%);z-index:1;}
 
-/* Real freight train photo — lower strip */
-.hpb-train{
-  position:absolute;
-  bottom:0;left:0;width:50%;height:55%;
-  background-image:url('https://images.unsplash.com/photo-1566023540935-3d6d20afa0e4?w=1000&q=85');
-  background-size:cover;
-  background-position:center 45%;
-  clip-path:polygon(0% 0%,92% 0%,75% 100%,0% 100%);
-}
+.left > *{position:relative;z-index:2;}
 
-/* Blue tint overlay on photos to match brand colour */
-.hpb-tint{
-  position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(8,20,50,0.35) 0%,rgba(6,16,40,0.15) 50%,rgba(8,20,50,0.25) 100%);
-  mix-blend-mode:multiply;
-}
+.brand{font-size:20px;font-weight:800;color:#F0F7FF;letter-spacing:-.5px;text-decoration:none;}
+.brand span{color:#4DA3FF;}
 
-/* overlay */
-.hpb-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(
-    105deg,
-    rgba(7,15,28,0.97) 0%,
-    rgba(7,15,28,0.92) 28%,
-    rgba(7,15,28,0.60) 48%,
-    rgba(7,15,28,0.12) 72%,
-    rgba(7,15,28,0.05) 100%
-  );
-}
+.hero-text{margin-top:auto;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(77,163,255,.12);border:1px solid rgba(77,163,255,.25);border-radius:20px;padding:4px 12px;margin-bottom:20px;}
+.hero-pill-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-pill-text{font-size:11px;font-weight:700;color:#4DA3FF;letter-spacing:.08em;text-transform:uppercase;}
+.hero-h1{font-size:44px;font-weight:800;line-height:1.1;letter-spacing:-1px;color:#fff;margin-bottom:16px;}
+.hero-h1 span{color:#4DA3FF;}
+.hero-desc{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;max-width:400px;margin-bottom:32px;}
 
-/* Layout */
-.hero-inner{position:relative;z-index:2;max-width:1160px;margin:0 auto;width:100%;padding:88px 52px 72px;display:grid;grid-template-columns:1fr 500px;gap:52px;align-items:center;}
+.hero-stats{display:flex;gap:32px;}
+.stat-item{display:flex;align-items:center;gap:8px;}
+.stat-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0;}
+.stat-text{font-size:13px;color:rgba(255,255,255,.7);}
+.stat-text strong{color:#fff;font-weight:700;}
 
-/* Left */
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#60B4FF;margin-bottom:22px;background:rgba(21,101,192,0.18);border:1px solid rgba(77,163,255,0.25);padding:5px 14px 5px 10px;border-radius:20px;}
-.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,.25);animation:hpulse 2s ease infinite;}
-@keyframes hpulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.25)}50%{box-shadow:0 0 0 7px rgba(34,197,94,.07)}}
-.hero h1{font-size:58px;font-weight:800;line-height:1.02;letter-spacing:-2.5px;margin:0 0 28px;color:#FFFFFF;text-shadow:0 2px 20px rgba(0,0,0,0.3);}
-.h1-accent{color:#4DA3FF;}
-.hero-bullets{display:flex;flex-direction:column;gap:16px;margin-bottom:40px;}
-.hero-bullet{display:flex;align-items:flex-start;gap:12px;}
-.hero-bullet-arrow{font-size:16px;font-weight:700;color:#4DA3FF;line-height:1.4;flex-shrink:0;width:18px;}
-.hero-bullet span{font-size:15.5px;color:#C8DCF0;line-height:1.55;font-weight:500;}
-.hero-pills{display:flex;gap:10px;flex-wrap:wrap;}
-.hero-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.18);border-radius:24px;padding:8px 18px;font-size:12px;color:#B8D4EE;font-weight:500;backdrop-filter:blur(6px);}
-.hero-pill strong{color:#FFFFFF;font-family:var(--font-mono);font-size:13px;}
-.hero-pill .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+/* ── RIGHT PANEL ── */
+.right{background:#F0F3F7;display:flex;align-items:center;justify-content:center;padding:32px 40px;}
 
-/* Right — card wrapper */
-.hero-right{display:flex;flex-direction:column;gap:12px;}
-.hero-card{background:#fff;border-radius:18px;overflow:visible;box-shadow:0 24px 80px rgba(0,0,0,0.6),0 4px 16px rgba(0,0,0,0.3);}
+.auth-box{width:100%;max-width:380px;}
+.auth-title{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--text);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--grey-label);margin-bottom:28px;}
 
-/* search panel inside white card */
-.hero-card .search-panel{background:#fff !important;border:none !important;box-shadow:none !important;border-radius:0 !important;padding:22px 24px 0 !important;}
-.hero-card .search-field{background:#F4F6F9 !important;border:1px solid #E0E6EE !important;border-radius:var(--r-md) !important;}
-.hero-card .search-field-label{color:#1565C0 !important;font-weight:700 !important;font-size:11px !important;text-transform:uppercase !important;letter-spacing:.06em !important;}
-.hero-card .search-field input{color:#1A202C !important;font-size:14px !important;font-weight:500 !important;}
-.hero-card .swap-btn{background:#EEF3FA !important;border:1px solid #D4DCE8 !important;color:#4A6080 !important;}
-.hero-card .search-meta{padding:12px 24px 0 !important;background:#fff !important;}
-.hero-card .meta-field label{color:#6B7A8D !important;font-size:11px !important;font-weight:600 !important;text-transform:uppercase !important;letter-spacing:.05em !important;}
-.hero-card .meta-field input{background:#F4F6F9 !important;border:1px solid #E0E6EE !important;color:#1A202C !important;font-size:13px !important;}
-.hero-card .btn-primary{background:#1565C0 !important;color:#fff !important;font-weight:700 !important;box-shadow:0 4px 14px rgba(21,101,192,0.4) !important;}
-.hero-card .btn-secondary{background:#EEF3FA !important;color:#1A202C !important;border:1px solid #D4DCE8 !important;}
-.hero-card .search-chips{padding:12px 24px 16px !important;background:#F8FAFC !important;border-top:1px solid #EAEFF5 !important;}
-.hero-card .chip{background:#EEF3FA !important;border:1px solid #D4DCE8 !important;color:#4A6080 !important;}
-.hero-card .chip.active{background:#1565C0 !important;color:#fff !important;border-color:#1565C0 !important;}
+/* Role toggle */
+.role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;background:#E2E6EC;border-radius:10px;padding:4px;margin-bottom:24px;}
+.role-btn{padding:10px;border:none;border-radius:7px;font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--grey-label);transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.role-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.1);}
+.role-btn .role-icon{font-size:18px;}
+.role-btn .role-label{font-size:12px;}
 
-/* live strip */
-.hero-live{background:rgba(10,22,44,0.82);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:18px 20px;backdrop-filter:blur(16px);}
-.live-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.live-badge{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.1em;color:#4ADE80;text-transform:uppercase;}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;animation:hpulse 2s ease infinite;}
-.live-route{font-size:11px;color:#7090A8;font-family:var(--font-mono);letter-spacing:.05em;}
-.live-modes{display:flex;flex-direction:column;gap:10px;}
-.live-mode{display:flex;align-items:center;gap:10px;}
-.lm-icon{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.lm-name{font-size:12px;font-weight:700;color:#E8F4FF;margin-bottom:5px;}
-.lm-bar{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
-.lm-price{font-size:14px;font-weight:800;color:#FFFFFF;font-family:var(--font-mono);text-align:right;}
-.lm-co2{font-size:10px;font-weight:700;color:#22C55E;text-align:right;margin-top:2px;}
-.lm-co2-base{color:#3A5070;}
+/* Tabs */
+.tab-row{display:flex;border-bottom:2px solid #D8DCE2;margin-bottom:20px;}
+.tab{flex:1;text-align:center;padding:8px;font-size:13px;font-weight:600;color:var(--grey-muted);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
 
-/* ── SEARCH CHIPS ── */
-.search-chips{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;}
-.search-chips label{font-size:12px;color:var(--grey-label);font-weight:500;flex-shrink:0;}
-.chip{background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-pill);padding:3px 10px;font-size:11px;color:var(--grey-label);cursor:pointer;font-family:var(--font-ui);transition:all .15s;}
-.chip:hover{border-color:var(--blue);color:var(--blue);}
-.chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+/* Fields */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--grey-label);margin-bottom:5px;}
+.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid #D0D6DE;border-radius:8px;font-family:var(--font-ui);font-size:14px;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--blue);}
 
-/* ── SEARCH PANEL base styles (used below hero) ── */
-.search-panel{background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-lg);padding:20px 24px;display:flex;flex-direction:column;gap:16px;}
-.search-row{display:flex;align-items:center;gap:12px;}
-.search-field{flex:1;background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-md);padding:10px 14px;display:flex;flex-direction:column;gap:2px;}
-.search-field-label{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;}
-.search-field input{border:none;background:transparent;font-family:var(--font-ui);font-size:14px;font-weight:500;color:var(--text);outline:none;width:100%;}
-.search-field input::placeholder{color:var(--grey-muted);}
-.search-meta{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;}
-.meta-field{display:flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--grey-border);border-radius:var(--r-md);padding:8px 10px;white-space:nowrap;}
-.meta-field label{font-size:11px;font-weight:600;color:var(--grey-label);white-space:nowrap;}
-.meta-field input{border:none;background:transparent;font-family:var(--font-ui);font-size:13px;color:var(--text);outline:none;}
-.search-actions{display:flex;gap:8px;margin-left:auto;flex-shrink:0;}
-.btn-primary{height:40px;padding:0 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
-.btn-primary:hover{background:var(--blue-hover);}
-.btn-secondary{height:40px;padding:0 16px;background:var(--white);color:var(--text);border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
-.btn-secondary:hover{border-color:var(--grey-strong);}
+/* CTA button */
+.btn-cta{width:100%;height:44px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-family:var(--font-ui);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px;}
+.btn-cta:hover{background:var(--blue-hover);}
+.btn-cta:disabled{opacity:.55;cursor:not-allowed;}
 
-/* swap btn */
-.swap-btn{width:36px;height:36px;flex-shrink:0;background:var(--white);border:1px solid var(--grey-border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--grey-label);transition:all .15s;}
-.swap-btn:hover{background:var(--blue-light);border-color:var(--blue-border);color:var(--blue);}
+/* Messages */
+.msg{font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:12px;display:none;}
+.msg.error{background:var(--red-light);color:var(--red);border:1px solid #FFCDD2;display:block;}
+.msg.success{background:var(--green-light);color:var(--green);border:1px solid var(--green-border);display:block;}
 
-/* ── HOW IT WORKS ── */
-.steps{max-width:1100px;margin:0 auto;padding:72px 48px;}
-.steps-title{font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px;}
-.steps-sub{font-size:15px;color:var(--grey-label);margin-bottom:48px;}
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
-.step-item{}
-.step-number{width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;margin-bottom:16px;}
-.step-title{font-size:18px;font-weight:700;margin-bottom:8px;}
-.step-desc{font-size:14px;color:var(--grey-label);line-height:1.6;}
+.auth-footer{text-align:center;font-size:12px;color:var(--grey-muted);margin-top:16px;}
+.auth-footer a{color:var(--blue);font-weight:600;cursor:pointer;text-decoration:none;}
 
-/* ── FOOTER ── */
-.site-footer{background:#F8F9FA;border-top:1px solid var(--grey-border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;}
-.footer-brand{font-size:15px;font-weight:700;}
-.footer-brand span{color:var(--blue);}
-.footer-text{font-size:12px;color:var(--grey-muted);}
-.footer-cert{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--grey-label);}
+/* Role badge shown after register success */
+.role-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.role-badge.forwarder{background:#E3F2FD;color:#1565C0;}
+.role-badge.operator{background:#FFF3E0;color:#E65100;}
 
-/* ── AUTOCOMPLETE ── */
-.autocomplete-wrap{position:relative;flex:1;min-width:0;}
-.autocomplete-wrap input{width:100%;}
-.dropdown-list{display:none;position:fixed;background:#FFFFFF;border:1.5px solid #D4DCE8;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.10);z-index:99999;max-height:260px;overflow-y:auto;padding:4px 0;}
-.dropdown-list.open{display:block;}
-.dropdown-group-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#94A3B8;padding:8px 14px 4px;user-select:none;border-top:1px solid #F1F5F9;}
-.dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .1s;}
-.dropdown-item:hover,.dropdown-item.highlighted{background:#EEF4FF;}
-.dropdown-item-icon{width:28px;height:28px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.dropdown-item-name{font-size:13px;font-weight:600;color:#0F1C2E;}
-.dropdown-item-sub{font-size:11px;color:#7090A8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
-.dropdown-item-code{margin-left:auto;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-light);padding:2px 6px;border-radius:4px;flex-shrink:0;}
-.dropdown-no-results{padding:12px 14px;font-size:13px;color:var(--grey-muted);text-align:center;}
-
-/* validation */
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@keyframes fadeInMsg{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-
-/* modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal-box{background:#fff;border-radius:12px;padding:28px;max-width:380px;width:90%;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
-.modal-mode-icon{display:flex;align-items:center;justify-content:center;}
-.modal-title{font-size:17px;font-weight:700;}
-.modal-pill{background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:600;padding:5px 14px;border-radius:var(--r-pill);margin:0 auto;display:inline-block;}
-.modal-sub{font-size:13px;color:var(--grey-label);line-height:1.5;}
-.modal-actions{display:flex;gap:8px;margin-top:4px;}
-.modal-btn-primary{flex:1;height:42px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;}
-.modal-btn-primary:hover{background:var(--blue-hover);}
-.modal-btn-cancel{flex:1;height:42px;background:transparent;color:var(--text);border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:13px;cursor:pointer;}
-
-@media(max-width:900px){
-  .hero-inner{grid-template-columns:1fr;padding:48px 20px 40px;gap:32px;}
-  .hero h1{font-size:36px;}
-  .hero-live{display:none;}
-  .steps-grid{grid-template-columns:1fr;}
+@media(max-width:768px){
+  .page{grid-template-columns:1fr;}
+  .left{display:none;}
+  .right{min-height:100vh;background:#0B1828;}
+  .auth-box{max-width:100%;}
+  .auth-title{color:#fff;}
+  .auth-sub{color:rgba(255,255,255,.6);}
+  .field input,.field select{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;}
+  .field label{color:rgba(255,255,255,.5);}
+  .role-toggle{background:rgba(255,255,255,.1);}
+  .role-btn.active{background:rgba(255,255,255,.15);color:#fff;}
+  .tab{color:rgba(255,255,255,.4);}
+  .tab.active{color:#4DA3FF;border-bottom-color:#4DA3FF;}
+  .tab-row{border-bottom-color:rgba(255,255,255,.15);}
 }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
-  <div class="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="tracking.html">My Shipments</a>
-    <a href="how-it-works.html">How it works</a>
-    <a href="for-operators.html">For operators</a>
-    <a href="forwarder-portal.html">Forwarder Portal</a>
-    <a href="about.html">About</a>
-  </div>
-  <button class="nav-cta" onclick="CB.showAuthModal()" id="navSignInBtn" onclick="openSignIn()">Sign in</button>
-</nav>
+<div class="page">
 
-<section class="hero">
-  <div class="hero-bg">
-    <!-- Real barge photo — Rhine container barge -->
-    <div class="hpb-barge"></div>
-    <!-- Real freight train photo -->
-    <div class="hpb-train"></div>
-    <!-- Colour tint + dark overlay for readability -->
-    <div class="hpb-tint"></div>
-    <div class="hpb-overlay"></div>
-  </div>
+  <!-- LEFT — hero -->
+  <div class="left">
+    <a href="#" class="brand">Corridor<span>Book</span></a>
 
-  <div class="hero-inner">
-    <!-- LEFT -->
-    <div>
-      <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div>Physical Internet Platform</div>
-      <h1>Every mode.<br><span class="h1-accent">Booked in<br>seconds.</span></h1>
-      <div class="hero-bullets">
-        <div class="hero-bullet"><div class="hero-bullet-arrow">›</div><span>Compare barge, rail &amp; truck capacity in real-time</span></div>
-        <div class="hero-bullet"><div class="hero-bullet-arrow">›</div><span>Save up to 68% CO₂ vs road default</span></div>
-        <div class="hero-bullet"><div class="hero-bullet-arrow">›</div><span>Slot confirmed in under 90 seconds</span></div>
+    <div class="hero-text">
+      <div class="hero-pill">
+        <div class="hero-pill-dot"></div>
+        <span class="hero-pill-text">Physical Internet Platform</span>
       </div>
-      <div class="hero-pills">
-        <div class="hero-pill"><div class="dot" style="background:#22C55E;animation:hpulse 2s ease infinite;"></div><strong id="ctr-operators">14</strong> operators live</div>
-        <div class="hero-pill"><div class="dot" style="background:#4DA3FF;animation:hpulse 1.5s ease infinite;"></div><strong id="ctr-bookings">847</strong> booked this month</div>
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="hero-right">
-      <!-- White search card -->
-      <div class="hero-card">
-        <div style="padding:18px;">
-
-          <!-- Row 1: From / Swap / To -->
-          <div style="display:flex;align-items:stretch;gap:8px;margin-bottom:10px;">
-            <div style="flex:1;min-width:0;background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:8px 12px;overflow:visible;position:relative;transition:border-color .15s;">
-              <div style="font-size:9px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">From</div>
-              <div class="autocomplete-wrap">
-                <input type="text" id="originInput" value="Rotterdam Maasvlakte" placeholder="Origin port…" autocomplete="off" style="border:none;background:transparent;font-family:var(--font-ui);font-size:13px;font-weight:600;color:#0F1C2E;outline:none;width:100%;" onkeydown="if(event.key==='Enter')showResults()" onfocus="this.closest('[style*=border]').style.borderColor='#1565C0'" onblur="setTimeout(function(){this.closest('[style*=border]').style.borderColor='#E0E6EE';}.bind(this),200)"/>
-              </div>
-            </div>
-            <button onclick="swapLocations()" style="width:32px;height:32px;flex-shrink:0;align-self:center;background:#fff;border:2px solid #E0E6EE;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7A8D;transition:all .15s;" onmouseover="this.style.background='#EEF3FA';this.style.borderColor='#BBDEFB';" onmouseout="this.style.background='#fff';this.style.borderColor='#E0E6EE';">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
-            </button>
-            <div style="flex:1;min-width:0;background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:8px 12px;overflow:visible;position:relative;transition:border-color .15s;">
-              <div style="font-size:9px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">To</div>
-              <div class="autocomplete-wrap">
-                <input type="text" id="destInput" value="Antwerp Deurganck" placeholder="Destination port…" autocomplete="off" style="border:none;background:transparent;font-family:var(--font-ui);font-size:13px;font-weight:600;color:#0F1C2E;outline:none;width:100%;" onkeydown="if(event.key==='Enter')showResults()" onfocus="this.closest('[style*=border]').style.borderColor='#1565C0'" onblur="setTimeout(function(){this.closest('[style*=border]').style.borderColor='#E0E6EE';}.bind(this),200)"/>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: Date / Depart -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-            <div style="background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:7px 12px;">
-              <div style="font-size:9px;font-weight:700;color:#6B7A8D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Date</div>
-              <input id="dateInput" type="date" value="2026-05-20" style="border:none;background:transparent;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#0F1C2E;outline:none;width:100%;cursor:pointer;"/>
-            </div>
-            <div style="background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:7px 12px;">
-              <div style="font-size:9px;font-weight:700;color:#6B7A8D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Depart</div>
-              <input id="departInput" type="time" value="06:00" style="border:none;background:transparent;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#0F1C2E;outline:none;width:100%;cursor:pointer;"/>
-            </div>
-          </div>
-
-          <!-- Row 2b: Container type / Qty / Total weight -->
-          <div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:8px;margin-bottom:10px;">
-            <div style="background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:7px 12px;">
-              <div style="font-size:9px;font-weight:700;color:#6B7A8D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Container type</div>
-              <select id="containerType" onchange="recalcWeight()" style="border:none;background:transparent;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#0F1C2E;outline:none;width:100%;cursor:pointer;-webkit-appearance:none;">
-                <option value="20GP" data-tare="2200" data-maxpay="28000">20ft GP</option>
-                <option value="40GP" data-tare="3800" data-maxpay="28600">40ft GP</option>
-                <option value="40HC" data-tare="4000" data-maxpay="28600" selected>40ft HC</option>
-                <option value="45HC" data-tare="4500" data-maxpay="27600">45ft HC</option>
-                <option value="20RF" data-tare="2900" data-maxpay="27100">20ft Reefer</option>
-                <option value="40RF" data-tare="4800" data-maxpay="26580">40ft Reefer</option>
-                <option value="custom" data-tare="0" data-maxpay="0">Custom</option>
-              </select>
-            </div>
-            <div style="background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:7px 12px;">
-              <div style="font-size:9px;font-weight:700;color:#6B7A8D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Qty</div>
-              <input id="containerQty" type="number" value="1" min="1" max="99" onchange="recalcWeight()" oninput="recalcWeight()" style="border:none;background:transparent;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#0F1C2E;outline:none;width:100%;"/>
-            </div>
-            <div style="background:#F4F6F9;border:2px solid #E0E6EE;border-radius:8px;padding:7px 12px;" id="weightField">
-              <div style="font-size:9px;font-weight:700;color:#6B7A8D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Total cargo (kg)</div>
-              <input id="cargoWeight" type="number" value="24000" min="100" max="9999999" style="border:none;background:transparent;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#0F1C2E;outline:none;width:100%;" oninput="updateLiveStrip()"/>
-            </div>
-          </div>
-          <div id="containerInfo" style="font-size:10px;color:#6B7A8D;margin:-4px 0 8px;padding:0 4px;">
-            40ft HC · max payload 28,600 kg per container · tare 4,000 kg
-          </div>
-
-          <!-- Row 3: Buttons -->
-          <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button onclick="showResults()" style="flex:1;height:38px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-family:var(--font-ui);font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(21,101,192,0.35);transition:all .15s;" onmouseover="this.style.background='#0D47A1';this.style.boxShadow='0 6px 20px rgba(21,101,192,0.5)';" onmouseout="this.style.background='#1565C0';this.style.boxShadow='0 4px 16px rgba(21,101,192,0.35)';">Search slots →</button>
-          </div>
-
-          <!-- Row 4: Mode chips -->
-          <div style="display:flex;align-items:center;gap:6px;padding:10px 0 0;border-top:1px solid #EAEFF5;">
-            <span style="font-size:11px;color:#94A3B8;font-weight:500;">Show:</span>
-            <span class="chip active" onclick="setChip(this)">All modes</span>
-            <span class="chip" onclick="setChip(this)">Barge</span>
-            <span class="chip" onclick="setChip(this)">Rail</span>
-            <span class="chip" onclick="setChip(this)">Truck</span>
-          </div>
-
+      <div class="hero-h1">Every mode.<br><span>Booked in</span><br>seconds.</div>
+      <div class="hero-desc">Compare barge, rail and road capacity on the Rotterdam–Antwerp corridor in real time. No quotes, no calls — just instant booking.</div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-dot"></div>
+          <div class="stat-text"><strong>14</strong> operators live</div>
         </div>
-      </div>
-
-      <!-- Live capacity strip -->
-      <div class="hero-live">
-        <div class="live-header">
-          <div class="live-badge"><div class="live-dot"></div>Live capacity</div>
-          <div class="live-route" id="liveRoute">RTM &rarr; ANR</div>
-        </div>
-        <div class="live-modes">
-          <div class="live-mode">
-            <div class="lm-icon" style="background:rgba(21,101,192,0.2);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4DA3FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6"/><rect x="13" y="5" width="4" height="6"/></svg>
-            </div>
-            <div style="flex:1">
-              <div class="lm-name">Barge</div>
-              <div class="lm-bar"><div style="width:72%;height:3px;background:#1565C0;border-radius:2px;"></div></div>
-            </div>
-            <div style="min-width:52px;text-align:right;">
-              <div class="lm-price" id="liveBargePrice">€310</div>
-              <div class="lm-co2" id="liveBargeCo2">−68% CO₂</div>
-            </div>
-          </div>
-          <div class="live-mode">
-            <div class="lm-icon" style="background:rgba(94,53,177,0.2);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9C64F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/></svg>
-            </div>
-            <div style="flex:1">
-              <div class="lm-name">Rail</div>
-              <div class="lm-bar"><div style="width:55%;height:3px;background:#5E35B1;border-radius:2px;"></div></div>
-            </div>
-            <div style="min-width:52px;text-align:right;">
-              <div class="lm-price" id="liveRailPrice">€355</div>
-              <div class="lm-co2" id="liveRailCo2">−54% CO₂</div>
-            </div>
-          </div>
-          <div class="live-mode">
-            <div class="lm-icon" style="background:rgba(255,255,255,0.06);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#637080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
-            </div>
-            <div style="flex:1">
-              <div class="lm-name" style="color:#637080;">Road</div>
-              <div class="lm-bar"><div style="width:100%;height:3px;background:#1E2C3A;border-radius:2px;"></div></div>
-            </div>
-            <div style="min-width:52px;text-align:right;">
-              <div class="lm-price" id="liveRoadPrice" style="color:#637080;">€420</div>
-              <div class="lm-co2 lm-co2-base" id="liveRoadCo2">baseline</div>
-            </div>
-          </div>
+        <div class="stat-item">
+          <div class="stat-dot"></div>
+          <div class="stat-text"><strong>841</strong> booked this month</div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- HOW IT WORKS -->
-<div class="steps">
-  <div class="steps-title">How CorridorBook works</div>
-  <div class="steps-sub">From search to confirmed slot in under 90 seconds.</div>
-  <div class="steps-grid">
-    <div class="step-item">
-      <div class="step-number">1</div>
-      <div class="step-title">Search all modes</div>
-      <div class="step-desc">Enter your route and cargo. See live barge, rail, and truck availability with real pricing — no quotes, no calls.</div>
-    </div>
-    <div class="step-item">
-      <div class="step-number">2</div>
-      <div class="step-title">Compare &amp; choose</div>
-      <div class="step-desc">Compare price, transit time, and CO₂ side by side. Filter by mode, direct service, or savings threshold.</div>
-    </div>
-    <div class="step-item">
-      <div class="step-number">3</div>
-      <div class="step-title">Confirm in seconds</div>
-      <div class="step-desc">Select your slot. A 20-minute hold begins immediately while you review booking details and confirm payment.</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.25);position:relative;z-index:2;">© 2026 CorridorBook B.V. · Rotterdam</div>
+  </div>
+
+  <!-- RIGHT — auth -->
+  <div class="right">
+    <div class="auth-box">
+
+      <div class="auth-title">Welcome to CorridorBook</div>
+      <div class="auth-sub">Sign in or create an account to continue</div>
+
+      <!-- Role selector (shown on register tab only) -->
+      <div class="role-toggle" id="roleToggle" style="display:none;">
+        <button class="role-btn active" id="roleForwarder" onclick="setRole('forwarder')">
+          <span class="role-icon">📦</span>
+          <span class="role-label">Freight Forwarder</span>
+        </button>
+        <button class="role-btn" id="roleOperator" onclick="setRole('operator')">
+          <span class="role-icon">🚢</span>
+          <span class="role-label">Transport Operator</span>
+        </button>
+      </div>
+
+      <!-- Login / Register tabs -->
+      <div class="tab-row">
+        <button class="tab active" id="tab-login" onclick="showTab('login')">Sign in</button>
+        <button class="tab" id="tab-register" onclick="showTab('register')">Create account</button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      <div id="form-login">
+        <div id="login-msg" class="msg"></div>
+        <div class="field">
+          <label>Email</label>
+          <input id="login-email" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn-cta" id="login-btn" onclick="doLogin()">Sign in →</button>
+        <div class="auth-footer">No account? <a onclick="showTab('register')">Create one</a></div>
+      </div>
+
+      <!-- ── REGISTER FORM ── -->
+      <div id="form-register" style="display:none;">
+        <div id="reg-msg" class="msg"></div>
+        <div class="field">
+          <label>Company name</label>
+          <input id="reg-company" type="text" placeholder="Your company">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input id="reg-email" type="email" placeholder="you@company.com">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="reg-password" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doRegister()">
+        </div>
+        <!-- Modality — only shown for operators -->
+        <div class="field" id="modality-field" style="display:none;">
+          <label>Your transport mode</label>
+          <select id="reg-modality">
+            <option value="barge">Barge</option>
+            <option value="rail">Rail</option>
+            <option value="road">Road</option>
+          </select>
+        </div>
+        <button class="btn-cta" id="reg-btn" onclick="doRegister()">Create account →</button>
+        <div class="auth-footer">Already have an account? <a onclick="showTab('login')">Sign in</a></div>
+      </div>
+
     </div>
   </div>
 </div>
-
-<footer class="site-footer">
-  <div class="footer-brand">Corridor<span>Book</span></div>
-  <div class="footer-text">&copy; 2026 CorridorBook B.V. · Rotterdam, Netherlands</div>
-  <div class="footer-cert">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    ISO 27001 &amp; GDPR certified
-  </div>
-</footer>
-
-<!-- SIGN IN MODAL -->
-<div class="modal-overlay" id="signInOverlay" onclick="if(event.target===this)closeSignIn()" style="display:none;align-items:center;justify-content:center;">
-  <div class="modal-box" style="max-width:360px;">
-    <div style="font-size:22px;margin-bottom:4px;">👋</div>
-    <div class="modal-title" id="signInTitle">Sign in to CorridorBook</div>
-    <div style="font-size:12px;color:var(--grey-label);margin-bottom:4px;" id="signInSubtitle">Enter your name to track bookings and save history.</div>
-    <input id="signInName" type="text" placeholder="Your full name" autocomplete="name"
-      style="width:100%;padding:10px 12px;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color .15s;"
-      onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor=''"
-      onkeydown="if(event.key==='Enter')doSignIn()"/>
-    <input id="signInEmail" type="email" placeholder="Business email" autocomplete="email"
-      style="width:100%;padding:10px 12px;border:1px solid var(--grey-border);border-radius:var(--r-md);font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color .15s;"
-      onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor=''"
-      onkeydown="if(event.key==='Enter')doSignIn()"/>
-    <div class="modal-actions">
-      <button class="modal-btn-primary" onclick="doSignIn()">Sign in</button>
-      <button class="modal-btn-cancel" onclick="closeSignIn()">Cancel</button>
-    </div>
-    <div style="font-size:11px;color:var(--grey-muted);text-align:center;">Demo mode — no password required.</div>
-  </div>
-</div>
-
-<script>
-// ── User session ──────────────────────────────────────────────────────────────
-function getInitials(name) {
-  if (!name) return '?';
-  var parts = name.trim().split(' ').filter(Boolean);
-  if (parts.length === 1) return parts[0].substring(0,2).toUpperCase();
-  return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
-}
-
-function applyUserState() {
-  var name  = localStorage.getItem('cb_user_name')  || '';
-  var email = localStorage.getItem('cb_user_email') || '';
-  var btn   = document.getElementById('navSignInBtn');
-  if (!btn) return;
-  if (name) {
-    btn.textContent = getInitials(name);
-    btn.style.borderRadius = '50%';
-    btn.style.width = '32px';
-    btn.style.padding = '0';
-    btn.title = name + (email ? ' · ' + email : '') + '\nClick to sign out';
-    btn.onclick = function(){ if(confirm('Sign out of CorridorBook?')){ localStorage.removeItem('cb_user_name'); localStorage.removeItem('cb_user_email'); applyUserState(); }};
-  } else {
-    btn.textContent = 'Sign in';
-    btn.style.borderRadius = '';
-    btn.style.width = '';
-    btn.style.padding = '';
-    btn.title = '';
-    btn.onclick = openSignIn;
-  }
-}
-
-function openSignIn() {
-  var overlay = document.getElementById('signInOverlay');
-  overlay.style.display = 'flex';
-  setTimeout(function(){ var n=document.getElementById('signInName'); if(n)n.focus(); }, 80);
-}
-function closeSignIn() {
-  document.getElementById('signInOverlay').style.display = 'none';
-}
-function doSignIn() {
-  var name  = (document.getElementById('signInName').value  || '').trim();
-  var email = (document.getElementById('signInEmail').value || '').trim();
-  if (!name) {
-    var n = document.getElementById('signInName');
-    n.style.borderColor = '#C62828';
-    n.focus();
-    setTimeout(function(){ n.style.borderColor=''; }, 2000);
-    return;
-  }
-  localStorage.setItem('cb_user_name',  name);
-  if (email) localStorage.setItem('cb_user_email', email);
-  closeSignIn();
-  applyUserState();
-}
-
-applyUserState();
-</script>
-
-<script>
-var LOCATIONS = [
-  // ── Netherlands ────────────────────────────────────────────────────────────
-  {group:'Netherlands — Rotterdam',  code:'RTM', name:'Rotterdam Maasvlakte',       sub:'Deep-sea container terminal, ECT Delta',          type:'port' },
-  {group:'Netherlands — Rotterdam',  code:'RWH', name:'Rotterdam Waalhaven',         sub:'Multipurpose terminal, break-bulk & containers',  type:'port' },
-  {group:'Netherlands — Rotterdam',  code:'REU', name:'Rotterdam Europoort',         sub:'Bulk, liquid and tanker terminal',                type:'port' },
-  {group:'Netherlands — Rotterdam',  code:'RBT', name:'Rotterdam Botlek',            sub:'Chemical, bulk and liquid cargo',                 type:'port' },
-  {group:'Netherlands — Rotterdam',  code:'RDM', name:'Rotterdam RDM Terminal',      sub:'Ro-Ro, project cargo and heavy-lift',             type:'port' },
-  {group:'Netherlands — Rotterdam',  code:'RTB', name:'Rotterdam Theemsweg Barge',   sub:'Inland barge transhipment hub, Maasvlakte',       type:'barge'},
-  {group:'Netherlands — Rotterdam',  code:'RRH', name:'Rotterdam Maasvlakte Rail',   sub:'Block train hub, Maasvlakte East',                type:'rail' },
-  {group:'Netherlands — Rotterdam',  code:'RWR', name:'Rotterdam Waalhaven Rail',    sub:'Freight rail terminal, Waal-Eems corridor',       type:'rail' },
-  {group:'Netherlands — Other Ports',code:'AMH', name:'Amsterdam Westpoort',         sub:'Bulk, agri and container, North Sea Canal',       type:'port' },
-  {group:'Netherlands — Other Ports',code:'FLS', name:'Flushing (Vlissingen)',        sub:'Deep-sea dry bulk and liquid terminal',           type:'port' },
-  {group:'Netherlands — Other Ports',code:'TER', name:'Terneuzen Zeeland Seaports',  sub:'Chemical cluster, Canal Zone',                   type:'port' },
-  {group:'Netherlands — Other Ports',code:'DOE', name:'Dordrecht River Terminal',    sub:'Inland barge and short-sea terminal',             type:'barge'},
-  {group:'Netherlands — Inland Hubs', code:'MOE', name:'Moerdijk Terminal',           sub:'Inland port, barge and rail, A16 corridor',       type:'hub'  },
-  {group:'Netherlands — Inland Hubs', code:'BRD', name:'Breda Logistics Park',        sub:'Intermodal distribution hub, Noord-Brabant',      type:'hub'  },
-  {group:'Netherlands — Inland Hubs', code:'TLB', name:'Tilburg Rail Terminal',       sub:'Container rail depot, Waal-Eems line',           type:'rail' },
-  {group:'Netherlands — Inland Hubs', code:'EIN', name:'Eindhoven Logistics Zone',    sub:'Road and rail hub, Brainport region',            type:'hub'  },
-  {group:'Netherlands — Inland Hubs', code:'VEN', name:'Venlo Freight Hub',           sub:'Largest inland logistics park NL, Rhine corridor',type:'hub' },
-  {group:'Netherlands — Inland Hubs', code:'NIM', name:'Nijmegen Rhine Terminal',     sub:'Inland barge, Rhine corridor connection',         type:'barge'},
-  {group:'Netherlands — Inland Hubs', code:'UTR', name:'Utrecht Rail Goods',          sub:'Container and pallet freight, central NL',       type:'rail' },
-
-  // ── Belgium ─────────────────────────────────────────────────────────────────
-  {group:'Belgium — Antwerp',        code:'ANR', name:'Antwerp Deurganck',           sub:'Deep-sea container terminal, PSA',                type:'port' },
-  {group:'Belgium — Antwerp',        code:'ANK', name:'Antwerp Noord Terminal',      sub:'Container and general cargo, left bank',          type:'port' },
-  {group:'Belgium — Antwerp',        code:'AWH', name:'Antwerp Waaslandhaven',       sub:'Container and Ro-Ro, Scheldt left bank',          type:'port' },
-  {group:'Belgium — Antwerp',        code:'AKT', name:'Antwerp Katwijk Terminal',    sub:'Bulk and breakbulk terminal',                     type:'port' },
-  {group:'Belgium — Antwerp',        code:'ARK', name:'Antwerp Rijnkaai Rail',       sub:'Freight rail terminal, DB Cargo NL',              type:'rail' },
-  {group:'Belgium — Antwerp',        code:'ABT', name:'Antwerp Barge Terminal',      sub:'Inland waterway hub, Contargo network',           type:'barge'},
-  {group:'Belgium — Antwerp',        code:'ALH', name:'Antwerp Lillo Hub',           sub:'Multipurpose inland terminal, Albert Canal',      type:'hub'  },
-  {group:'Belgium — Other Ports',    code:'ZBR', name:'Zeebrugge Container Terminal',sub:'North Sea deep-sea gateway, APM Terminals',       type:'port' },
-  {group:'Belgium — Other Ports',    code:'ADB', name:'Bruges-Zeebrugge Rail Link',  sub:'Rail connection Zeebrugge to hinterland',         type:'rail' },
-  {group:'Belgium — Other Ports',    code:'GNT', name:'Ghent Sea Terminal',          sub:'Industrial port, canal barge to Antwerp',         type:'port' },
-  {group:'Belgium — Other Ports',    code:'LGE', name:'Liege Trilogiport',           sub:'Trimodal hub, barge rail road, Albert Canal',     type:'hub'  },
-  {group:'Belgium — Other Ports',    code:'BRX', name:'Brussels Barge Terminal',     sub:'Canal barge, Sea Canal Brussels',                 type:'barge'},
-
-  // ── Germany ─────────────────────────────────────────────────────────────────
-  {group:'Germany — North Sea',      code:'HAM', name:'Hamburg Container Terminal',  sub:'Largest German port, Altenwerder CTA',            type:'port' },
-  {group:'Germany — North Sea',      code:'HBR', name:'Hamburg Burchardkai',         sub:'HHLA multipurpose container terminal',            type:'port' },
-  {group:'Germany — North Sea',      code:'BRE', name:'Bremen / Bremerhaven',        sub:'Second largest German port, container hub',       type:'port' },
-  {group:'Germany — North Sea',      code:'WIL', name:'Wilhelmshaven JadeWeserPort', sub:'Deep-water container terminal, North Sea',        type:'port' },
-  {group:'Germany — Rhine Corridor', code:'DUI', name:'Duisburg Logport',            sub:'Largest inland port in the world, Rhine-Ruhr',    type:'hub'  },
-  {group:'Germany — Rhine Corridor', code:'DUB', name:'Duisburg DeCeTe Barge',       sub:'Inland waterway terminal, Rhine hub',             type:'barge'},
-  {group:'Germany — Rhine Corridor', code:'DUR', name:'Duisburg Rail Terminal',      sub:'DB Cargo intermodal, Rhine-Ruhr',                 type:'rail' },
-  {group:'Germany — Rhine Corridor', code:'COL', name:'Cologne Niehl Terminal',      sub:'Trimodal hub, Rhine barge and rail',              type:'hub'  },
-  {group:'Germany — Rhine Corridor', code:'FRA', name:'Frankfurt Rail Freight',      sub:'DB intermodal depot, central Germany',            type:'rail' },
-  {group:'Germany — Rhine Corridor', code:'MAN', name:'Mannheim Port',               sub:'Trimodal inland port, Rhine-Neckar',              type:'hub'  },
-  {group:'Germany — Rhine Corridor', code:'KAR', name:'Karlsruhe Rheinhafen',        sub:'Inland port, southern Rhine corridor',            type:'hub'  },
-  {group:'Germany — Rhine Corridor', code:'BSL', name:'Basel Rhine Port',            sub:'Swiss-German border trimodal terminal',           type:'hub'  },
-
-  // ── France ──────────────────────────────────────────────────────────────────
-  {group:'France — North',           code:'LHV', name:'Le Havre Grand Port',         sub:'Largest French container port, Seine estuary',    type:'port' },
-  {group:'France — North',           code:'LHV', name:'Le Havre Terminal de France', sub:'APM Terminals deep-sea hub',                      type:'port' },
-  {group:'France — North',           code:'DUN', name:'Dunkerque Port',              sub:'Third largest French port, dry bulk and RoRo',    type:'port' },
-  {group:'France — North',           code:'CAL', name:'Calais Port',                 sub:'Ferry and short-sea terminal, Strait of Dover',   type:'port' },
-  {group:'France — North',           code:'LIL', name:'Lille Dourges Terminal',      sub:'Delta 3 intermodal hub, north France',            type:'hub'  },
-  {group:'France — South',           code:'MRS', name:'Marseille Fos Terminal',      sub:'Mediterranean deep-sea container terminal',       type:'port' },
-  {group:'France — South',           code:'LYO', name:'Lyon Rail Freight Hub',       sub:'Intermodal depot, Lyon-Saint-Exupery',            type:'rail' },
-  {group:'France — South',           code:'BDX', name:'Bordeaux Port Atlantique',    sub:'Atlantic coast, agri-bulk and containers',        type:'port' },
-
-  // ── United Kingdom ───────────────────────────────────────────────────────────
-  {group:'United Kingdom',           code:'FXT', name:'Felixstowe Port',             sub:'Largest UK container port, Hutchison Ports',      type:'port' },
-  {group:'United Kingdom',           code:'SOT', name:'Southampton DP World',        sub:'Second largest UK container terminal',            type:'port' },
-  {group:'United Kingdom',           code:'LON', name:'London Gateway Port',         sub:'DP World deep-sea container terminal',            type:'port' },
-  {group:'United Kingdom',           code:'GRG', name:'Grimsby Immingham',           sub:'Largest UK port by tonnage, bulk and RoRo',       type:'port' },
-  {group:'United Kingdom',           code:'LIV', name:'Liverpool Seaforth Terminal', sub:'Container and Ro-Ro, Peel Ports',                 type:'port' },
-  {group:'United Kingdom',           code:'BRS', name:'Bristol Avonmouth',           sub:'Bulk and container, western UK gateway',          type:'port' },
-
-  // ── Scandinavia ──────────────────────────────────────────────────────────────
-  {group:'Scandinavia',              code:'GOT', name:'Gothenburg Skandia Terminal', sub:'Largest Scandinavian container port',             type:'port' },
-  {group:'Scandinavia',              code:'OSL', name:'Oslo Sjursoya Terminal',      sub:'Norwegian container and Ro-Ro hub',               type:'port' },
-  {group:'Scandinavia',              code:'CPH', name:'Copenhagen Nordhavn',         sub:'Danish container and general cargo terminal',     type:'port' },
-  {group:'Scandinavia',              code:'AAR', name:'Aarhus Container Terminal',   sub:'Second largest Danish port',                      type:'port' },
-  {group:'Scandinavia',              code:'HEL', name:'Helsinki Vuosaari',           sub:'Finnish main container port',                     type:'port' },
-  {group:'Scandinavia',              code:'STO', name:'Stockholm Norvik Port',       sub:'New deep-sea container terminal, Sweden',         type:'port' },
-
-  // ── Iberian Peninsula ────────────────────────────────────────────────────────
-  {group:'Iberian Peninsula',        code:'BCN', name:'Barcelona Port Exterior',     sub:'Mediterranean deep-sea container hub, APM',       type:'port' },
-  {group:'Iberian Peninsula',        code:'VAL', name:'Valencia MSC Terminal',       sub:'Largest Spanish container port by volume',        type:'port' },
-  {group:'Iberian Peninsula',        code:'ALG', name:'Algeciras APM Terminal',      sub:'Key transshipment hub, Strait of Gibraltar',      type:'port' },
-  {group:'Iberian Peninsula',        code:'BLB', name:'Bilbao Outer Port',           sub:'Deepwater container terminal, Bay of Biscay',     type:'port' },
-  {group:'Iberian Peninsula',        code:'LSB', name:'Lisbon Liscont Terminal',     sub:'Portuguese main container gateway',               type:'port' },
-  {group:'Iberian Peninsula',        code:'SIN', name:'Sines Container Terminal XXI',sub:'Deep-sea transhipment, Atlantic corridor',        type:'port' },
-
-  // ── Mediterranean ────────────────────────────────────────────────────────────
-  {group:'Mediterranean',            code:'GEN', name:'Genoa Port of Genova',        sub:'Largest Italian port, container and Ro-Ro',       type:'port' },
-  {group:'Mediterranean',            code:'LAS', name:'La Spezia Lsct Terminal',     sub:'Northern Italy container gateway',                type:'port' },
-  {group:'Mediterranean',            code:'VEN', name:'Venice Vecon Terminal',       sub:'Adriatic sea container and Ro-Ro hub',            type:'port' },
-  {group:'Mediterranean',            code:'PIR', name:'Piraeus Cosco Terminal',      sub:'Largest Mediterranean container port',            type:'port' },
-  {group:'Mediterranean',            code:'IST', name:'Istanbul Marport',            sub:'Largest Turkish container terminal',              type:'port' },
-  {group:'Mediterranean',            code:'HAI', name:'Haifa Bayport Terminal',      sub:'Israeli deep-sea container gateway',              type:'port' },
-
-  // ── Middle East & Asia ───────────────────────────────────────────────────────
-  {group:'Middle East and Asia',     code:'DXB', name:'Dubai Jebel Ali (DP World)',  sub:'Largest port Middle East, DP World hub',          type:'port' },
-  {group:'Middle East and Asia',     code:'AUH', name:'Abu Dhabi Khalifa Port',      sub:'COSCO-operated deep-sea container terminal',      type:'port' },
-  {group:'Middle East and Asia',     code:'SGP', name:'Singapore PSA Port',          sub:'Second busiest container port worldwide',         type:'port' },
-  {group:'Middle East and Asia',     code:'SHA', name:'Shanghai Yangshan Port',      sub:'Busiest container port in the world',             type:'port' },
-  {group:'Middle East and Asia',     code:'HKG', name:'Hong Kong Kwai Tsing',        sub:'Major transshipment hub, Pearl River Delta',      type:'port' },
-  {group:'Middle East and Asia',     code:'BUS', name:'Busan New Port',              sub:'Largest South Korean container terminal',         type:'port' },
-  {group:'Middle East and Asia',     code:'TYO', name:'Tokyo Oi Container Terminal', sub:'Japan main container gateway, Tokyo Bay',         type:'port' },
-  {group:'Middle East and Asia',     code:'KLG', name:'Klang Westports',             sub:'Malaysian deep-sea container hub',                type:'port' },
-  {group:'Middle East and Asia',     code:'TAO', name:'Qingdao Qianwan Terminal',    sub:'Top 10 world container port, China',              type:'port' },
-
-  // ── Americas ─────────────────────────────────────────────────────────────────
-  {group:'Americas',                 code:'NYK', name:'New York / New Jersey Port',  sub:'Largest US East Coast container port',            type:'port' },
-  {group:'Americas',                 code:'SAV', name:'Savannah Garden City Terminal',sub:'Fast growing US East Coast hub, GPA',            type:'port' },
-  {group:'Americas',                 code:'LAX', name:'Los Angeles / Long Beach',    sub:'Largest US container port complex, West Coast',   type:'port' },
-  {group:'Americas',                 code:'HOU', name:'Houston Bayport Terminal',    sub:'US Gulf Coast container and bulk hub',            type:'port' },
-  {group:'Americas',                 code:'MIA', name:'Miami PortMiami',             sub:'Cargo and cruise gateway, South Florida',         type:'port' },
-  {group:'Americas',                 code:'VAN', name:'Vancouver Deltaport',         sub:'Largest Canadian container terminal',             type:'port' },
-  {group:'Americas',                 code:'SAO', name:'Santos Container Terminal',   sub:'Largest Latin American container port',           type:'port' },
-  {group:'Americas',                 code:'BAL', name:'Balboa Port, Panama',         sub:'Panama Canal Pacific entrance, PSA terminal',    type:'port' },
-  {group:'Americas',                 code:'COL', name:'Colon Manzanillo Terminal',   sub:'Panama Atlantic gateway, largest Caribbean hub',  type:'port' },
-
-  // ── Africa ───────────────────────────────────────────────────────────────────
-  {group:'Africa',                   code:'TNG', name:'Tanger Med Terminal',         sub:'Largest African container port, APMT',            type:'port' },
-  {group:'Africa',                   code:'DKR', name:'Dakar Port du Futur',         sub:'West African hub, modernised deep-sea terminal',  type:'port' },
-  {group:'Africa',                   code:'DUR', name:'Durban Pier 1 Terminal',      sub:'Largest African port by throughput',              type:'port' },
-  {group:'Africa',                   code:'MOM', name:'Mombasa Kilindini Harbour',   sub:'East Africa main container gateway',              type:'port' },
-  {group:'Africa',                   code:'LAG', name:'Lagos Apapa Terminal',        sub:'Nigeria main container and bulk port',            type:'port' },
-  {group:'Africa',                   code:'ABJ', name:'Abidjan Terminal a Conteneur',sub:'Ivory Coast and West Africa gateway',             type:'port' },
-
-  // ── Australia & Pacific ──────────────────────────────────────────────────────
-  {group:'Australia and Pacific',    code:'SYD', name:'Sydney Port Botany',          sub:'Australian east coast container gateway',         type:'port' },
-  {group:'Australia and Pacific',    code:'MEL', name:'Melbourne Webb Dock',         sub:'Largest Australian container port',               type:'port' },
-  {group:'Australia and Pacific',    code:'BNE', name:'Brisbane Fisherman Islands',  sub:'Queensland container and bulk terminal',          type:'port' },
-  {group:'Australia and Pacific',    code:'AKL', name:'Auckland Fergusson Terminal', sub:'New Zealand main container gateway',              type:'port' }
-];
-
-var TYPE_COLORS = {
-  port:  {bg:'#E3F2FD', color:'#1565C0'},
-  barge: {bg:'#E8F5E9', color:'#2E7D32'},
-  rail:  {bg:'#EDE7F6', color:'#5E35B1'},
-  hub:   {bg:'#FFF3E0', color:'#E65100'}
-};
-
-function buildDropdown(query, excludeName) {
-  query = (query || '').toLowerCase().trim();
-  var groups = {}, total = 0;
-  LOCATIONS.forEach(function(loc) {
-    if (loc.name === excludeName) return;
-    var match = !query
-      || loc.name.toLowerCase().indexOf(query) >= 0
-      || loc.code.toLowerCase().indexOf(query) >= 0
-      || loc.sub.toLowerCase().indexOf(query) >= 0
-      || loc.group.toLowerCase().indexOf(query) >= 0;
-    if (!match) return;
-    if (!groups[loc.group]) groups[loc.group] = [];
-    groups[loc.group].push(loc);
-    total++;
-  });
-  if (total === 0) return '<div class="dropdown-no-results">No locations found</div>';
-  var html = '';
-  Object.keys(groups).forEach(function(grp) {
-    html += '<div class="dropdown-group-label">' + grp + '</div>';
-    groups[grp].forEach(function(loc) {
-      var tc = TYPE_COLORS[loc.type] || TYPE_COLORS.hub;
-      var svgIcons = {
-      port:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M12 11v10"/><path d="M5 21h14"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7"/></svg>',
-      barge: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/></svg>',
-      rail:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M7 17h10"/></svg>',
-      hub:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="13" rx="1"/><path d="M9 22V12h6v10"/><path d="M1 9l11-7 11 7"/></svg>'
-    };
-    var iconSvg = svgIcons[loc.type] || svgIcons.hub;
-    html += '<div class="dropdown-item" data-locname="' + loc.name + '">'
-        + '<div class="dropdown-item-icon" style="background:' + tc.bg + ';color:' + tc.color + ';">' + iconSvg + '</div>'
-        + '<div><div class="dropdown-item-name">' + loc.name + '</div>'
-        + '<div class="dropdown-item-sub">' + loc.sub + '</div></div>'
-        + '<div class="dropdown-item-code">' + loc.code + '</div>'
-        + '</div>';
-    });
-  });
-  return html;
-}
-
-var _activeInput = null;
-
-function openDropdown(inputId) {
-  _activeInput = inputId;
-  var ddlId    = inputId === 'originInput' ? 'originDropdown' : 'destDropdown';
-  var othDdlId = inputId === 'originInput' ? 'destDropdown'   : 'originDropdown';
-  var otherId  = inputId === 'originInput' ? 'destInput'      : 'originInput';
-  var inp    = document.getElementById(inputId);
-  var ddl    = document.getElementById(ddlId);
-  var othDdl = document.getElementById(othDdlId);
-  var other  = document.getElementById(otherId);
-
-  // Close the other dropdown
-  if (othDdl) { othDdl.classList.remove('open'); othDdl.innerHTML = ''; othDdl.style.width = ''; }
-
-  // Build content
-  ddl.innerHTML = buildDropdown(inp.value, other.value);
-
-  // Position fixed relative to the input field
-  var rect = inp.getBoundingClientRect();
-  ddl.style.top    = (rect.bottom + 6) + 'px';
-  ddl.style.width  = Math.max(rect.width, 280) + 'px';
-  ddl.style.left   = rect.left + 'px';
-  ddl.style.right  = 'auto';
-
-  ddl.classList.add('open');
-
-  // Remove border from first group label
-  var firstGrp = ddl.querySelector('.dropdown-group-label');
-  if (firstGrp) firstGrp.style.borderTop = 'none';
-
-  // Flip left if overflows right edge of viewport
-  requestAnimationFrame(function() {
-    var dr = ddl.getBoundingClientRect();
-    if (dr.right > window.innerWidth - 12) {
-      ddl.style.left  = 'auto';
-      ddl.style.right = (window.innerWidth - rect.right) + 'px';
-    }
-  });
-}
-
-function selectItem(name) {
-  if (!_activeInput) return;
-  var inp = document.getElementById(_activeInput);
-  var ddlId = _activeInput === 'originInput' ? 'originDropdown' : 'destDropdown';
-  var ddl = document.getElementById(ddlId);
-  inp.value = name;
-  ddl.classList.remove('open');
-}
-
-// Event delegation for item clicks
-document.addEventListener('click', function(e) {
-  var item = e.target.closest('.dropdown-item[data-locname]');
-  if (item) { selectItem(item.dataset.locname); return; }
-  if (!e.target.closest('.autocomplete-wrap')) {
-    document.querySelectorAll('.dropdown-list').forEach(function(d){ d.classList.remove('open'); });
-  }
-});
-
-['originInput', 'destInput'].forEach(function(id) {
-  var inp = document.getElementById(id);
-  var ddlId = id === 'originInput' ? 'originDropdown' : 'destDropdown';
-  inp.addEventListener('focus', function() { /* don't auto-open, only on type */ });
-  inp.addEventListener('input', function() { openDropdown(id); });
-  inp.addEventListener('keydown', function(e) {
-    var ddl = document.getElementById(ddlId);
-    var items = Array.from(ddl.querySelectorAll('.dropdown-item'));
-    var hi = ddl.querySelector('.dropdown-item.highlighted');
-    var idx = items.indexOf(hi);
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (hi) hi.classList.remove('highlighted');
-      var next = items[idx + 1] || items[0];
-      if (next) next.classList.add('highlighted');
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (hi) hi.classList.remove('highlighted');
-      var prev = items[idx - 1] || items[items.length - 1];
-      if (prev) prev.classList.add('highlighted');
-    } else if (e.key === 'Enter') {
-      var hi2 = ddl.querySelector('.dropdown-item.highlighted');
-      if (hi2) selectItem(hi2.dataset.locname);
-    } else if (e.key === 'Escape') {
-      ddl.classList.remove('open');
-    }
-  });
-});
-</script>
-<script>
-function showResults(){
-  var origin = document.getElementById('originInput').value.trim();
-  var dest   = document.getElementById('destInput').value.trim();
-  var date   = (document.getElementById('dateInput')||document.querySelector('input[type=date]')).value || '2026-05-20';
-  var weight = document.getElementById('cargoWeight') ? document.getElementById('cargoWeight').value : (document.querySelector('input[type=number]')||{value:'24000'}).value;
-  var cType  = (document.getElementById('containerType')||{value:'40HC'}).value;
-  var cQty   = parseInt((document.getElementById('containerQty')||{value:'1'}).value)||1;
-
-  // Validate: origin required
-  if (!origin) {
-    shakeField('originInput', 'Please enter an origin port or terminal.');
-    return;
-  }
-  // Validate: destination required
-  if (!dest) {
-    shakeField('destInput', 'Please enter a destination port or terminal.');
-    return;
-  }
-  // Validate: origin ≠ destination
-  if (origin.trim().toLowerCase() === dest.trim().toLowerCase()) {
-    shakeField('destInput', 'Origin and destination must be different.');
-    shakeField('originInput', '');
-    return;
-  }
-  // Validate: weight is a positive number
-  var w = parseInt(weight);
-  if (!w || w <= 0) {
-    showValidationMsg('Weight must be a positive number.');
-    return;
-  }
-
-  localStorage.setItem('cb_origin',         origin);
-  localStorage.setItem('cb_dest',           dest);
-  localStorage.setItem('cb_date',           date);
-  localStorage.setItem('cb_weight',         weight);
-  localStorage.setItem('cb_container_type', cType);
-  localStorage.setItem('cb_container_qty',  cQty);
-  var p = new URLSearchParams({origin:origin,dest:dest,date:date,weight:weight,ctype:cType,cqty:cQty});
-  window.location.href = 'results-screen.html?' + p.toString();
-}
-
-function shakeField(inputId, msg) {
-  var inp = document.getElementById(inputId);
-  if (!inp) return;
-  var field = inp.closest('.search-field') || inp.parentElement;
-  // Red border flash
-  field.style.transition = 'border-color .15s, box-shadow .15s';
-  field.style.borderColor = '#C62828';
-  field.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.15)';
-  setTimeout(function(){ field.style.borderColor = ''; field.style.boxShadow = ''; }, 2000);
-  // Shake animation
-  inp.style.animation = 'none';
-  inp.offsetHeight; // reflow
-  inp.style.animation = 'shake 0.35s ease';
-  // Show message if provided
-  if (msg) showValidationMsg(msg);
-}
-
-function showValidationMsg(msg) {
-  var existing = document.getElementById('validation-msg');
-  if (existing) existing.remove();
-  var el = document.createElement('div');
-  el.id = 'validation-msg';
-  el.style.cssText = 'display:flex;align-items:center;gap:8px;color:#C62828;font-size:13px;font-weight:500;padding:8px 12px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:8px;margin-top:8px;animation:fadeInMsg 0.2s ease;';
-  el.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' + msg;
-  // Insert after search panel buttons
-  var panel = document.querySelector('.search-panel');
-  if (panel) panel.appendChild(el);
-  setTimeout(function(){ if (el.parentNode) el.remove(); }, 3000);
-}
-
-function showHome(){
-  document.getElementById('resultsView').style.display='none';
-  document.getElementById('homeView').style.display='block';
-  window.scrollTo(0,0);
-}
-
-function swapLocations(){
-  var a=document.getElementById('originInput'), b=document.getElementById('destInput'), t=a.value; a.value=b.value; b.value=t;
-}
-
-function toggleChip(el){
-  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-  el.classList.add('active');
-}
-
-var modeInfo = {
-  barge:{ icon:`<span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;background:#F1F3F5;border-radius:12px;color:#495057;flex-shrink:0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M1 3h13v13H1z" rx="1"/>
-  <path d="M14 7h3.5L21 11.5V16h-7V7z"/>
-  <circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/>
-  <path d="M3 16v3"/><path d="M19 16v3"/>
-  <path d="M1 9h13"/><path d="M14 10h5.5"/>
-</svg></span>`, label:'Road · €420',  sub:"You'll be taken to the confirmation screen. A 20-minute slot hold will begin for your HGV transport." }
-};
-
-function openModal(mode){
-  var d=modeInfo[mode];
-  document.getElementById('modalIcon').innerHTML=d.icon;
-  document.getElementById('modalMode').textContent=d.label;
-  document.getElementById('modalSub').textContent=d.sub;
-  document.getElementById('modalOverlay').classList.add('open');
-}
-function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
-function goToConfirmation(){ window.location.href='confirmation-screen.html'; }
-</script>
-<script>
-// Animate counters on load
-(function() {
-  // Bookings counter — starts at random realistic number and ticks up slowly
-  var base = 820 + Math.floor(Math.random() * 40);
-  var el = document.getElementById('ctr-bookings');
-  if (!el) return;
-  el.textContent = base;
-  // Tick up every 8-15 seconds
-  setInterval(function() {
-    base++;
-    el.textContent = base;
-  }, 8000 + Math.random() * 7000);
-
-  // Also count real completed bookings
-  var myBookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
-  if (myBookings.length > 0) {
-    base += myBookings.length;
-    el.textContent = base;
-  }
-})();
-</script>
-<script>
-function setChip(el){
-  el.closest('div').querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
-  el.classList.add('active');
-}
-
-// Container type presets (tare in kg, max payload in kg)
-var CONTAINER_SPECS = {
-  '20GP': {tare:2200, maxpay:28000, label:'20ft General Purpose'},
-  '40GP': {tare:3800, maxpay:28600, label:'40ft General Purpose'},
-  '40HC': {tare:4000, maxpay:28600, label:'40ft High Cube'},
-  '45HC': {tare:4500, maxpay:27600, label:'45ft High Cube'},
-  '20RF': {tare:2900, maxpay:27100, label:'20ft Reefer'},
-  '40RF': {tare:4800, maxpay:26580, label:'40ft Reefer'},
-  'custom': {tare:0, maxpay:0, label:'Custom'}
-};
-
-function recalcWeight() {
-  var sel   = document.getElementById('containerType');
-  var qtyEl = document.getElementById('containerQty');
-  var wtEl  = document.getElementById('cargoWeight');
-  var info  = document.getElementById('containerInfo');
-  if (!sel || !qtyEl || !wtEl) return;
-  var type = sel.value;
-  var qty  = Math.max(1, parseInt(qtyEl.value)||1);
-  var spec = CONTAINER_SPECS[type] || CONTAINER_SPECS['40HC'];
-  if (type === 'custom') {
-    if (info) info.textContent = 'Custom — enter total cargo weight manually';
-    updateLiveStrip();
-    return;
-  }
-  // Default payload = 80% of max per container
-  var defaultPayload = Math.round(spec.maxpay * 0.80);
-  var totalWeight    = defaultPayload * qty;
-  wtEl.value = totalWeight;
-  if (info) info.textContent = spec.label + ' · max payload ' + spec.maxpay.toLocaleString() + ' kg per container · tare ' + spec.tare.toLocaleString() + ' kg';
-  updateLiveStrip();
-}
-
-// Init on load
-document.addEventListener('DOMContentLoaded', function(){ recalcWeight(); });
-</script>
-
-<script>
-// ── Live strip: update route label and prices from inputs ──────────────────
-var PORT_CODES_LIVE = {
-  'Rotterdam Maasvlakte':'RTM','Rotterdam Waalhaven':'RWH','Rotterdam Europoort':'REU',
-  'Amsterdam Westpoort':'AMS','Antwerp Deurganck':'ANR','Antwerp Noord Terminal':'ANK',
-  'Antwerp Waaslandhaven':'AWH','Zeebrugge Container Terminal':'ZBR',
-  'Ghent Sea Terminal':'GNT','Hamburg Container Terminal':'HAM',
-  'Bremen / Bremerhaven':'BRE','Duisburg Logport':'DUI','Cologne Niehl Terminal':'CGN',
-  'Basel Rhine Port':'BSL','Le Havre Grand Port':'LHV','Felixstowe Port':'FXT',
-  'Southampton DP World':'SOU','Gothenburg Skandia Terminal':'GOT',
-  'Barcelona Port Exterior':'BCN','Valencia MSC Terminal':'VLC',
-  'Marseille Fos Terminal':'MRS','Genoa Port of Genova':'GOA',
-  'Piraeus Cosco Terminal':'PIR','Istanbul Marport':'IST',
-  'Dubai Jebel Ali (DP World)':'DXB','Singapore PSA Port':'SGP',
-  'Shanghai Yangshan Port':'SHA','Busan New Port':'PUS',
-  'Tokyo Oi Container Terminal':'TYO','Los Angeles / Long Beach':'LAX',
-  'New York / New Jersey Port':'EWR','Sydney Port Botany':'SYD',
-  'Melbourne Webb Dock':'MEL'
-};
-
-function getCode(name) {
-  if (!name) return '—';
-  if (PORT_CODES_LIVE[name]) return PORT_CODES_LIVE[name];
-  // fallback: first 3 uppercase letters
-  var upper = name.replace(/[^A-Za-z ]/g,'').toUpperCase().split(' ');
-  return upper[0] ? upper[0].substring(0,3) : name.substring(0,3).toUpperCase();
-}
-
-// Port coordinates for live price calculation
-var LIVE_COORDS = {
-  'Rotterdam Maasvlakte':[51.951,4.045],'Rotterdam Waalhaven':[51.895,4.396],
-  'Rotterdam Europoort':[51.932,4.010],'Amsterdam Westpoort':[52.398,4.793],
-  'Antwerp Deurganck':[51.282,4.272],'Antwerp Noord Terminal':[51.302,4.298],
-  'Antwerp Waaslandhaven':[51.270,4.210],'Zeebrugge Container Terminal':[51.344,3.197],
-  'Ghent Sea Terminal':[51.100,3.730],'Hamburg Container Terminal':[53.530,9.950],
-  'Bremen / Bremerhaven':[53.533,8.571],'Duisburg Logport':[51.430,6.740],
-  'Cologne Niehl Terminal':[51.014,6.943],'Basel Rhine Port':[47.557,7.593],
-  'Le Havre Grand Port':[49.490,0.107],'Marseille Fos Terminal':[43.409,4.996],
-  'Barcelona Port Exterior':[41.335,2.154],'Felixstowe Port':[51.963,1.351],
-  'Southampton DP World':[50.898,-1.424],'Gothenburg Skandia Terminal':[57.706,11.864],
-  'Genoa Port of Genova':[44.406,8.934],'Piraeus Cosco Terminal':[37.942,23.640],
-  'Istanbul Marport':[41.010,28.960],'Dubai Jebel Ali (DP World)':[24.988,55.065],
-  'Singapore PSA Port':[1.265,103.820],'Shanghai Yangshan Port':[30.632,122.051],
-  'Busan New Port':[35.100,128.854],'Tokyo Oi Container Terminal':[35.601,139.754],
-  'Los Angeles / Long Beach':[33.754,-118.216],'New York / New Jersey Port':[40.666,-74.148],
-  'Sydney Port Botany':[-33.970,151.213],'Melbourne Webb Dock':[-37.840,144.910]
-};
-
-function haversineLive(a, b) {
-  var R=6371, dLat=(b[0]-a[0])*Math.PI/180, dLng=(b[1]-a[1])*Math.PI/180;
-  var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-}
-
-function calcLivePrices(distKm) {
-  var weight = 24000;
-  // Weight scaling
-  var fuel=Math.round(weight*0.04), hand=Math.round(weight*(distKm<500?0.18:0.10));
-  var wB=1.0, wR=1.0, wD=1.0; // at base weight
-  if (distKm < 50)  { return {barge:80, rail:120, road:150}; }
-  if (distKm < 400) {
-    return {
-      barge: Math.max(80,  Math.round(distKm * 4.2 / 10) * 10),
-      rail:  Math.max(120, Math.round(distKm * 4.8 / 10) * 10),
-      road:  Math.max(150, Math.round(distKm * 5.7 / 10) * 10)
-    };
-  }
-  if (distKm < 2000) {
-    return {
-      barge: Math.max(80,  Math.round(distKm * 0.8  / 10) * 10),
-      rail:  Math.max(120, Math.round(distKm * 0.95 / 10) * 10),
-      road:  Math.max(150, Math.round(distKm * 1.1  / 10) * 10)
-    };
-  }
-  // Long range (sea)
-  var days = Math.ceil(distKm / 800);
-  return {
-    barge: Math.max(300, Math.round(distKm * 0.4 / 100) * 100),
-    rail:  Math.max(400, Math.round(distKm * 0.55 / 100) * 100),
-    road:  Math.max(600, Math.round(distKm * 0.7 / 100) * 100)
-  };
-}
-
-function updateLiveStrip() {
-  var origin = (document.getElementById('originInput') || {}).value || '';
-  var dest   = (document.getElementById('destInput')   || {}).value || '';
-  var oTrim  = origin.trim();
-  var dTrim  = dest.trim();
-  var oCode  = getCode(oTrim);
-  var dCode  = getCode(dTrim);
-
-  // Update route label
-  var label = document.getElementById('liveRoute');
-  if (label) label.textContent = oCode + ' → ' + dCode;
-
-  // Calculate distance and update prices
-  var oCoord = LIVE_COORDS[oTrim];
-  var dCoord = LIVE_COORDS[dTrim];
-
-  // If we don't have exact coords, try partial match
-  if (!oCoord) {
-    Object.keys(LIVE_COORDS).forEach(function(k){ if(k.indexOf(oTrim.split(' ')[0])>=0) oCoord=LIVE_COORDS[k]; });
-  }
-  if (!dCoord) {
-    Object.keys(LIVE_COORDS).forEach(function(k){ if(k.indexOf(dTrim.split(' ')[0])>=0) dCoord=LIVE_COORDS[k]; });
-  }
-
-  if (!oCoord || !dCoord || oTrim===dTrim) return; // can't calculate
-
-  var distKm = Math.round(haversineLive(oCoord, dCoord));
-  var prices = calcLivePrices(distKm);
-
-  // Road CO2 is always baseline; barge/rail savings scale with mode
-  var bargeSaving = Math.round((1 - prices.barge/prices.road) * 100);
-  var railSaving  = Math.round((1 - prices.rail/prices.road)  * 100);
-  // Cap at known maximums
-  if (bargeSaving > 72) bargeSaving = 72;
-  if (railSaving  > 58) railSaving  = 58;
-  if (bargeSaving < 0)  bargeSaving = 0;
-  if (railSaving  < 0)  railSaving  = 0;
-
-  var fmt = function(n){ return '€' + n.toLocaleString(); };
-  var bp=document.getElementById('liveBargePrice'), bc=document.getElementById('liveBargeCo2');
-  var rp=document.getElementById('liveRailPrice'),  rc=document.getElementById('liveRailCo2');
-  var dp=document.getElementById('liveRoadPrice');
-  if (bp) bp.textContent = fmt(prices.barge);
-  if (bc) bc.textContent = '−' + bargeSaving + '% CO₂';
-  if (rp) rp.textContent = fmt(prices.rail);
-  if (rc) rc.textContent = '−' + railSaving  + '% CO₂';
-  if (dp) dp.textContent = fmt(prices.road);
-}
-
-// Wire to both inputs
-['originInput','destInput'].forEach(function(id) {
-  var el = document.getElementById(id);
-  if (el) {
-    el.addEventListener('input',   updateLiveStrip);
-    el.addEventListener('change',  updateLiveStrip);
-    // Also fire after autocomplete selection (slight delay for value to set)
-    el.addEventListener('blur', function(){ setTimeout(updateLiveStrip, 80); });
-  }
-});
-
-// Run once on load
-updateLiveStrip();
-</script>
-
-<!-- Portalled dropdowns — positioned via JS, z-index above everything -->
-<div class="dropdown-list" id="originDropdown" style="position:fixed;"></div>
-<div class="dropdown-list" id="destDropdown"   style="position:fixed;"></div>
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
 <script>
-// If already logged in, skip the landing page and go straight to their portal
+// ── If already logged in, redirect to correct portal ──────────
 (async function() {
   await CB.redirectIfLoggedIn();
 })();
 
-// Gate the search form — must be logged in to search
-var _origSearchSubmit = window.submitSearch;
-window.submitSearch = async function() {
-  var session = await CB.getSession();
-  if (!session) {
-    CB.showAuthModal();
-    return;
+// ── State ─────────────────────────────────────────────────────
+var currentRole = 'forwarder';
+var currentTab  = 'login';
+
+// ── Tab switching ─────────────────────────────────────────────
+function showTab(tab) {
+  currentTab = tab;
+  var isLogin = tab === 'login';
+
+  document.getElementById('form-login').style.display    = isLogin ? '' : 'none';
+  document.getElementById('form-register').style.display = isLogin ? 'none' : '';
+  document.getElementById('roleToggle').style.display    = isLogin ? 'none' : '';
+
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tab-register').classList.toggle('active', !isLogin);
+
+  // Clear messages
+  document.getElementById('login-msg').className = 'msg';
+  document.getElementById('reg-msg').className   = 'msg';
+}
+
+// ── Role selection ────────────────────────────────────────────
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('roleForwarder').classList.toggle('active', role === 'forwarder');
+  document.getElementById('roleOperator').classList.toggle('active',  role === 'operator');
+  document.getElementById('modality-field').style.display = role === 'operator' ? '' : 'none';
+}
+
+// ── Login ─────────────────────────────────────────────────────
+async function doLogin() {
+  var email    = document.getElementById('login-email').value.trim();
+  var password = document.getElementById('login-password').value;
+  var msgEl    = document.getElementById('login-msg');
+  var btn      = document.getElementById('login-btn');
+
+  msgEl.className = 'msg';
+  if (!email || !password) {
+    msgEl.textContent = 'Please enter your email and password.';
+    msgEl.className = 'msg error'; return;
   }
-  if (typeof _origSearchSubmit === 'function') {
-    _origSearchSubmit();
-  } else {
-    // Find and click the actual search submit
-    var btn = document.querySelector('[onclick*="results-screen"], [onclick*="submitSearch"]');
-    if (btn) btn.click();
+
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  try {
+    await CB.login({ email, password });
+    var profile = await CB.getProfile();
+    if (profile && profile.user_type === 'operator') {
+      window.location.href = 'operator-portal.html';
+    } else {
+      window.location.href = 'search.html';
+    }
+  } catch(e) {
+    msgEl.textContent = e.message || 'Login failed. Check your email and password.';
+    msgEl.className = 'msg error';
+    btn.disabled = false; btn.textContent = 'Sign in →';
   }
-};
+}
+
+// ── Register ──────────────────────────────────────────────────
+async function doRegister() {
+  var company  = document.getElementById('reg-company').value.trim();
+  var email    = document.getElementById('reg-email').value.trim();
+  var password = document.getElementById('reg-password').value;
+  var modality = document.getElementById('reg-modality').value;
+  var msgEl    = document.getElementById('reg-msg');
+  var btn      = document.getElementById('reg-btn');
+
+  msgEl.className = 'msg';
+  if (!company || !email || !password) {
+    msgEl.textContent = 'Please fill in all fields.';
+    msgEl.className = 'msg error'; return;
+  }
+  if (password.length < 6) {
+    msgEl.textContent = 'Password must be at least 6 characters.';
+    msgEl.className = 'msg error'; return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  try {
+    await CB.register({
+      email, password,
+      company_name: company,
+      user_type:    currentRole,
+      modality:     currentRole === 'operator' ? modality : null
+    });
+
+    // Auto sign in after register (email confirm is off)
+    await CB.login({ email, password });
+    var profile = await CB.getProfile();
+    if (profile && profile.user_type === 'operator') {
+      window.location.href = 'operator-portal.html';
+    } else {
+      window.location.href = 'search.html';
+    }
+  } catch(e) {
+    msgEl.textContent = e.message || 'Registration failed. Please try again.';
+    msgEl.className = 'msg error';
+    btn.disabled = false; btn.textContent = 'Create account →';
+  }
+}
 </script>
 </body>
 </html>
