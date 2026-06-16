@@ -204,7 +204,8 @@
   .slot-row.active .slot-price { color:var(--blue); }
 
 .card-mode-header{display:flex!important;align-items:center!important;gap:8px!important;}
-.card-mode-type{white-space:nowrap;}
+.card-mode-type{white-space:nowrap;font-size:11px!important;font-weight:700!important;padding:3px 8px!important;border-radius:4px!important;}
+#disruptionBanner{display:none!important;}
 </style>
 </head>
 <body>
@@ -507,7 +508,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp
 
       <!-- BARGE -->
       <div class="route-card recommended selected" id="card-barge" data-mode="barge" data-price="310" data-transit="18" data-co2="-68" data-direct="false" onclick="selectCard('barge')">
-        <div class="card-mode-header"><span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1565C0;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/><path d="M9 5V3h6v2"/><path d="M1 20h22"/></svg></span><span class="card-mode-name">Barge</span><span class="card-mode-type" style="background:#1565C0;color:#fff;border-color:#1565C0;">Inland Waterway</span></div>
+        <div class="card-mode-header" style="display:flex;align-items:center;gap:8px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1565C0;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/><path d="M9 5V3h6v2"/><path d="M1 20h22"/></svg></span><span class="card-mode-name">Barge</span><span class="card-mode-type" style="background:#1565C0;color:#fff;border-color:#1565C0;">Inland Waterway</span></div>
         <div class="card-times">
           <span class="time-val">06:00<div style="font-size:10px;color:var(--grey-muted);font-weight:500;margin-top:2px;font-family:var(--font-ui);">Thu 20 May</div></span>
           <div class="time-line"><span class="time-dur">18h waterway</span></div>
@@ -548,7 +549,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp
 
       <!-- RAIL -->
       <div class="route-card" id="card-rail" data-mode="rail" data-price="355" data-transit="11" data-co2="-54" data-direct="true" onclick="selectCard('rail')">
-        <div class="card-mode-header"><span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#5E35B1;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M12 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M4 22h16"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/></svg></span><span class="card-mode-name">Rail</span><span class="card-mode-type" style="background:#5E35B1;color:#fff;border-color:#5E35B1;">Freight Train</span></div>
+        <div class="card-mode-header" style="display:flex;align-items:center;gap:8px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#5E35B1;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M2 10h20"/><path d="M7 4v6"/><path d="M12 4v6"/><path d="M17 4v6"/><path d="M5 22l2-6"/><path d="M19 22l-2-6"/><path d="M4 22h16"/><circle cx="7" cy="18" r="1"/><circle cx="17" cy="18" r="1"/></svg></span><span class="card-mode-name">Rail</span><span class="card-mode-type" style="background:#5E35B1;color:#fff;border-color:#5E35B1;">Freight Train</span></div>
         <div class="card-times">
           <span class="time-val">10:30<div style="font-size:10px;color:var(--grey-muted);font-weight:500;margin-top:2px;font-family:var(--font-ui);">Thu 20 May</div></span>
           <div class="time-line"><span class="time-dur">11h direct</span></div>
@@ -588,7 +589,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp
 
       <!-- ROAD -->
       <div class="route-card" id="card-road" data-mode="road" data-price="420" data-transit="4" data-co2="0" data-direct="true" onclick="selectCard('road')">
-        <div class="card-mode-header"><span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#C25450;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M1 9h13"/><path d="M14 10h5.5"/></svg></span><span class="card-mode-name">Road</span><span class="card-mode-type" style="background:#C25450;color:#fff;border-color:#C25450;">HGV Transport</span></div>
+        <div class="card-mode-header" style="display:flex;align-items:center;gap:8px;"><span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#C25450;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h13v13H1z"/><path d="M14 7h3.5L21 11.5V16h-7V7z"/><circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M1 9h13"/><path d="M14 10h5.5"/></svg></span><span class="card-mode-name">Road</span><span class="card-mode-type" style="background:#C25450;color:#fff;border-color:#C25450;">HGV Transport</span></div>
         <div class="card-times">
           <span class="time-val">14:00<div style="font-size:10px;color:var(--grey-muted);font-weight:500;margin-top:2px;font-family:var(--font-ui);">Thu 20 May</div></span>
           <div class="time-line"><span class="time-dur">4h direct</span></div>
@@ -2333,7 +2334,7 @@ function loadSearchAndUpdate() {
   })();
   if (typeof initDetailPanels === "function") initDetailPanels(options, origin, dest, distKm);
   updateCards(options, origin, dest, parseInt(weight)||24000, distKm);
-  checkDisruptions(origin, dest);
+  // checkDisruptions(origin, dest); // disabled
 
   // Clear delivery state immediately if field is empty, BEFORE the timeout
   var _dtInputNow = document.getElementById('rs-deliver-to');
@@ -3881,7 +3882,7 @@ function applyDisruptionFilter() {
 var _origLoadSearch = window.loadSearchAndUpdate;
 document.addEventListener('DOMContentLoaded', function() {
   // Disruption banner disabled — only show if real disruption data exists
-  // checkDisruptions(o, d);
+  // // checkDisruptions(o, d); // disabled
 });
 </script>
 
