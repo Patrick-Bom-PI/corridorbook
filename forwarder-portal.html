@@ -493,21 +493,18 @@ async function loadAndRenderAll() {
   renderAll();
 }
 
-// DO NOT call loadAndRenderAll() here - called after CB is ready below
+// Loaded after CB ready - see auth block below
 </script>
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
 <script>
-// Auth guard and init - runs after CB is loaded
 (async function() {
   var profile = await CB.authGuard({ forwarderOnly: true });
   if (!profile) return;
   var nc = document.getElementById('nav-company');
   if (nc) nc.textContent = profile.company_name || '';
-  // Now CB is ready - load bookings
   await loadAndRenderAll();
-  // Auto-refresh
   setInterval(loadAndRenderAll, 10000);
 })();
 </script>

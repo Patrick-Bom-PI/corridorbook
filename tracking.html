@@ -313,15 +313,15 @@
 <!-- NAV -->
 <nav class="nav">
   <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
-  <div class="nav-links" style="display:flex;align-items:center;gap:24px;">
-    <a href="search.html" class="nav-link">Search slots</a>
-    <a href="tracking.html" class="nav-link" style="color:#fff;font-weight:600;">My Shipments</a>
-    <a href="how-it-works.html" class="nav-link">How it works</a>
-    <a href="about.html" class="nav-link">About</a>
+  <div class="nav-links">
+    <a href="search.html">Search slots</a>
+    <a href="tracking.html" style="color:var(--blue);font-weight:700;">My Shipments</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="about.html">About</a>
   </div>
   <div class="nav-right">
-    <span class="nav-company" id="nav-company"></span>
-    <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
+    <span id="nav-company" style="font-size:12px;color:var(--grey-muted);font-family:var(--font-mono);"></span>
+    <button onclick="CB.logout()" style="font-size:12px;color:var(--grey-label);background:none;border:1px solid var(--grey-border);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
   </div>
 </nav>
 
@@ -1298,7 +1298,7 @@ function cancelShipment(ref, btn) {
     if (banner) {
       banner.style.display = 'flex';
       var body = document.getElementById('delayAlertBody');
-      if (body) body.textContent = 'Shipment MBP-4QR7W2 (Barge · Rotterdam → Antwerp) is running ~45 min late due to lock congestion on the Scheldt. Updated ETA: 21 May · 00:45. Your registered contacts have been notified.';
+      if (false && body) body.textContent = 'Shipment MBP-4QR7W2 (Barge · Rotterdam → Antwerp) is running ~45 min late due to lock congestion on the Scheldt. Updated ETA: 21 May · 00:45. Your registered contacts have been notified.';
     }
   }
 
@@ -1400,8 +1400,9 @@ async function loadRealBookings() {
   });
 
   // Update stat cards
+  var co2t = totalCO2 >= 1000 ? (totalCO2/1000).toFixed(1)+'t' : Math.round(totalCO2)+'kg';
   setStatValue('statActive',   activeCount);
-  setStatValue('statCO2',      Math.round(totalCO2) + 'kg');
+  setStatValue('statCO2',      co2t);
   setStatValue('statSpend',    '€' + Math.round(totalSpend).toLocaleString('nl-NL'));
   setStatValue('statBookings', bookings.length);
 

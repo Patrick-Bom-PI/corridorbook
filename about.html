@@ -107,7 +107,7 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
 
 <nav class="nav">
   <a href="index.html" class="nav-brand">Corridor<span>Book</span></a>
-  <div class="nav-links">
+  <div class="nav-links" style="display:flex;align-items:center;gap:24px;">
     <a href="search.html" class="nav-link">Search slots</a>
     <a href="tracking.html" class="nav-link">My Shipments</a>
     <a href="how-it-works.html" class="nav-link">How it works</a>
@@ -283,16 +283,16 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
   if (!session) return;
   var profile = await CB.getProfile();
   if (!profile) return;
-  if (compEl) { compEl.textContent = profile.company_name || ''; compEl.style.display = ''; }
+  if (compEl) { compEl.textContent = profile.company_name||''; compEl.style.display=''; }
   if (ctaEl) {
     ctaEl.textContent = 'My portal';
     ctaEl.style.background = 'transparent';
     ctaEl.style.border = '1px solid rgba(255,255,255,.25)';
-    ctaEl.onclick = function(){ window.location.href = profile.user_type==='operator' ? 'operator-portal.html' : 'search.html'; };
+    ctaEl.onclick = function(){ window.location.href = profile.user_type==='operator'?'operator-portal.html':'search.html'; };
     var so = document.createElement('button');
-    so.textContent = 'Sign out';
-    so.style.cssText = 'font-size:12px;color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;font-family:inherit;';
-    so.onclick = function(){ CB.logout(); };
+    so.textContent='Sign out';
+    so.style.cssText='font-size:12px;color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;font-family:inherit;';
+    so.onclick=function(){ CB.logout(); };
     ctaEl.parentNode.appendChild(so);
   }
 })();

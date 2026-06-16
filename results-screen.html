@@ -2338,7 +2338,7 @@ function loadSearchAndUpdate() {
   })();
   if (typeof initDetailPanels === "function") initDetailPanels(options, origin, dest, distKm);
   updateCards(options, origin, dest, parseInt(weight)||24000, distKm);
-  // checkDisruptions(origin, dest); // disabled
+  // // checkDisruptions disabled; // disabled
 
   // Clear delivery state immediately if field is empty, BEFORE the timeout
   var _dtInputNow = document.getElementById('rs-deliver-to');
@@ -3235,6 +3235,16 @@ function selectAndBook(mode) {
   if (dFull) localStorage.setItem('cb_dest_full',   dFull);
   localStorage.removeItem('cb_timer_start');
   localStorage.removeItem('cb_ref');
+
+  // Set real slot ID so confirmation can write to Supabase
+  var _slotData = null;
+  try { _slotData = JSON.parse(localStorage.getItem('cb_slot_' + mode) || 'null'); } catch(e) {}
+  if (_slotData && _slotData.id) {
+    localStorage.setItem('cb_slot_id', _slotData.id);
+  } else {
+    localStorage.removeItem('cb_slot_id');
+  }
+
   var ctype     = (document.getElementById('rs-ctype') ||{value: localStorage.getItem('cb_container_type')||'40HC'}).value;
   var cqty      = (document.getElementById('rs-cqty')  ||{value: localStorage.getItem('cb_container_qty') ||'1'}).value;
   var deliverTo = (document.getElementById('rs-deliver-to')||{value:''}).value.trim() || localStorage.getItem('cb_deliver_to') || '';
@@ -3887,7 +3897,7 @@ function applyDisruptionFilter() {
 var _origLoadSearch = window.loadSearchAndUpdate;
 document.addEventListener('DOMContentLoaded', function() {
   // Disruption banner disabled — only show if real disruption data exists
-  // // checkDisruptions(o, d); // disabled
+  // // // checkDisruptions disabled; // disabled
 });
 </script>
 
@@ -3901,7 +3911,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var profile = await CB.authGuard({ forwarderOnly: true });
   if (!profile) return;
 
-  // Update nav-company
   var nc = document.getElementById('nav-company');
   if (nc) nc.textContent = profile.company_name || '';
 
@@ -4076,17 +4085,17 @@ function overlayCardWithSlot(mode, slot, weightKg) {
     operator_id:     slot.operator_id,
     mode:            slot.mode,
     operator:        slot.operator_name,
-    origin:          slot.origin,
-    destination:     slot.destination,
-    departure_at:    slot.departure_at,
-    arrival_at:      slot.arrival_at,
+    origin:       slot.origin,
+    destination:  slot.destination,
+    departure_at: slot.departure_at,
+    arrival_at:   slot.arrival_at,
     price_per_tonne: slot.price_per_tonne,
-    co2_per_tonne_km:slot.co2_per_tonne_km,
-    total_price:     totalPrice,
-    transit_h:       transitH,
-    depart_str:      depStr,
-    arrive_str:      arrStr,
-    saved_co2_kg:    savedKg
+    co2_per_tonne_km: slot.co2_per_tonne_km,
+    total_price:  totalPrice,
+    transit_h:    transitH,
+    depart_str:   depStr,
+    arrive_str:   arrStr,
+    saved_co2_kg: savedKg
   };
   localStorage.setItem('cb_slot_' + mode, JSON.stringify(savedSlot));
 }

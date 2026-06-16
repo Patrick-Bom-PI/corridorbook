@@ -671,6 +671,11 @@ if (rSummary) {
 
 // Read selected mode from localStorage, default to barge
 var initMode = localStorage.getItem('cb_mode') || 'barge';
+(function() {
+  var price = localStorage.getItem('cb_price') || '';
+  var lbl = document.getElementById('confirmLabel');
+  if (lbl && price) lbl.textContent = 'Confirm & pay · €' + price;
+})();
 
 // Update confirm button with real price
 (function() {
@@ -916,11 +921,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!slotId) {
       // No real slot — run original demo flow
-      _origHandleConfirm();
+      if (_origHandleConfirm) _origHandleConfirm();
       return;
     }
 
-    // Get the confirm button and show loading
     var btn = document.getElementById('confirmBtn');
     if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div><span>Confirming booking…</span>'; }
 
@@ -944,34 +948,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
       var booking = await CB.confirmBooking({ slot: slot, cargo_weight_kg: weightKg });
 
-      // Store real ref from Supabase
       localStorage.setItem('cb_ref',        booking.reference);
       localStorage.setItem('cb_booking_id', booking.id || '');
-      localStorage.removeItem('cb_slot_id'); // consumed
+      localStorage.removeItem('cb_slot_id');
 
-      // Update displayed ref
       var refEl = document.getElementById('refNum');
       if (refEl) refEl.textContent = booking.reference;
       var srEl  = document.getElementById('successRef');
       if (srEl) srEl.textContent = booking.reference;
 
-      // Also save to completed_bookings for tracking page
       var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
       var newB = {
-        ref: booking.reference, status: 'confirmed',
-        mode: mode, price: slotData.total_price || '',
-        origin: slotData.origin || '', dest: slotData.destination || '',
-        operator: slotData.operator || '', depart: slotData.depart_str || '',
-        arrive: slotData.arrive_str || '', weight: weightKg,
-        co2: 'saves ' + (slotData.saved_co2_kg || 0) + 'kg CO₂',
-        ts: new Date().toISOString()
+        ref: booking.reference, status: 'confirmed', mode: mode,
+        price: slotData.total_price || '', origin: slotData.origin || '',
+        dest: slotData.destination || '', operator: slotData.operator || '',
+        weight: weightKg, ts: new Date().toISOString()
       };
       if (!bookings.find(function(b){ return b.ref === booking.reference; })) {
         bookings.unshift(newB);
         localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
       }
 
-      // Redirect to booking reference page
       var p = buildRefParams(booking.reference);
       setTimeout(function(){
         window.location.href = 'mbp_booking_reference.html?' + p.toString() + '&status=confirmed';
@@ -980,6 +977,72 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch(err) {
       console.error('[CB] Booking error:', err);
       if (btn) { btn.disabled = false; btn.innerHTML = '<span id="confirmLabel">Confirm &amp; pay</span>'; }
+      var price2 = localStorage.getItem('cb_price') || '';
+      var lbl2 = document.getElementById('confirmLabel');
+      if (lbl2 && price2) lbl2.textContent = 'Confirm & pay · €' + price2;
+      alert('Booking failed: ' + (err.message || 'Please try again.'));
+    }
+  };
+
+  // Legacy confirmDone override (kept for compatibility)
+  window.confirmDone = async function() {
+    var slotId  = localStorage.getItem('cb_slot_id');
+    var weightKg = parseInt(localStorage.getItem('cb_weight') || '24000');
+
+    if (!slotId) {
+      // No real slot — run demo flow
+      runDemoConfirm();
+      return;
+    }
+
+    // Show loading state on button
+    var btn = document.querySelector('[onclick*="confirmDone"]') ||
+              document.querySelector('.confirm-btn') ||
+              document.querySelector('button[class*="confirm"]');
+    var origText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+
+    try {
+      // Fetch the slot object we stored
+      var slotRaw = localStorage.getItem('cb_slot_' + localStorage.getItem('cb_mode'));
+      var slotData = slotRaw ? JSON.parse(slotRaw) : null;
+
+      if (!slotData) throw new Error('Slot data missing. Please go back and reselect.');
+
+      // Build slot object in the shape CB.confirmBooking expects
+      var slot = {
+        id:              slotData.id,
+        operator_id:     null,  // filled server-side via RLS
+        operator_name:   slotData.operator,
+        mode:            slotData.mode,
+        origin:          slotData.origin,
+        destination:     slotData.destination,
+        departure_at:    slotData.departure_at,
+        arrival_at:      slotData.arrival_at,
+        price_per_tonne: slotData.price_per_tonne,
+        co2_per_tonne_km:slotData.co2_per_tonne_km
+      };
+
+      var booking = await CB.confirmBooking({ slot: slot, cargo_weight_kg: weightKg });
+
+      // Store reference and switch to confirmed state
+      localStorage.setItem('cb_ref', booking.reference);
+      localStorage.setItem('cb_booking_id', booking.id);
+      localStorage.removeItem('cb_slot_id');  // consumed
+
+      // Update the reference number displayed on screen
+      var refEls = document.querySelectorAll('.booking-ref, [id*="ref"]');
+      refEls.forEach(function(el) {
+        if (el.querySelector) {
+          var span = el.querySelector('span');
+          if (span) el.innerHTML = '<span>REF</span> ' + booking.reference;
+        }
+      });
+
+      showConfirmSuccess(booking.reference);
+
+    } catch(err) {
+      if (btn) { btn.disabled = false; btn.textContent = origText; }
       showToast('Booking failed: ' + (err.message || 'Please try again.'), 'error');
     }
   };

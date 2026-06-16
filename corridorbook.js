@@ -125,6 +125,42 @@ const CB = {
       : 'search.html';
   },
 
+  // ── Auth guard with retry ─────────────────────────────────
+  async authGuard({ operatorOnly = false, forwarderOnly = false } = {}) {
+    await cbReady();
+    let session = await this.getSession();
+    if (!session) {
+      await new Promise(r => setTimeout(r, 700));
+      session = await this.getSession();
+    }
+    if (!session) { window.location.href = 'index.html'; return null; }
+    const profile = await this.getProfile();
+    if (!profile) { window.location.href = 'index.html'; return null; }
+    if (forwarderOnly && profile.user_type === 'operator') {
+      window.location.href = 'operator-portal.html'; return null;
+    }
+    if (operatorOnly && profile.user_type !== 'operator') {
+      window.location.href = 'forwarder-portal.html'; return null;
+    }
+    return profile;
+  },
+
+  // ── Redirect logged-in users away from index ───────────────
+  async redirectIfLoggedIn() {
+    await cbReady();
+    let session = await this.getSession();
+    if (!session) {
+      await new Promise(r => setTimeout(r, 500));
+      session = await this.getSession();
+    }
+    if (!session) return;
+    const profile = await this.getProfile();
+    if (!profile) return;
+    window.location.href = profile.user_type === 'operator'
+      ? 'operator-portal.html'
+      : 'search.html';
+  },
+
   // ── Update nav bar with user info ──────────────────────────
   async initNav() {
     const profile = await this.getProfile();
@@ -298,9 +334,8 @@ const CB = {
 
     if (error) throw error;
 
-    // Reduce remaining capacity on the slot
+    // Decrement remaining capacity on the slot
     if (slot.id) {
-      // First get current remaining_kg
       const { data: slotRow } = await sb.from('slots')
         .select('remaining_kg')
         .eq('id', slot.id)
