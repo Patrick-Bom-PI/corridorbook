@@ -203,6 +203,8 @@
   .slot-price { font-size:13px; font-weight:700; font-family:var(--font-mono); color:var(--text); margin-left:auto; }
   .slot-row.active .slot-price { color:var(--blue); }
 
+.card-mode-header{display:flex!important;align-items:center!important;gap:8px!important;}
+.card-mode-type{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -505,7 +507,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp
 
       <!-- BARGE -->
       <div class="route-card recommended selected" id="card-barge" data-mode="barge" data-price="310" data-transit="18" data-co2="-68" data-direct="false" onclick="selectCard('barge')">
-        <div class="rec-badge">★ RECOMMENDED</div>
         <div class="card-mode-header"><span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1565C0;border-radius:8px;color:#fff;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2 3H5l-2-3z"/><path d="M5 17V11h14v6"/><rect x="7" y="5" width="4" height="6" rx="0.5"/><rect x="13" y="5" width="4" height="6" rx="0.5"/><path d="M9 5V3h6v2"/><path d="M1 20h22"/></svg></span><span class="card-mode-name">Barge</span><span class="card-mode-type" style="background:#1565C0;color:#fff;border-color:#1565C0;">Inland Waterway</span></div>
         <div class="card-times">
           <span class="time-val">06:00<div style="font-size:10px;color:var(--grey-muted);font-weight:500;margin-top:2px;font-family:var(--font-ui);">Thu 20 May</div></span>
@@ -3879,11 +3880,8 @@ function applyDisruptionFilter() {
 // ── Wire disruption check into loadSearchAndUpdate ───────────────────────────
 var _origLoadSearch = window.loadSearchAndUpdate;
 document.addEventListener('DOMContentLoaded', function() {
-  // Run on initial load
-  var o = localStorage.getItem('cb_origin') || '';
-  var d = localStorage.getItem('cb_dest')   || '';
-  var dist = 100;
-  checkDisruptions(o, d);
+  // Disruption banner disabled — only show if real disruption data exists
+  // checkDisruptions(o, d);
 });
 </script>
 
