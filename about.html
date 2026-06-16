@@ -110,10 +110,9 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
     <a href="search.html">Search slots</a>
     <a href="tracking.html">My Shipments</a>
     <a href="how-it-works.html">How it works</a>
-    <a href="index.html">Join as operator</a>
     <a href="about.html" class="active">About</a>
   </div>
-  <button class="nav-cta" onclick="window.location.href='index.html'">Sign in</button>
+  <button class="nav-cta" id="nav-cta" onclick="window.location.href='index.html'">Sign in</button>
 </nav>
 
 <div class="about-hero">
@@ -271,5 +270,37 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+<script>
+(async function() {
+  var session = await CB.getSession();
+  if (!session) {
+    await new Promise(r => setTimeout(r, 600));
+    session = await CB.getSession();
+  }
+  var ctaEl = document.getElementById('nav-cta');
+  if (!session) {
+    if (ctaEl) { ctaEl.textContent = 'Sign in'; ctaEl.onclick = function(){ window.location.href='index.html'; }; }
+    return;
+  }
+  var profile = await CB.getProfile();
+  if (!profile) return;
+  var navRight = document.querySelector('.nav-links');
+  if (navRight && ctaEl) {
+    ctaEl.textContent = profile.company_name || 'My account';
+    ctaEl.style.background = 'transparent';
+    ctaEl.style.border = '1px solid rgba(255,255,255,.25)';
+    ctaEl.style.color = 'rgba(255,255,255,.8)';
+    ctaEl.onclick = function(){
+      window.location.href = profile.user_type === 'operator' ? 'operator-portal.html' : 'search.html';
+    };
+    // Add sign out link
+    var so = document.createElement('a');
+    so.href = '#'; so.style.cssText = 'font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;font-weight:500;';
+    so.textContent = 'Sign out';
+    so.onclick = function(e){ e.preventDefault(); CB.logout(); };
+    ctaEl.parentNode.insertBefore(so, ctaEl.nextSibling);
+  }
+})();
+</script>
 </body>
 </html>

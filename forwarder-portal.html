@@ -111,10 +111,12 @@ body{font-family:var(--font-ui);color:var(--text);background:#E8ECF0;min-height:
 
 <nav class="nav">
   <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
-  <span class="nav-badge">Freight Forwarder Portal</span>
   <div class="nav-right">
     <a href="search.html" class="nav-link">Search slots</a>
     <a href="tracking.html" class="nav-link">My Shipments</a>
+    <a href="forwarder-portal.html" class="nav-link" style="color:#fff;">My Bookings</a>
+    <span id="nav-company" class="nav-company"></span>
+    <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.5);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
   </div>
 </nav>
 
@@ -496,5 +498,13 @@ setInterval(loadAndRenderAll, 10000);
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+<script>
+(async function() {
+  var profile = await CB.authGuard({ forwarderOnly: true });
+  if (!profile) return;
+  var nc = document.getElementById('nav-company');
+  if (nc) nc.textContent = profile.company_name || '';
+})();
+</script>
 </body>
 </html>

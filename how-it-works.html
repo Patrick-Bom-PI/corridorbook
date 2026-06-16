@@ -109,7 +109,7 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
     <a href="how-it-works.html" class="active">How it works</a>
     <a href="about.html">About</a>
   </div>
-  <button class="nav-cta" onclick="window.location.href='index.html'">Sign in</button>
+  <button class="nav-cta" id="nav-cta" onclick="window.location.href='index.html'">Sign in</button>
 </nav>
 
 <div class="page-hero">
@@ -263,7 +263,7 @@ body{font-family:var(--font-ui);color:var(--text);background:var(--white);-webki
     <h2>Ready to book your first shipment?</h2>
     <p>Compare barge, rail and road in real-time — no account needed to search.</p>
     <div class="cta-btns">
-      <a href="index.html" class="btn-primary">
+      <a href="search.html" class="btn-primary">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Search routes now
       </a>
@@ -288,5 +288,37 @@ function toggleFaq(el) {
 
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+<script>
+(async function() {
+  var session = await CB.getSession();
+  if (!session) {
+    await new Promise(r => setTimeout(r, 600));
+    session = await CB.getSession();
+  }
+  var ctaEl = document.getElementById('nav-cta');
+  if (!session) {
+    if (ctaEl) { ctaEl.textContent = 'Sign in'; ctaEl.onclick = function(){ window.location.href='index.html'; }; }
+    return;
+  }
+  var profile = await CB.getProfile();
+  if (!profile) return;
+  var navRight = document.querySelector('.nav-links');
+  if (navRight && ctaEl) {
+    ctaEl.textContent = profile.company_name || 'My account';
+    ctaEl.style.background = 'transparent';
+    ctaEl.style.border = '1px solid rgba(255,255,255,.25)';
+    ctaEl.style.color = 'rgba(255,255,255,.8)';
+    ctaEl.onclick = function(){
+      window.location.href = profile.user_type === 'operator' ? 'operator-portal.html' : 'search.html';
+    };
+    // Add sign out link
+    var so = document.createElement('a');
+    so.href = '#'; so.style.cssText = 'font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;font-weight:500;';
+    so.textContent = 'Sign out';
+    so.onclick = function(e){ e.preventDefault(); CB.logout(); };
+    ctaEl.parentNode.insertBefore(so, ctaEl.nextSibling);
+  }
+})();
+</script>
 </body>
 </html>
