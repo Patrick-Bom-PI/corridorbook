@@ -111,7 +111,7 @@ body{font-family:var(--font-ui);color:var(--text);background:#E8ECF0;min-height:
 
 <nav class="nav">
   <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
-  <div class="nav-links" style="display:flex;align-items:center;gap:24px;">
+  <div class="nav-links">
     <a href="search.html" class="nav-link">Search slots</a>
     <a href="tracking.html" class="nav-link">My Shipments</a>
     <a href="how-it-works.html" class="nav-link">How it works</a>
@@ -502,12 +502,12 @@ setInterval(loadAndRenderAll, 10000);
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
 <script>
-(async function() {
+(async function() {{
   var profile = await CB.authGuard({ forwarderOnly: true });
   if (!profile) return;
   var nc = document.getElementById('nav-company');
   if (nc) nc.textContent = profile.company_name || '';
-})();
+}})();
 </script>
 </body>
 </html>

@@ -139,7 +139,19 @@ body{font-family:var(--font-ui);background:#E8ECF0;color:var(--text);min-height:
   </div>
 </div>
 
+<script src="corridorbook.js"></script>
+<script src="auth-modal.js"></script>
 <script>
+// Auth guard + nav company name
+(async function() {
+  var profile = await CB.authGuard();
+  if (!profile) return;
+  var nc = document.getElementById('nav-company');
+  if (nc) nc.textContent = profile.company_name || '';
+  // Now safe to load feedback
+  await loadAndRender();
+})();
+
 async function loadAndRender() {
   // Load from Supabase instead of localStorage
   var feedback = [];
@@ -230,11 +242,8 @@ function clearFeedback() {
   alert('Responses are stored in the database and can only be cleared by an admin.');
 }
 
-loadAndRender();
 setInterval(loadAndRender, 10000);
 </script>
 
-<script src="corridorbook.js"></script>
-<script src="auth-modal.js"></script>
 </body>
 </html>
