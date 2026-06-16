@@ -402,7 +402,6 @@ const CB = {
 };
 
 // Auto-initNav disabled — each page manages its own nav state
-});
 
 // Expose globally
 window.CB = CB;
