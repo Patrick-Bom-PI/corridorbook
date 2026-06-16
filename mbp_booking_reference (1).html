@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MBP-4QR7W2 · Booking Confirmed · CorridorBook</title>
+<title>Booking Confirmed · CorridorBook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -228,7 +229,7 @@
       <span id="statusBadgeText">Slot Confirmed</span>
     </div>
     <div class="ref-label">Booking Reference</div>
-    <div class="ref-code" id="refCode">MBP-4QR7W2</div>
+    <div class="ref-code" id="refCode">—</div>
   </div>
 
   <!-- PENDING FORWARDER APPROVAL BANNER -->
@@ -254,7 +255,7 @@
       </div>
       <div class="lv-row">
         <span class="lv-label">Operator</span>
-        <span class="lv-value" id="modeOperator">Rhine Carrier III</span>
+        <span class="lv-value" id="modeOperator">—</span>
       </div>
       <table class="cmp-table">
         <thead><tr><th></th><th>Cost</th><th>Transit</th><th>CO₂</th></tr></thead>
@@ -265,7 +266,7 @@
   <circle cx="5" cy="19" r="2"/><circle cx="17" cy="19" r="2"/>
   <path d="M3 16v3"/><path d="M19 16v3"/>
   <path d="M1 9h13"/><path d="M14 10h5.5"/>
-</svg></span> Road (default)</span></td><td>€420</td><td>4h</td><td>baseline</td></tr>
+</svg></span> Road (default)</span></td><td id="roadPrice">—</td><td id="roadTransit">—</td><td>baseline</td></tr>
           <tr class="barge" id="cmpBooked"><td><span style="display:inline-flex;align-items:center;gap:8px;vertical-align:middle"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#E3F2FD;border-radius:5px;color:#1565C0;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
   <path d="M3 17h18l-2 3H5l-2-3z"/>
   <path d="M5 17V11h14v6"/>
@@ -273,7 +274,7 @@
   <rect x="13" y="5" width="4" height="6" rx="0.5"/>
   <path d="M9 5V3h6v2"/>
   <path d="M1 20h22"/>
-</svg></span> Barge</span> <span class="mbadge">booked</span></td><td class="g">€310</td><td>18h</td><td class="g">−68%</td></tr>
+</svg></span> Barge</span> <span class="mbadge">booked</span></td><td class="g" id="bookedPrice">—</td><td id="bookedTransit">—</td><td class="g">−68%</td></tr>
           <tr class="saving" id="cmpSaving"><td></td><td>Saves €110</td><td></td><td></td></tr>
         </tbody>
       </table>
@@ -289,9 +290,9 @@
         <span class="route-arrow-text" id="routeTransitLabel">──── 18h waterway ────▶</span>
         <span id="routeDestLabel">Port of Antwerp-Bruges (ANR)</span>
       </div>
-      <div class="lv-row"><span class="lv-label">Departure</span><span class="lv-value" id="routeDeparture">Thu 20 May 2026 · 06:00</span></div>
-      <div class="lv-row"><span class="lv-label">Arrival</span><span class="lv-value" id="routeArrival">Fri 21 May 2026 · 00:00</span></div>
-      <div class="lv-row"><span class="lv-label">Gate open</span><span class="lv-value" id="routeGateOpen">Thu 20 May · 04:30</span></div>
+      <div class="lv-row"><span class="lv-label">Departure</span><span class="lv-value" id="routeDeparture">— 2026 · 06:00</span></div>
+      <div class="lv-row"><span class="lv-label">Arrival</span><span class="lv-value" id="routeArrival">— 2026 · 00:00</span></div>
+      <div class="lv-row"><span class="lv-label">Gate open</span><span class="lv-value" id="routeGateOpen">— · 04:30</span></div>
       <div class="lv-row"><span class="lv-label">Cut-off</span><span class="lv-value amber" id="routeCutOff"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Thu 20 May · 05:30</span></div>
     </div>
   </div>
@@ -323,13 +324,13 @@
       <div class="pay-grid">
         <div class="pay-panel">
           <div class="pay-panel-label">Total charged</div>
-          <div class="pay-amount" id="payTotal">€310.00</div>
+          <div class="pay-amount" id="payTotal">—</div>
           <div class="pay-sub">incl. terminal handling</div>
         </div>
         <div class="pay-panel" id="paySavingsPanel" style="border-color:var(--green-border);background:var(--green-light);">
           <div class="pay-panel-label" style="color:var(--green);">Saved vs road</div>
           <div class="pay-amount savings" id="paySaving">€110.00</div>
-          <div class="pay-sub" id="paySavingSub" style="color:var(--green);">road would have been €420</div>
+          <div class="pay-sub" id="paySavingSub" style="color:var(--green);"></div>
         </div>
       </div>
     </div>
@@ -407,19 +408,19 @@ var MODES = {
   barge: {
     name:        'Barge',
     sub:         'Inland Waterway',
-    operator:    'Rhine Carrier III',
-    price:       310,
-    priceFmt:    '€310.00',
+    operator:    'Operator',
+    price:       0,
+    priceFmt:    '',
     priceRoad:   420,
     saving:      110,
     savingFmt:   '€110.00',
     co2:         '−68%',
     transit:     '18h',
-    departure:   'Thu 20 May 2026 · 06:00',
-    arrival:     'Fri 21 May 2026 · 00:00',
-    gateOpen:    'Thu 20 May · 04:30',
-    cutOff:      'Thu 20 May · 05:30',
-    refCode:     'MBP-4QR7W2',
+    departure:   '',
+    arrival:     '',
+    gateOpen:    '',
+    cutOff:      '',
+    refCode:     '',
     bookingTime: '47 seconds',
     cancelBy:    'Wed 19 May 2026 · 18:00',
     cancelFee:   '€45.00',
@@ -433,19 +434,19 @@ var MODES = {
   rail: {
     name:        'Rail',
     sub:         'Freight Train',
-    operator:    'DB Cargo NL',
-    price:       355,
-    priceFmt:    '€355.00',
+    operator:    'Operator',
+    price:       0,
+    priceFmt:    '',
     priceRoad:   420,
     saving:      65,
     savingFmt:   '€65.00',
     co2:         '−54%',
     transit:     '11h',
-    departure:   'Wed 20 May 2026 · 10:30',
-    arrival:     'Wed 20 May 2026 · 21:30',
-    gateOpen:    'Wed 20 May · 09:00',
-    cutOff:      'Wed 20 May · 10:00',
-    refCode:     'MBP-8TK3R5',
+    departure:   '',
+    arrival:     '',
+    gateOpen:    '',
+    cutOff:      '',
+    refCode:     '',
     bookingTime: '52 seconds',
     cancelBy:    'Tue 19 May 2026 · 18:00',
     cancelFee:   '€35.00',
@@ -459,19 +460,19 @@ var MODES = {
   road: {
     name:        'Road',
     sub:         'HGV Transport',
-    operator:    'Jan de Rijk',
-    price:       420,
-    priceFmt:    '€420.00',
+    operator:    'Operator',
+    price:       0,
+    priceFmt:    '',
     priceRoad:   420,
     saving:      0,
     savingFmt:   '—',
     co2:         'baseline',
     transit:     '4h',
-    departure:   'Wed 20 May 2026 · 14:00',
-    arrival:     'Wed 20 May 2026 · 18:00',
-    gateOpen:    'Wed 20 May · 13:00',
-    cutOff:      'Wed 20 May · 13:45',
-    refCode:     'MBP-6XP1W9',
+    departure:   '',
+    arrival:     '',
+    gateOpen:    '',
+    cutOff:      '',
+    refCode:     '',
     bookingTime: '38 seconds',
     cancelBy:    'Tue 19 May 2026 · 18:00',
     cancelFee:   '€25.00',
@@ -514,7 +515,7 @@ function render() {
   var ctype       = p.get('ctype')    || localStorage.getItem('cb_container_type') || '40HC';
   var cqty        = parseInt(p.get('cqty') || localStorage.getItem('cb_container_qty')) || 1;
   var cargoLabel  = cqty + ' × ' + ctype + ' · ' + realWeight.toLocaleString() + ' kg';
-  var refCode     = p.get('ref')      || localStorage.getItem('cb_ref') || ('MBP-' + Math.random().toString(36).substring(2,9).toUpperCase());
+  var refCode     = p.get('ref')      || localStorage.getItem('cb_ref') || 'CB-XXXXXX';
   var bookingStatus = p.get('status') || 'confirmed';
 
   // Show pending banner if awaiting forwarder approval
@@ -770,6 +771,25 @@ function subtractMins(timeStr, mins) {
   if (total < 0) total += 1440;
   return (Math.floor(total/60)<10?'0':'')+Math.floor(total/60)+':'+(total%60<10?'0':'')+(total%60);
 }
+
+// Patch render() to also update comparison table and page title
+var _origRender = render;
+render = function() {
+  _origRender();
+  var p = new URLSearchParams(window.location.search);
+  var realPrice   = parseInt(p.get('price')  || localStorage.getItem('cb_price'))  || 0;
+  var realTransit = p.get('transit') || localStorage.getItem('cb_transit') || '';
+  var refCode     = p.get('ref')     || localStorage.getItem('cb_ref')     || '';
+  var roadEst     = realPrice > 0 ? Math.round(realPrice * 1.35 / 10) * 10 : 0;
+
+  var el;
+  el = document.getElementById('roadPrice');   if(el && roadEst)  el.textContent = '€' + roadEst;
+  el = document.getElementById('roadTransit'); if(el)             el.textContent = '4h';
+  el = document.getElementById('bookedPrice'); if(el && realPrice)el.textContent = '€' + realPrice;
+  el = document.getElementById('bookedTransit');if(el && realTransit)el.textContent = realTransit;
+
+  if (refCode) document.title = refCode + ' · Booking Confirmed · CorridorBook';
+};
 
 render();
 </script>

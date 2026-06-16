@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Booking Confirmation — CorridorBook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -359,7 +360,7 @@
     <div class="actions">
       <button class="btn-primary" id="confirmBtn" onclick="handleConfirm()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span id="confirmLabel">Confirm &amp; pay · €310.00</span>
+        <span id="confirmLabel">Confirm &amp; pay</span>
       </button>
       <div class="footer-note" id="footerNote">By confirming you agree to the Terms &amp; Conditions. Payment secured via Stripe.</div>
     </div>
@@ -406,8 +407,8 @@
       </svg>
     </div>
     <div class="state-title">Booking confirmed</div>
-    <div class="state-ref" id="successRef">MBP-4QR7W2</div>
-    <div class="state-sub" id="successSub">Your barge slot from RTM → ANR is confirmed. Departure 06:00 on 20 May 2026.</div>
+    <div class="state-ref" id="successRef"></div>
+    <div class="state-sub" id="successSub"></div>
     <button class="state-btn" id="viewRefBtn" onclick="goToRef()">View booking reference →</button>
   </div>
 </div>
@@ -429,7 +430,7 @@ var modeData = {
     journey:[['Departs','06:00, 20 May'],['Arrives','00:00, 21 May'],['Gate open','04:30, 20 May'],['Cut-off','05:30, 20 May'],['Operator','Rhine Carrier III'],['Berth','Waalhaven B-14']],
     cargo:[['Cargo weight', (parseInt(localStorage.getItem('cb_weight'))||24000).toLocaleString()+' kg'],['Commodity','General freight'],['Container','Dry freight'],['ADR',null],['Insurance',true],['Handling','Standard']],
     fare:[['Freight base rate','€240.00'],['Terminal handling (RTM)','€42.00'],['Terminal handling (ANR)','€18.00'],['Fuel surcharge','€10.00']],
-    total:'€310.00', successSub:'Your barge slot from RTM → ANR is confirmed. Departure 06:00 on 20 May 2026.'
+    total:'€310.00', successSub:''
   },
   rail: {
     badge: { bg:'#EEEDFE', color:'#534AB7', text:'Rail · Freight Train' },
@@ -534,7 +535,7 @@ function showState(name){
   else if(name==='success') {
     document.getElementById('successState').classList.add('visible');
     var sr = document.getElementById('successRef');
-    if (sr) sr.textContent = localStorage.getItem('cb_ref') || 'MBP-4QR7W2';
+    if (sr) sr.textContent = localStorage.getItem('cb_ref') || '';
     // Update success sub with real route
     var ssd = document.getElementById('successSub');
     if (ssd && modeData[currentMode]) ssd.textContent = modeData[currentMode].successSub;
@@ -563,7 +564,7 @@ function buildRefParams(ref) {
 }
 
 function goToRef() {
-  var ref = localStorage.getItem('cb_ref') || 'MBP-XXXXXXX';
+  var ref = localStorage.getItem('cb_ref') || '';
   window.location.href = 'mbp_booking_reference.html?' + buildRefParams(ref).toString();
 }
 
@@ -573,7 +574,7 @@ function handleConfirm(){
   btn.innerHTML='<div class="spinner"></div><span>Processing…</span>';
   clearInterval(interval);
   localStorage.removeItem(_timerKey);
-  var ref = localStorage.getItem('cb_ref') || 'MBP-XXXXXXX';
+  var ref = localStorage.getItem('cb_ref') || '';
   var notifEmails = JSON.parse(localStorage.getItem('cb_notif_emails') || '[]');
   var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings')||'[]');
   var newB = {
@@ -618,7 +619,7 @@ function handleCancel(){
 // Generate unique booking ref if not already set
 function generateRef() {
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var ref = 'MBP-';
+  var ref = 'CB-';
   for (var i=0; i<7; i++) ref += chars[Math.floor(Math.random()*chars.length)];
   return ref;
 }
@@ -670,6 +671,13 @@ if (rSummary) {
 
 // Read selected mode from localStorage, default to barge
 var initMode = localStorage.getItem('cb_mode') || 'barge';
+
+// Update confirm button with real price
+(function() {
+  var price = localStorage.getItem('cb_price') || '';
+  var lbl = document.getElementById('confirmLabel');
+  if (lbl && price) lbl.textContent = 'Confirm & pay · €' + price;
+})();
 
 // Override modeData with real values from results screen
 (function() {
@@ -899,65 +907,79 @@ document.addEventListener('DOMContentLoaded', function() {
   var confirmBtns = document.querySelectorAll('[onclick*="confirmDone"], [onclick*="confirm"]');
   // We intercept via the global function override below instead
 
-  // Override confirmDone globally
-  window.confirmDone = async function() {
-    var slotId  = localStorage.getItem('cb_slot_id');
+  // Override handleConfirm to write real booking to Supabase
+  var _origHandleConfirm = window.handleConfirm;
+  window.handleConfirm = async function() {
+    var slotId   = localStorage.getItem('cb_slot_id');
     var weightKg = parseInt(localStorage.getItem('cb_weight') || '24000');
+    var mode     = localStorage.getItem('cb_mode') || 'barge';
 
     if (!slotId) {
-      // No real slot — run demo flow
-      runDemoConfirm();
+      // No real slot — run original demo flow
+      _origHandleConfirm();
       return;
     }
 
-    // Show loading state on button
-    var btn = document.querySelector('[onclick*="confirmDone"]') ||
-              document.querySelector('.confirm-btn') ||
-              document.querySelector('button[class*="confirm"]');
-    var origText = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Confirming…'; }
+    // Get the confirm button and show loading
+    var btn = document.getElementById('confirmBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div><span>Confirming booking…</span>'; }
 
     try {
-      // Fetch the slot object we stored
-      var slotRaw = localStorage.getItem('cb_slot_' + localStorage.getItem('cb_mode'));
+      var slotRaw  = localStorage.getItem('cb_slot_' + mode);
       var slotData = slotRaw ? JSON.parse(slotRaw) : null;
+      if (!slotData) throw new Error('Slot data missing — please go back and reselect.');
 
-      if (!slotData) throw new Error('Slot data missing. Please go back and reselect.');
-
-      // Build slot object in the shape CB.confirmBooking expects
       var slot = {
-        id:              slotData.id,
-        operator_id:     null,  // filled server-side via RLS
-        operator_name:   slotData.operator,
-        mode:            slotData.mode,
-        origin:          slotData.origin,
-        destination:     slotData.destination,
-        departure_at:    slotData.departure_at,
-        arrival_at:      slotData.arrival_at,
-        price_per_tonne: slotData.price_per_tonne,
-        co2_per_tonne_km:slotData.co2_per_tonne_km
+        id:               slotData.id,
+        operator_id:      slotData.operator_id || null,
+        operator_name:    slotData.operator,
+        mode:             slotData.mode,
+        origin:           slotData.origin,
+        destination:      slotData.destination,
+        departure_at:     slotData.departure_at,
+        arrival_at:       slotData.arrival_at,
+        price_per_tonne:  slotData.price_per_tonne,
+        co2_per_tonne_km: slotData.co2_per_tonne_km
       };
 
       var booking = await CB.confirmBooking({ slot: slot, cargo_weight_kg: weightKg });
 
-      // Store reference and switch to confirmed state
-      localStorage.setItem('cb_ref', booking.reference);
-      localStorage.setItem('cb_booking_id', booking.id);
-      localStorage.removeItem('cb_slot_id');  // consumed
+      // Store real ref from Supabase
+      localStorage.setItem('cb_ref',        booking.reference);
+      localStorage.setItem('cb_booking_id', booking.id || '');
+      localStorage.removeItem('cb_slot_id'); // consumed
 
-      // Update the reference number displayed on screen
-      var refEls = document.querySelectorAll('.booking-ref, [id*="ref"]');
-      refEls.forEach(function(el) {
-        if (el.querySelector) {
-          var span = el.querySelector('span');
-          if (span) el.innerHTML = '<span>REF</span> ' + booking.reference;
-        }
-      });
+      // Update displayed ref
+      var refEl = document.getElementById('refNum');
+      if (refEl) refEl.textContent = booking.reference;
+      var srEl  = document.getElementById('successRef');
+      if (srEl) srEl.textContent = booking.reference;
 
-      showConfirmSuccess(booking.reference);
+      // Also save to completed_bookings for tracking page
+      var bookings = JSON.parse(localStorage.getItem('cb_completed_bookings') || '[]');
+      var newB = {
+        ref: booking.reference, status: 'confirmed',
+        mode: mode, price: slotData.total_price || '',
+        origin: slotData.origin || '', dest: slotData.destination || '',
+        operator: slotData.operator || '', depart: slotData.depart_str || '',
+        arrive: slotData.arrive_str || '', weight: weightKg,
+        co2: 'saves ' + (slotData.saved_co2_kg || 0) + 'kg CO₂',
+        ts: new Date().toISOString()
+      };
+      if (!bookings.find(function(b){ return b.ref === booking.reference; })) {
+        bookings.unshift(newB);
+        localStorage.setItem('cb_completed_bookings', JSON.stringify(bookings));
+      }
+
+      // Redirect to booking reference page
+      var p = buildRefParams(booking.reference);
+      setTimeout(function(){
+        window.location.href = 'mbp_booking_reference.html?' + p.toString() + '&status=confirmed';
+      }, 1500);
 
     } catch(err) {
-      if (btn) { btn.disabled = false; btn.textContent = origText; }
+      console.error('[CB] Booking error:', err);
+      if (btn) { btn.disabled = false; btn.innerHTML = '<span id="confirmLabel">Confirm &amp; pay</span>'; }
       showToast('Booking failed: ' + (err.message || 'Please try again.'), 'error');
     }
   };

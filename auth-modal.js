@@ -193,7 +193,7 @@
           if (profile && profile.user_type === 'operator') {
             window.location.href = 'operator-portal.html';
           } else {
-            window.location.href = 'forwarder-portal.html';
+            window.location.href = 'search.html';
           }
         } catch (err) {
           errEl.textContent = err.message || 'Login failed. Check your email and password.';

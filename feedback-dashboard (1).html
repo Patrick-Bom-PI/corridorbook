@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feedback Dashboard — CorridorBook</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -61,8 +62,8 @@ body{font-family:var(--font-ui);background:#E8ECF0;color:var(--text);min-height:
     <a href="how-it-works.html" class="nav-link">How it works</a>
     <a href="about.html" class="nav-link">About</a>
   </div>
-  <div class="nav-right">
-    <span class="nav-company" id="nav-company"></span>
+  <div class="nav-right" style="display:flex;align-items:center;gap:12px;">
+    <span class="nav-company" id="nav-company" style="font-size:12px;color:rgba(255,255,255,.45);font-family:'IBM Plex Mono',monospace;"></span>
     <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
   </div>
 </nav>

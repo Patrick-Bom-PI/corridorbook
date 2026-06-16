@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Results — CorridorBook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -214,6 +215,8 @@
   <a href="search.html" class="platform-name" style="text-decoration:none;color:inherit;cursor:pointer;">Corridor<span>Book</span></a>
   <div class="header-right">
     <a href="tracking.html" class="header-link" style="text-decoration:none;color:var(--grey-label);font-size:13px;font-weight:500;">My Shipments</a>
+    <span id="nav-company" style="font-size:12px;color:var(--grey-muted);font-family:'IBM Plex Mono',monospace;"></span>
+    <button onclick="CB.logout()" style="font-size:12px;color:var(--grey-label);background:none;border:1px solid var(--grey-border);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
     <button onclick="openHelp()" class="header-link" style="background:none;border:1px solid var(--grey-border);border-radius:var(--r-pill);padding:4px 14px;cursor:pointer;color:var(--grey-label);font-size:13px;font-weight:500;font-family:var(--font-ui);display:flex;align-items:center;gap:5px;transition:all .15s;" onmouseover="this.style.borderColor='#1565C0';this.style.color='#1565C0'" onmouseout="this.style.borderColor='var(--grey-border)';this.style.color='var(--grey-label)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       Help
@@ -1301,7 +1304,7 @@ function buildRouteOptions(origin, dest, distKm, weightKg) {
 
   if (distKm < 400) {
     // ── Short range ──────────────────────────────────────────────────────────
-    var bH=Math.round(distKm/25), rH=Math.round(distKm/45), dH=Math.round(distKm/80);
+    var bH=Math.round(distKm/25), rH=Math.round(distKm/45), dH=Math.max(2,Math.round(distKm/55));
     var bP=Math.max(minBarge,Math.round(distKm*4.2*wBarge/10)*10);
     var rP=Math.max(minRail, Math.round(distKm*4.8*wRail /10)*10);
     var dP=Math.max(minRoad, Math.round(distKm*5.7*wRoad /10)*10);
@@ -3895,14 +3898,12 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // ── Auth guard ────────────────────────────────────────────────
 (async function() {
-  var session = await CB.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
+  var profile = await CB.authGuard({ forwarderOnly: true });
+  if (!profile) return;
 
-  var profile = await CB.getProfile();
-  if (!profile) { window.location.href = 'index.html'; return; }
-  if (profile.user_type === 'operator') {
-    window.location.href = 'operator-portal.html'; return;
-  }
+  // Update nav-company
+  var nc = document.getElementById('nav-company');
+  if (nc) nc.textContent = profile.company_name || '';
 
   // Update avatar with real initials
   var avatar = document.getElementById('userAvatar');
@@ -3964,6 +3965,33 @@ async function loadRealSlots(profile) {
     var best = modeSlots[0]; // top scorer for this mode
     overlayCardWithSlot(mode, best, weightKg);
   });
+
+  // Update stat bar from real slot data
+  setTimeout(function() {
+    var tabs = document.querySelectorAll('.sort-tab');
+    var bargeCard = document.getElementById('card-barge');
+    var railCard  = document.getElementById('card-rail');
+    var roadCard  = document.getElementById('card-road');
+    var cards = [bargeCard, railCard, roadCard].filter(Boolean);
+
+    // Find best balance (recommended card)
+    var recCard = cards.find(function(c){ return c.classList.contains('recommended'); }) || cards[0];
+    // Find cheapest
+    var cheapCard = cards.slice().sort(function(a,b){ return parseInt(a.dataset.price||9999)-parseInt(b.dataset.price||9999); })[0];
+    // Find fastest (lowest transit)
+    var fastCard  = cards.slice().sort(function(a,b){ return parseInt(a.dataset.transit||9999)-parseInt(b.dataset.transit||9999); })[0];
+    // Find lowest co2
+    var co2Card   = cards.slice().sort(function(a,b){ return parseInt(a.dataset.co2||0)-parseInt(b.dataset.co2||0); })[0];
+
+    function getCardPrice(card)   { var el=card&&card.querySelector('.price-main'); return el?el.textContent:''; }
+    function getCardTransit(card) { var el=card&&card.querySelector('.time-dur');   return el?el.textContent:''; }
+    function getCardCo2(card)     { var el=card&&card.querySelector('.co2-pill');   return el?el.textContent.replace(/saves\s*/i,'').replace('kg CO₂','').trim():''; }
+
+    if (tabs[1] && recCard)   tabs[1].querySelector('.sort-tab-value').textContent = getCardTransit(recCard) + ' · ' + getCardPrice(recCard);
+    if (tabs[2] && cheapCard) tabs[2].querySelector('.sort-tab-value').textContent = getCardPrice(cheapCard);
+    if (tabs[3] && fastCard)  tabs[3].querySelector('.sort-tab-value').textContent = getCardTransit(fastCard);
+    if (tabs[4] && co2Card)   tabs[4].querySelector('.sort-tab-value').textContent = getCardCo2(co2Card);
+  }, 500);
 
   // Log the search to Supabase
   try {
@@ -4044,20 +4072,21 @@ function overlayCardWithSlot(mode, slot, weightKg) {
 
   // Save real slot data to localStorage for confirmation screen
   var savedSlot = {
-    id:           slot.id,
-    mode:         slot.mode,
-    operator:     slot.operator_name,
-    origin:       slot.origin,
-    destination:  slot.destination,
-    departure_at: slot.departure_at,
-    arrival_at:   slot.arrival_at,
+    id:              slot.id,
+    operator_id:     slot.operator_id,
+    mode:            slot.mode,
+    operator:        slot.operator_name,
+    origin:          slot.origin,
+    destination:     slot.destination,
+    departure_at:    slot.departure_at,
+    arrival_at:      slot.arrival_at,
     price_per_tonne: slot.price_per_tonne,
-    co2_per_tonne_km: slot.co2_per_tonne_km,
-    total_price:  totalPrice,
-    transit_h:    transitH,
-    depart_str:   depStr,
-    arrive_str:   arrStr,
-    saved_co2_kg: savedKg
+    co2_per_tonne_km:slot.co2_per_tonne_km,
+    total_price:     totalPrice,
+    transit_h:       transitH,
+    depart_str:      depStr,
+    arrive_str:      arrStr,
+    saved_co2_kg:    savedKg
   };
   localStorage.setItem('cb_slot_' + mode, JSON.stringify(savedSlot));
 }

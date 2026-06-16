@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Shipments — CorridorBook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -312,15 +313,15 @@
 <!-- NAV -->
 <nav class="nav">
   <a href="search.html" class="nav-brand">Corridor<span>Book</span></a>
-  <div class="nav-links">
-    <a href="search.html">Search slots</a>
-    <a href="tracking.html" style="color:var(--blue);font-weight:700;border-bottom:2px solid var(--blue);">My Shipments</a>
-    <a href="how-it-works.html">How it works</a>
-    <a href="about.html">About</a>
+  <div class="nav-links" style="display:flex;align-items:center;gap:24px;">
+    <a href="search.html" class="nav-link">Search slots</a>
+    <a href="tracking.html" class="nav-link" style="color:#fff;font-weight:600;">My Shipments</a>
+    <a href="how-it-works.html" class="nav-link">How it works</a>
+    <a href="about.html" class="nav-link">About</a>
   </div>
   <div class="nav-right">
-    <span id="nav-company" style="font-size:12px;color:var(--grey-muted);font-family:var(--font-mono);"></span>
-    <button onclick="CB.logout()" style="font-size:12px;color:var(--grey-label);background:none;border:1px solid var(--grey-border);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
+    <span class="nav-company" id="nav-company"></span>
+    <button onclick="CB.logout()" style="font-size:12px;color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:inherit;">Sign out</button>
   </div>
 </nav>
 
@@ -361,7 +362,7 @@
     <div class="stat-card">
       <div class="stat-label">Active shipments</div>
       <div class="stat-value">3</div>
-      <div class="stat-sub"><span class="stat-dot" style="background:var(--blue)"></span>2 in transit · 1 pending</div>
+      <div class="stat-sub" id="statActiveSub"><span class="stat-dot" style="background:var(--blue)"></span>active bookings</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Delivered this month</div>
@@ -370,13 +371,13 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">Total CO₂ saved</div>
-      <div class="stat-value" style="color:var(--green)">18.4t</div>
+      <div class="stat-value" id="statCO2" style="color:var(--green)">—</div>
       <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>vs road default</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total spend (May)</div>
-      <div class="stat-value">€4,820</div>
-      <div class="stat-sub"><span class="stat-dot" style="background:var(--blue)"></span>€1,240 saved vs road</div>
+      <div class="stat-value" id="statSpend">—</div>
+      <div class="stat-sub" id="statSpendSub"><span class="stat-dot" style="background:var(--blue)"></span>vs road baseline</div>
     </div>
   </div>
 
@@ -423,7 +424,8 @@
   <div class="tab-panel active" id="panel-active">
     <div class="shipment-list" id="activeList">
 
-      <!-- SHIPMENT 1: In Transit - Barge -->
+      <div id="demo-cards" style="display:none;">
+            <!-- SHIPMENT 1: In Transit - Barge -->
       <div class="shipment-card" data-mode="barge" data-status="in-transit" data-ref="MBP-4QR7W2" data-route="Rotterdam → Antwerp">
         <div class="shipment-main">
           <div class="status-indicator in-transit"></div>
@@ -682,7 +684,9 @@
       </div>
 
     </div>
-    <!-- First-visit empty state (shown when no real bookings in localStorage) -->
+          </div><!-- /demo-cards -->
+
+      <!-- First-visit empty state (shown when no real bookings in localStorage) -->
     <div id="firstVisitEmpty" style="display:none;">
       <div class="empty-state" style="border:2px dashed var(--grey-border);background:var(--white);">
         <div class="empty-icon" style="background:var(--blue-light);">
@@ -720,7 +724,8 @@
     </div>
     <div class="shipment-list">
 
-      <div class="shipment-card" data-mode="barge" data-status="delivered" data-ref="MBP-2LM9X1">
+      <div id="demo-history" style="display:none;">
+            <div class="shipment-card" data-mode="barge" data-status="delivered" data-ref="MBP-2LM9X1">
         <div class="shipment-main">
           <div class="status-indicator delivered"></div>
           <div>
@@ -795,7 +800,8 @@
         </div>
       </div>
 
-    </div>
+
+      </div><!-- /demo-history -->    </div>
   </div>
   </div>
 
@@ -882,7 +888,7 @@
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
         <div style="text-align:center;padding:14px;background:var(--grey-bg);border-radius:var(--r-md);">
           <div style="font-size:11px;color:var(--grey-muted);margin-bottom:4px;">Total spend</div>
-          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);">€4,820</div>
+          <div style="font-size:20px;font-weight:700;font-family:var(--font-mono);" id="statSpend">—</div>
         </div>
         <div style="text-align:center;padding:14px;background:var(--green-light);border-radius:var(--r-md);">
           <div style="font-size:11px;color:var(--green);margin-bottom:4px;">Saved vs road</div>
@@ -1285,9 +1291,9 @@ function cancelShipment(ref, btn) {
     }
   });
   // Also check static demo card (MBP-4QR7W2 has the delay we added)
-  if (document.querySelector('#detail-1')) hasDelay = true;
+  // hasDelay disabled — no hardcoded delays
 
-  if (hasDelay) {
+  if (false && hasDelay) {
     var banner = document.getElementById('delayAlertBanner');
     if (banner) {
       banner.style.display = 'flex';
@@ -1309,13 +1315,234 @@ function cancelShipment(ref, btn) {
 <!-- ── Supabase scripts ─────────────────────────────────────── -->
 <script src="corridorbook.js"></script>
 <script src="auth-modal.js"></script>
+
 <script>
+// ── Auth guard + real bookings ────────────────────────────────
 (async function() {
-  var profile = await CB.authGuard({ forwarderOnly: true });
-  if (!profile) return;
+  var session = await CB.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  var profile = await CB.getProfile();
+  if (!profile) { window.location.href = 'index.html'; return; }
+  if (profile.user_type === 'operator') {
+    window.location.href = 'operator-portal.html'; return;
+  }
+
+  // Update nav company name
   var nc = document.getElementById('nav-company');
   if (nc) nc.textContent = profile.company_name || '';
+
+  // Update avatar and welcome text with real name
+  var av = document.getElementById('trackAvatar');
+  if (av && profile.company_name) {
+    var parts = profile.company_name.trim().split(' ').filter(Boolean);
+    av.textContent = parts.length > 1
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : parts[0].substring(0,2).toUpperCase();
+    av.title = profile.company_name + ' — click to sign out';
+    av.onclick = function() {
+      if (confirm('Sign out?')) CB.logout();
+    };
+  }
+  var sub = document.querySelector('.page-sub');
+  if (sub && profile.company_name) {
+    sub.textContent = 'Welcome back, ' + profile.company_name.split(' ')[0]
+      + ' — track your active bookings and shipment history';
+  }
+
+  // Load real bookings and inject into the page
+  await loadRealBookings();
 })();
+
+async function loadRealBookings() {
+  var bookings = [];
+  try {
+    bookings = await CB.getMyBookings();
+  } catch(e) {
+    console.warn('[CB] Could not load bookings:', e.message);
+    return;
+  }
+
+  var demoCards = document.getElementById('demo-cards');
+  var demoHistory = document.getElementById('demo-history');
+  var demoLabel = document.getElementById('demo-label');
+
+  if (!bookings || bookings.length === 0) {
+    // No real bookings — show demo cards with label
+    if (demoCards) demoCards.style.display = '';
+    if (demoHistory) demoHistory.style.display = '';
+    if (demoLabel) demoLabel.style.display = '';
+    return;
+  }
+
+  // Real bookings exist — hide demo cards
+  if (demoCards) demoCards.style.display = 'none';
+  if (demoHistory) demoHistory.style.display = 'none';
+  if (demoLabel) demoLabel.style.display = 'none';
+
+  var list = document.getElementById('panel-active');
+  if (!list) list = document.querySelector('.shipment-list');
+  if (!list) return;
+
+  // Update stats
+  var activeCount = bookings.filter(function(b){ return b.status === 'confirmed'; }).length;
+  var totalCO2 = 0;
+  var totalSpend = 0;
+
+  bookings.forEach(function(b) {
+    totalSpend += b.total_price || 0;
+    // CO2 saved vs road
+    var ROAD_CO2 = 0.096;
+    var distKm = 90;
+    var wt = (b.cargo_weight_kg || 24000) / 1000;
+    var roadEmit = ROAD_CO2 * wt * distKm;
+    var slotEmit = (b.co2_per_tonne_km || ROAD_CO2) * wt * distKm;
+    totalCO2 += Math.max(0, roadEmit - slotEmit);
+  });
+
+  // Update stat cards
+  setStatValue('statActive',   activeCount);
+  setStatValue('statCO2',      Math.round(totalCO2) + 'kg');
+  setStatValue('statSpend',    '€' + Math.round(totalSpend).toLocaleString('nl-NL'));
+  setStatValue('statBookings', bookings.length);
+
+  // Prepend real booking cards before the static demo cards
+  var activePanel = document.getElementById('panel-active');
+  if (!activePanel) return;
+
+  var firstStatic = activePanel.querySelector('.shipment-card');
+
+  bookings.forEach(function(booking) {
+    if (activePanel.querySelector('[data-ref="' + booking.reference + '"]')) return; // already shown
+
+    var card = buildBookingCard(booking);
+    if (firstStatic) {
+      activePanel.insertBefore(card, firstStatic);
+    } else {
+      activePanel.appendChild(card);
+    }
+  });
+
+  // Update active tab count badge
+  var badge = document.querySelector('.tab-btn.active .tab-count');
+  if (badge) badge.textContent = activeCount + (document.querySelectorAll('#panel-active .shipment-card').length - bookings.length);
+
+  // Hide first-visit empty state
+  var fve = document.getElementById('firstVisitEmpty');
+  if (fve) fve.style.display = 'none';
+}
+
+function buildBookingCard(b) {
+  var dep = b.departure_at ? new Date(b.departure_at) : null;
+  var arr = b.arrival_at   ? new Date(b.arrival_at)   : null;
+
+  var depStr = dep ? dep.toLocaleDateString('nl-NL', {day:'2-digit', month:'short'})
+    + ' · ' + dep.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'}) : '—';
+  var arrStr = arr ? arr.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'}) : '—';
+  var transitH = (dep && arr) ? Math.round((arr - dep) / 36e5) : 0;
+
+  var modeColors = { barge:'#1565C0', rail:'#2E7D32', road:'#E65100' };
+  var modeColor  = modeColors[b.mode] || '#1565C0';
+
+  var statusMap  = { confirmed:'in-transit', cancelled:'delivered' };
+  var statusCls  = statusMap[b.status] || 'pending';
+  var statusLabel = b.status === 'confirmed' ? 'Confirmed'
+    : b.status === 'cancelled' ? 'Cancelled' : b.status;
+
+  // CO2 saving
+  var ROAD_CO2 = 0.096, distKm = 90;
+  var wt = (b.cargo_weight_kg || 24000) / 1000;
+  var savedKg = Math.round((ROAD_CO2 - (b.co2_per_tonne_km || ROAD_CO2)) * wt * distKm);
+
+  var card = document.createElement('div');
+  card.className = 'shipment-card';
+  card.dataset.ref    = b.reference;
+  card.dataset.status = statusCls;
+  card.style.cursor   = 'pointer';
+  card.title          = 'Click to view booking details';
+
+  card.innerHTML = [
+    '<div class="shipment-main">',
+      '<div class="status-indicator ' + statusCls + '"></div>',
+      '<div>',
+        '<div class="ship-ref">' + b.reference + '</div>',
+        '<div class="ship-route">' + (b.origin||'') + ' → ' + (b.destination||'') + '</div>',
+        '<div class="ship-meta">',
+          '<span style="display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:700;background:' + modeColor + '22;color:' + modeColor + ';">' + b.mode + '</span>',
+          '<span class="ship-meta-dot"></span>',
+          '<span>' + (b.operator_name || '') + '</span>',
+          '<span class="ship-meta-dot"></span>',
+          '<span>' + depStr + '</span>',
+        '</div>',
+      '</div>',
+      '<div style="text-align:right;">',
+        '<div style="font-family:var(--font-mono);font-size:15px;font-weight:700;">€' + Math.round(b.total_price || 0).toLocaleString('nl-NL') + '</div>',
+        '<div style="font-size:11px;color:var(--grey-muted);">' + Math.round((b.cargo_weight_kg||0)/1000) + 't cargo</div>',
+      '</div>',
+      '<div style="text-align:right;">',
+        savedKg > 0 ? '<div style="font-size:11px;font-weight:600;color:#2E7D32;">saves ' + savedKg + 'kg CO₂</div>' : '',
+        '<div style="font-size:11px;color:var(--grey-muted);">' + transitH + 'h transit</div>',
+      '</div>',
+      '<span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;background:' + (b.status==='confirmed'?'#E3F2FD':'#F5F5F5') + ';color:' + (b.status==='confirmed'?'#1565C0':'#6C757D') + ';">' + statusLabel + '</span>',
+    '</div>'
+  ].join('');
+
+  // Click to view booking reference page
+  card.addEventListener('click', function(e) {
+    if (e.target.closest('.expand-btn') || e.target.closest('.detail-panel')) return;
+    var p = new URLSearchParams({
+      ref:      b.reference,
+      mode:     b.mode || 'barge',
+      origin:   b.origin || '',
+      dest:     b.destination || '',
+      date:     b.departure_at ? b.departure_at.split('T')[0] : '',
+      weight:   b.cargo_weight_kg || 24000,
+      price:    Math.round(b.total_price || 0),
+      operator: b.operator_name || '',
+      depart:   dep ? dep.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}) : '',
+      arrive:   arrStr
+    });
+    window.location.href = 'mbp_booking_reference.html?' + p.toString();
+  });
+
+  return card;
+}
+
+function setStatValue(id, value) {
+  var el = document.getElementById(id);
+  if (!el) {
+    var stats = document.querySelectorAll('.stat-value');
+    var map = { statActive:0, statDelivered:1, statCO2:2, statSpend:3, statBookings:3 };
+    if (map[id] !== undefined && stats[map[id]]) el = stats[map[id]];
+  }
+  if (el) el.textContent = value;
+}
+
+// ── Real cancellation ─────────────────────────────────────────
+var _origCancelShipment = window.cancelShipment;
+window.cancelShipment = async function(ref, btn) {
+  var confirmed = confirm(
+    'Cancel booking ' + ref + '?\n\n'
+    + 'Cancellation policy:\n'
+    + '  - Free if more than 24h before departure\n'
+    + '  - Fee applies within 24h of departure\n\n'
+    + 'This action cannot be undone.'
+  );
+  if (!confirmed) return;
+
+  // Try to cancel in Supabase first
+  try {
+    var bookings = await CB.getMyBookings();
+    var booking  = bookings.find(function(b){ return b.reference === ref; });
+    if (booking) await CB.cancelBooking(booking.id);
+  } catch(e) {
+    console.warn('[CB] Cancel failed:', e.message);
+  }
+
+  // Then run original UI update
+  if (typeof _origCancelShipment === 'function') {
+    _origCancelShipment(ref, btn);
+  }
+};
 </script>
 </body>
 </html>

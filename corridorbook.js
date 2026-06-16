@@ -282,7 +282,7 @@ const CB = {
       reference:        ref,
       forwarder_id:     user.id,
       slot_id:          slot.id,
-      operator_id:      slot.operator_id,
+      operator_id:      slot.operator_id || null,
       operator_name:    slot.operator_name,
       mode:             slot.mode,
       origin:           slot.origin,
@@ -297,6 +297,21 @@ const CB = {
     }).select().single();
 
     if (error) throw error;
+
+    // Reduce remaining capacity on the slot
+    if (slot.id) {
+      // First get current remaining_kg
+      const { data: slotRow } = await sb.from('slots')
+        .select('remaining_kg')
+        .eq('id', slot.id)
+        .single();
+      if (slotRow && slotRow.remaining_kg >= cargo_weight_kg) {
+        await sb.from('slots')
+          .update({ remaining_kg: slotRow.remaining_kg - cargo_weight_kg })
+          .eq('id', slot.id);
+      }
+    }
+
     return data;
   },
 
